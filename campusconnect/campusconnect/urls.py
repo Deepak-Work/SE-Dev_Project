@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.shortcuts import render
-from django.urls import path, include
+from django.urls import path, include, re_path
 
 def index_view(request):
     return render(request, 'dist/index.html')
@@ -24,5 +24,5 @@ def index_view(request):
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("authentication/", include("authentication.urls")),
-    path('', index_view, name='index'),
+    re_path(r'^.*$', index_view),
 ]
