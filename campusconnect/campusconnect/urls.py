@@ -23,6 +23,6 @@ def index_view(request):
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("authentication/", include("authentication.urls")),
+    path("api/authentication/", include("authentication.urls")),
     re_path(r'^.*$', index_view),
 ]

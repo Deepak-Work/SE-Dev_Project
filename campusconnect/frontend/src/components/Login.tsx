@@ -1,13 +1,21 @@
+import { useState } from 'react';
 import '../index.css';
 import FormTextElement from './UI/FormElement';
 
 const Login = () => {
+    const [form, setForm] = useState({
+        'password': '',
+        'username': '',
+    });
+
+
+
     return (
         <div className="cointainer">
             <h2 className='flex-block text-4xl text-white font-bold m-1.5'>Login</h2>
             <form className='min-w-md'>
-                <FormTextElement type="email" id="exampleFormControlInput1" placeholder="Enter Email" label={''}/>
-                <FormTextElement type="password" id="exampleFormControlInput1" placeholder="Enter Password" label={''}/>
+                <FormTextElement onChange={(e) => setForm({...form, username: e.currentTarget.value})} type="username" id="exampleFormControlInput1" placeholder="Enter username" label={''}/>
+                <FormTextElement onChange={(e) => setForm({...form, password: e.currentTarget.value})} type="password" id="exampleFormControlInput1" placeholder="Enter Password" label={''}/>
                 <div className="flex items-center justify-between">
                     <div className='flex items-center h-5'>
                         <input id="remember" type='checkbox' className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800" />
