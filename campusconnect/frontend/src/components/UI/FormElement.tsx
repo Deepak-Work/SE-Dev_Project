@@ -5,10 +5,11 @@ interface FormElementProps {
     placeholder: string;
     id: string;
     label: string;
+    className: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const FormTextElement: React.FC<FormElementProps> = ({type, placeholder, id, label, onChange})=>{
+const FormTextElement: React.FC<FormElementProps> = ({type, placeholder, id, label, className, onChange})=>{
     return (
         <>
             <div className="mb-5">
@@ -16,7 +17,7 @@ const FormTextElement: React.FC<FormElementProps> = ({type, placeholder, id, lab
             </div>
             <div className="relative my-4">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <input onChange={onChange} type={type} className="form-control" id={id} placeholder={placeholder}/>
+                    <input onChange={onChange} type={type} className={className} id={id} placeholder={placeholder}/>
                 </div>
 
             </div>

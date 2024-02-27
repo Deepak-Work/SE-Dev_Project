@@ -127,7 +127,19 @@ STATICFILES_DIRS = (
     BASE_DIR.joinpath('frontend', 'dist'),
 )
 
+# REST_FRAMEWORK = {
+#     "DEFAULT_PERMISSION_CLASSES": [
+#         "rest_framework.permissions.IsAuthenticated",
+#     ],
+#     "DEFAULT_AUTHENTICATION_CLASSES": [
+#         'rest_framework.authentication.SessionAuthentication',
+#     ]
+# }
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+
