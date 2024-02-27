@@ -1,6 +1,8 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+
 from .serializers import CreateUserSerializer
+
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -10,13 +12,15 @@ class LoginView(APIView):
 
 
 class RegisterView(APIView):
+    serializer_class = CreateUserSerializer
+
     def post(self, request):         
-        serializer = CreateUserSerializer
+        serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            username = serializer.get('username')
-            first_name, last_name = serializer.get('firstname'), serializer.get('lastname')
-            email = serializer.get('email')
-            password = serializer.get('password')
+            username = serializer.data.get('username')
+            first_name, last_name = serializer.data.get('first_name'), serializer.data.get('last_name')
+            email = serializer.data.get('email')
+            password = serializer.data.get('password')
                         
             # If username is not unique, return 400
             queryset = User.objects.filter(username=username)
@@ -28,7 +32,6 @@ class RegisterView(APIView):
                                             email=email, password=password)
             user.save()
             
-            print("Register request received")
             return Response(status=status.HTTP_201_CREATED)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
