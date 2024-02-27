@@ -3,3 +3,4 @@ __pycache__
 SE_Virtual_env
 node_modules
 dist
+.*pyc
