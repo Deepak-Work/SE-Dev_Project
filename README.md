@@ -22,7 +22,7 @@ git branch // This will output the current branch you are on
 git checkout branchname // This switches from your current branch to branchname
 git branch branchname // Creates a new branch under branchname
 ```
-Whenever you create a new branch and attempt to push code on that new branch, you will most likely need to run this first: ```git push --set-upstream origin solaris```
+Whenever you create a new branch and attempt to push code on that new branch, you will most likely need to run this first: ```git push --set-upstream origin branchname```
 
 ### Merging
 If you want to merge branch A into branch B, push your code onto branch A and switch to branch B. Also, ensure you have the latest code by doing ```git pull``` on branch B.
