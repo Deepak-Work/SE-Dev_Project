@@ -47,3 +47,17 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 The migrations folder should also be included in the commit.
+
+## Docker Runs
+
+Make sure you have Docker installed on your machine.
+
+To build the app using Docker, run the following commnad
+
+```docker build -t <image_name> .```
+
+To run the image use:
+
+```docker run -it -p 8000:8000 <image_name>```
+
+This should run the image and lauch the app.
