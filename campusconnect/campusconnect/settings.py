@@ -28,7 +28,7 @@ SECRET_KEY = "django-insecure-=ylbnb+a*q-4vl@w77z8edgsucee1f5^^8--!7y73y9s(u8wf8
 DEBUG = True
 
 ALLOWED_HOSTS = ['campusconnect.on.dockerize.io',
-                 '0.0.0.0', 'localhost']
+                 '0.0.0.0', 'localhost', '127.0.0.1']
 
 
 # Application definition

@@ -1,54 +1,123 @@
-import { useState } from 'react';
+
 import '../index.css';
-import FormTextElement from './UI/FormElement';
 
+import Cookies from 'js-cookie';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Avatar, Checkbox, FormControlLabel, Link } from '@mui/material';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+interface Errors {
+  email: boolean;
+  password: boolean;
+}
 const Login = () => {
-    const [form, setForm] = useState({
-        'password': '',
-        'username': '',
-    });
+  const defaultTheme = createTheme();
+
+  const navigate = useNavigate();
+
+  const [errors, setErrors] = useState<Errors>({
+    email: false,
+    password: false,
+  })
 
 
+  const handleEmailChange = (event: any) => {
+    if (event.target.validity.valid) {
+      setErrors({...errors, email: false});
+    }
+    else {
+      setErrors({...errors, email: true});
+    }
+  }
+
+  const handlePasswordChange = (event: any) => {
+    if (event.target.validity.valid) {
+      setErrors({...errors, password: false});
+    }
+    else {
+      setErrors({...errors, password: true});
+    }
+  }
+    // const [form, setForm] = useState({
+    //     'password': '',
+    //     'username': '',
+    // });
+
+  const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
+    // Prevent default behavior for forms. We need this other some browsers (like Firefox) blocks the request.
+    event.preventDefault();
+
+    const data = new FormData(event.currentTarget);
+    const form: Form = {
+        email: data.get('email') as string,
+        password: data.get('password') as string,}
+
+      const headers = {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': Cookies.get('csrftoken') || '',
+      }
+
+      const response: Response = await fetch('api/authentication/login', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(form),
+      })
+
+      if (response.ok) {
+        navigate("/home");
+      }
+      else {
+        console.log("Login failed");
+      }
+  }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-  <div className="max-w-md w-full space-y-8">
-    <div>
-      <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-        Login
-      </h2>
-    </div>
-    <form className="mt-8 space-y-6" action="#" method="POST">
-      <input type="hidden" name="remember" value="true" />
-      <div className="rounded-md shadow-sm -space-y-px">
-        <FormTextElement onChange={(e) => setForm({...form, username: e.currentTarget.value})} type="username" id="exampleFormControlInput1" placeholder="Enter username" label={''} className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-black-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"/>
-        <FormTextElement onChange={(e) => setForm({...form, password: e.currentTarget.value})} type="password" id="exampleFormControlInput1" placeholder="Enter Password" label={''} className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-black-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"/>
-      </div>
+      <ThemeProvider theme={defaultTheme}>
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <Box sx={{marginTop: 8,display: 'flex', flexDirection: 'column', alignItems: 'center',}}>
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Sign in
+          </Typography>
+          <Box component="form" noValidate sx={{ mt: 1 }}>
+            <TextField margin="normal" onChange={handleEmailChange} required fullWidth id="email" label="Email Address" name="email" autoComplete="email" error={errors.email} autoFocus helperText={errors.email ? "Enter a valid NYU email id" : ""} inputProps={{ pattern: '.*\@nyu\.edu$'}}/>
+            <TextField margin="normal" onChange={handlePasswordChange} required fullWidth name="password" label="Password" type="password" id="password" error={errors.password} autoComplete="current-password" helperText={errors.password ? "Enter a valid password" : ""} inputProps={{pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$'}}/>
+              
+            <FormControlLabel control={<Checkbox value="remember" color="primary" />}
+              label="Remember me"
+            />
+            <Button type="submit" onSubmit={handleSubmit} fullWidth variant="contained" color="primary" sx={{ mt: 3, mb: 2 }}>
+              Sign In
+            </Button>
+            <Grid container>
+              <Grid item xs>
+                <Link href="#" variant="body2">
+                  Forgot password?
+                </Link>
+              </Grid>
+              <Grid item>
+                <Link href="#" variant="body2">
+                  {"Don't have an account? Sign Up"}
+                </Link>
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+      </Container>
+    </ThemeProvider>
+    );
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <input id="remember" name="remember" type="checkbox" className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
-          <label htmlFor="remember" className="ml-2 block text-sm text-gray-900">
-            Remember me
-          </label>
-        </div>
-      </div>
-
-      <div>
-        <button type="submit" className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-          Login
-        </button>
-      </div>
-    </form>
-    <p className="mt-2 text-center text-sm text-gray-600">
-      Don't have an account? <a href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
-        Register
-      </a>
-    </p>
-  </div>
-</div>
-
-    )
 }
-
 export default Login;
