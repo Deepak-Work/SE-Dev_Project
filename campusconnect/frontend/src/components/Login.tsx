@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-
+import { useState } from "react";
 import Cookies from 'js-cookie';
 
 import * as React from 'react';
@@ -8,6 +8,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -18,15 +19,13 @@ interface Form {
   username: string;
 }
 
-// interface Errors {
-//   email: boolean;
-//   password: boolean;
-// }
 
 const Login = () => {
   const defaultTheme = createTheme();
 
   const navigate = useNavigate();
+
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
       // Prevent default behavior for forms. We need this other some browsers (like Firefox) blocks the request.
@@ -49,18 +48,29 @@ const Login = () => {
       console.log("3")
 
 
-      const response: Response = await fetch('api/authentication/login', {
-          method: 'POST',
-          headers: headers,
-          body: JSON.stringify(form)
-      })
+      try {
+        const response: Response = await fetch('api/authentication/login', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(form)
+        });
 
-      if (response.ok) {
-          navigate("/home");
-          console.log("Login successful");
-      } else {
-          console.log("Login failed");
-      }
+        const data = await response.json();
+
+        if (response.ok) {
+            navigate("/home");
+            console.log('Login successful');
+            // Redirect to home page or another action
+        } else {
+            // Display error message from server
+            console.log('Login failed!');
+            setErrorMessage(data.error);
+        }
+    } catch (error) {
+        // Handle network errors
+        console.error('There was a problem with your fetch operation:', error);
+        setErrorMessage('Network error, please try again later.');
+    }
 
   }
 
@@ -81,9 +91,14 @@ const Login = () => {
                           </Grid>
                       </Grid>
                       <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Login</Button>
+                      {errorMessage && (
+                            <Alert severity="error" sx={{ mt: 1 }}>
+                                {errorMessage}
+                            </Alert>
+                        )}
                   </Box>
                 <Typography variant="body2">
-                      Don't have an account? <a href="/register">Register</a>
+                      Don't have an account? <a href="/register">Register!</a>
                   </Typography>
               </Box>
           </Container>

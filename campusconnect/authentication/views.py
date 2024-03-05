@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 
 from .serializers import CreateUserSerializer,LoginUserSerializer
 
@@ -21,20 +22,20 @@ class LoginView(APIView):
             user_exist_query = User.objects.filter(username=username)
 
             if not user_exist_query.exists():
-                return Response(status=status.HTTP_400_BAD_REQUEST) ###We can add a message here later
+                return JsonResponse({"error": "Username does not exist"}, status = 401) ###We can add a message here later
 
             # If username and password match
             user_auth_query = authenticate(username=username, password=password)
 
             if user_auth_query is not None:
                 login(request, user_auth_query)
-                return Response(status=status.HTTP_200_OK)
+                return JsonResponse({"message": "Login Successful"}, status = 200)
             else:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                return JsonResponse({"error": "Username and Password combination is incorrect"}, status = 401)
 
         else:
             print(serializer.errors)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({"error": "Bad Request"}, status=400)
 
 
 class RegisterView(APIView):
