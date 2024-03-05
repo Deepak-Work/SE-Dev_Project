@@ -6,6 +6,7 @@ import {
 import Login from "./Login";
 import Register from "./Register";
 import LandingPage from "./LandingPage";
+import ClubApplication from "./ClubApplication";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/login" element={<Login/>}/>
           <Route path="/register" element={<Register/>}/>
           <Route path="/home" element={<LandingPage/>}/>
+          <Route path="/create-club" element={<ClubApplication/>}/>
         </Routes>
       </Router>
     </div>
