@@ -125,6 +125,9 @@ const Register = () => {
                             </Grid>
                         </Grid>
                         <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Register</Button>
+                        <Typography variant="body2" color="text.secondary" align="center">
+                                Already have an account? <a href="/login">Login</a>
+                        </Typography>
                     </Box>
                 </Box>
             </Container>
