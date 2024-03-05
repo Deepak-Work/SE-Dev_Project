@@ -4,3 +4,4 @@ SE_Virtual_env
 node_modules
 dist
 *.pyc
+*.sqlite3
