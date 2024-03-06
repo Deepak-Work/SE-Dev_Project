@@ -5,3 +5,5 @@ const ClubPage = () => {
         </div>
     )
 }
+
+export default ClubPage;
