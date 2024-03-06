@@ -7,6 +7,7 @@ import Login from "./Login";
 import Register from "./Register";
 import LandingPage from "./LandingPage";
 import ClubApplication from "./ClubApplication";
+import ClubPage from "./ClubPage";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/register" element={<Register/>}/>
           <Route path="/home" element={<LandingPage/>}/>
           <Route path="/create-club" element={<ClubApplication/>}/>
+          <Route path="/club/:id" element={<ClubPage/>}/>
         </Routes>
       </Router>
     </div>

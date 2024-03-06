@@ -177,13 +177,21 @@ const CreateClub = () => {
                                     id="club_members" 
                                     name="club_members" 
                                     label="Club Members" 
-                                    select SelectProps={{multiple: true, renderValue: (selected) => (
-                                        <div>
-                                            {selected.map((value) => (
-                                                <Chip key={value} label={value} />
-                                            ))}
-                                        </div>
-                                    ),}}/>
+                                    select 
+                                    SelectProps={{multiple: true, 
+                                        renderValue: (selected: unknown) => {
+                                            if (Array.isArray(selected)) {
+                                              return (
+                                                <div>
+                                                  {selected.map((value: string) => (
+                                                    <Chip key={value} label={value} />
+                                                  ))}
+                                                </div>
+                                              );
+                                            }
+                                            return null; // Return a default or handle other cases as needed
+                                          },
+                                        }}/>
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField autoComplete="club-events" 
@@ -191,15 +199,21 @@ const CreateClub = () => {
                                 id="club_events" 
                                 name="club_events" 
                                 label="Club Events"
-                                select SelectProps={{multiple: true, renderValue: (selected) => (
-                                    <div>
-                                        {selected.map((value) => (
-                                            <Chip key={value} label={value} />
-                                        ))}
-                                    </div>
-                                    
-                                ),}}
-                                />
+                                select 
+                                SelectProps={{multiple: true, 
+                                    renderValue: (selected: unknown) => {
+                                        if (Array.isArray(selected)) {
+                                          return (
+                                            <div>
+                                              {selected.map((value: string) => (
+                                                <Chip key={value} label={value} />
+                                              ))}
+                                            </div>
+                                          );
+                                        }
+                                        return null; // Return a default or handle other cases as needed
+                                      },
+                                    }}/>
                             </Grid>
                             <Grid item xs={12}>
                             <Button component="label"
@@ -207,9 +221,8 @@ const CreateClub = () => {
                                 variant="contained"
                                 tabIndex={-1}
                                 startIcon={<CloudUploadIcon />}
-                                Upload Image
                                 >
-                                Upload file
+                                Upload Profile Pic
                                 <VisuallyHiddenInput type="file" />
                                 </Button>
                             </Grid>
