@@ -22,7 +22,7 @@ const Login = () => {
   const theme = createTheme({
     palette: {
       text: {
-        primary: "#ffffff",
+        primary: "#e9ecef",
         secondary: "#8B139C",
       },
     },
@@ -91,7 +91,6 @@ const Login = () => {
               "url(https://cdn.pixabay.com/photo/2022/10/02/17/12/black-and-white-7494005_1280.jpg)",
             backgroundRepeat: "no-repeat",
             backgroundSize: "cover",
-            backgroundColor: "#ced4da",
             borderRadius: "20px",
             width: "100%",
             height: "60%",
@@ -110,15 +109,16 @@ const Login = () => {
             }}
           >
             <Container
-              component="div"
+              component="main"
               maxWidth="xs"
               sx={{
+                display: "flex",
                 margin: "3%",
-                backgroundColor: "#e9ecef",
+                backgroundColor: "text.primary",
                 borderRadius: "20px",
                 borderColor: "#000",
                 borderWidth: "2px",
-                width: "35%",
+                justifyContent: "center",
               }}
             >
               <Typography
@@ -142,6 +142,7 @@ const Login = () => {
                     label="Username"
                     autoFocus
                     color="secondary"
+                    sx={{input: {color: "#000"}, backgroundColor: "text.primary"}}
                   />
                 </Grid>
                 <Grid item xs={12} sm={12}>
@@ -154,6 +155,7 @@ const Login = () => {
                     id="password"
                     label="Password"
                     color="secondary"
+                    sx={{input: {color: "#000"}, backgroundColor: "text.primary"}}
                   />
                 </Grid>
               </Grid>
@@ -175,7 +177,7 @@ const Login = () => {
                 component="main"
                 sx={{
                   mt: "3%",
-                  mb: 5,
+                  mb: "2%",
                   backgroundColor: "#e9ecef",
                   borderRadius: "20px",
                   borderColor: "#8B139A",
@@ -183,7 +185,7 @@ const Login = () => {
                   width: "80%",
                 }}
               ></Container>
-              <Typography variant="body2" sx={{ ml:"22%", color: "primary" }}>
+              <Typography variant="body2" sx={{ ml:"25%", color: "primary" }}>
                 Don't have an account?{" "}
                 <a href="/register" style={{ color: "#8B139A" }}>
                   Register!
