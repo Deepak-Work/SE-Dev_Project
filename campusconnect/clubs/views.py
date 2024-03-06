@@ -1,14 +1,14 @@
 from rest_framework.response import Response
 from django.shortcuts import render
 from rest_framework.views import APIView
-from campusconnect.clubs.models import Club
+from .models import Club
 from rest_framework import status
 
-from campusconnect.clubs.serializers import ClubApplicationSerializer
+from .serializers import ClubSerializer
 
 # Create your views here.
 class ClubApplicationView(APIView):
-    serilizer_class = ClubApplicationSerializer
+    serilizer_class = ClubSerializer
     
     def post(self, request):
         serializer = self.serilizer_class(data=request.data)
