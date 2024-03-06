@@ -21,7 +21,13 @@ interface Form {
 
 
 const Login = () => {
-  const defaultTheme = createTheme();
+  const theme = createTheme({
+    palette: {
+      text: {
+        primary: "#ffffff"
+      },
+    },
+  });
 
   const navigate = useNavigate();
 
@@ -31,22 +37,16 @@ const Login = () => {
       // Prevent default behavior for forms. We need this other some browsers (like Firefox) blocks the request.
       event.preventDefault();
 
-      console.log("1")
       const data = new FormData(event.currentTarget);
       const form: Form = {
           password: data.get('password') as string,
           username: data.get('username') as string,
       }
 
-      console.log("2")
-
       const headers = {
           'Content-Type': 'application/json',
           'X-CSRFToken': Cookies.get('csrftoken') || '',
       }
-
-      console.log("3")
-
 
       try {
         const response: Response = await fetch('api/authentication/login', {
@@ -75,9 +75,16 @@ const Login = () => {
   }
 
   return (
-      <>
-      <ThemeProvider theme={defaultTheme}>
-          <Container className="bg-gradient-to-r from-indigo-400 to-[#8b139c]"  component="main" maxWidth="xl" >
+    <ThemeProvider theme={theme}>
+      <Box sx={{
+          background: 'linear-gradient(to right, #6366F1, #8B139C)',
+          height: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Container component="main" maxWidth="xl">
               <CssBaseline/>
               <Box sx={{marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                   <Typography component="h1" variant="h5">Login</Typography>
@@ -102,8 +109,8 @@ const Login = () => {
                   </Typography>
               </Box>
           </Container>
-      </ThemeProvider>
-      </>
+        </Box>
+    </ThemeProvider>
   );
 }
 export default Login;
