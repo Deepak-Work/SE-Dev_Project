@@ -28,7 +28,14 @@ interface Errors {
 }
 
 const Register = () => {
-    const defaultTheme = createTheme();
+    const defaultTheme = createTheme({
+        palette: {
+          text: {
+            primary: "#e9ecef",
+            secondary: "#8B139C",
+          },
+        },
+      });
 
     const navigate = useNavigate();
 
@@ -97,10 +104,24 @@ const Register = () => {
 
     return (
         <ThemeProvider theme={defaultTheme}>
-            <Container component="main" maxWidth="xs">
+            <Box         sx={{
+          background: "linear-gradient(to right, #000, #8B139C)",
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}>
+            <Container component="main" maxWidth="sm" sx={{ background: "linear-gradient(to right, #111, #7A028B)",pb: 10, border:"2px #000 solid", borderRadius: "20px"
+    }} >
                 <CssBaseline/>
                 <Box sx={{marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                    <Typography component="h1" variant="h5">Register</Typography>
+                <Typography
+                component="h1"
+                variant="h5"
+                sx={{ fontSize: "2rem", color: "text.primary" }}
+              >
+                Create an Account
+              </Typography>
                     <Box component="form" onSubmit={handleSubmit} sx={{mt: 3}}>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
@@ -126,11 +147,12 @@ const Register = () => {
                         </Grid>
                         <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Register</Button>
                         <Typography variant="body2" color="text.secondary" align="center">
-                                Already have an account? <a href="/login">Login</a>
+                                Already have an account? <a href="/login" style={{color: "#fff"}}>Login</a>
                         </Typography>
                     </Box>
                 </Box>
             </Container>
+            </Box>
         </ThemeProvider>
     );
 }
