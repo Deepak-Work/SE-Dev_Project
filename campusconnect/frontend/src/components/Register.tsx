@@ -141,7 +141,7 @@ const Register = () => {
                             <Grid item xs={12}>
                                 <TextField onChange={handlePasswordChange} error={errors.password} 
                                 helperText={errors.password ? 'Password needs at least 1 uppercase letter, 1 lowercase letter, 1 number, 1 special character, and at least 8 characters long': ''} 
-                                inputProps={{pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$'}}
+                                inputProps={{pattern: '(?=[A-Za-z0-9@#$%^&+!=]+$)^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+!=])(?=.{8,}).*$'}}
                                 autoComplete="new-password" required fullWidth name="password" label="Password" type="password"id="password"/>
                             </Grid>
                         </Grid>
