@@ -83,23 +83,34 @@ const Login = () => {
           alignItems: "center",
         }}
       >
-        <Container
-          component="main"
-          maxWidth="md"
-          sx={{
-            backgroundImage:
-              "url(https://cdn.pixabay.com/photo/2022/10/02/17/12/black-and-white-7494005_1280.jpg)",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "cover",
-            borderRadius: "20px",
-            width: "100%",
-            height: "60%",
-            borderColor: "#000",
-            borderWidth: "2px",
-          }}
-        >
-          <CssBaseline />
-          <Box
+        <CssBaseline />
+        <Box component="div" sx={{
+                // backgroundImage: "url(https://cdn.pixabay.com/photo/2022/10/02/17/12/black-and-white-7494005_1280.jpg)",
+                backgroundColor: "text.primary",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "cover",
+                borderRadius: "20px",
+                width: "80%",
+                height: "60%",
+                borderColor: "#000",
+                borderWidth: "2px",
+                display: "flex",
+              }}>
+                <Container
+              component="div"
+              maxWidth="md"
+              sx={{
+                backgroundImage:
+                  "url(https://cdn.pixabay.com/photo/2022/10/02/17/12/black-and-white-7494005_1280.jpg)",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "cover",
+                borderRadius: "10px",
+                height: "100%",
+                borderColor: "#000",
+              }}
+            >
+              </Container>
+    <Container
             sx={{
               marginTop: 8,
               display: "flex",
@@ -113,7 +124,7 @@ const Login = () => {
               maxWidth="xs"
               sx={{
                 display: "flex",
-                margin: "3%",
+                margin: "0%",
                 backgroundColor: "text.primary",
                 borderRadius: "20px",
                 borderColor: "#000",
@@ -130,7 +141,7 @@ const Login = () => {
               </Typography>
             </Container>
             <Box component="main" sx={{ mt: 0, ml:0}}>
-            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 5 }}>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={12}>
                   <TextField
@@ -142,7 +153,7 @@ const Login = () => {
                     label="Username"
                     autoFocus
                     color="secondary"
-                    sx={{input: {color: "#000"}, backgroundColor: "text.primary"}}
+                    sx={{input: {color: "#000"}, backgroundColor: "text.primary", borderColor:"#000", borderWidth:"10px"  }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={12}>
@@ -168,13 +179,13 @@ const Login = () => {
                 Login
               </Button>
               {errorMessage && (
-                <Alert severity="error" sx={{ mt: 1 }}>
+                <Alert severity="error" sx={{ mt: 0 }}>
                   {errorMessage}
                 </Alert>
               )}
             </Box>
             <Container
-                component="main"
+                component="div"
                 sx={{
                   mt: "3%",
                   mb: "2%",
@@ -185,15 +196,28 @@ const Login = () => {
                   width: "80%",
                 }}
               ></Container>
-              <Typography variant="body2" sx={{ ml:"25%", color: "primary" }}>
-                Don't have an account?{" "}
-                <a href="/register" style={{ color: "#8B139A" }}>
-                  Register!
-                </a>
-              </Typography>
+              <Container component="div" sx={{
+                  display: "flex",
+                  justifyContent:"center",
+                  // backgroundColor: "#e9ecef",
+                  borderRadius: "20px",
+                  borderColor: "transparent",
+                  borderWidth: "2px",
+                  mt: "2%",
+                }}>
+                <Typography variant="body1" sx={{  color: "#000" }}>
+                  Don't have an account?{" "}
+                  <a href="/register" style={{ color: "#8B139A" }}>
+                    Register!
+                  </a>
+                </Typography>
+              </Container>
               </Box>
+
+              </Container>
           </Box>
-        </Container>
+
+          
       </Box>
     </ThemeProvider>
   );
