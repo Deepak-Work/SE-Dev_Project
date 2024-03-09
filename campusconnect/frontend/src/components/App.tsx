@@ -5,7 +5,7 @@ import {
 } from "react-router-dom";
 import Login from "./Login";
 import Register from "./Register";
-import LandingPage from "./LandingPage";
+import LandingPage from "./LandingPage/LandingPage";
 import ClubApplication from "./ClubApplication";
 import ClubPage from "./ClubPage";
 
