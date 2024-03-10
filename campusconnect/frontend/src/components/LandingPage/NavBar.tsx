@@ -21,11 +21,13 @@ const NavBar = () => {
   });
 
   // TODO: Will have to implement logout functionality later
+  
+
+  // TODO: Add drawer/fix hamburger menu when zooming in
 
   return (
     <ThemeProvider theme={theme}>
       <AppBar
-        position="fixed"
         sx={{
           boxShadow: 0,
           bgcolor: "transparent",
@@ -42,12 +44,12 @@ const NavBar = () => {
               justifyContent: "space-between",
               flexShrink: 0,
               borderRadius: "999px",
-              bgcolor: "rgba(0, 0, 0, 0.4)",
               backdropFilter: "blur(24px)",
               maxHeight: 40,
               border: "1px solid",
               borderColor: "divider",
               boxShadow: "0 0 1px rgba(2, 31, 59, 0.7), 1px 1.5px 2px -1px rgba(2, 31, 59, 0.65), 4px 4px 12px -2.5px rgba(2, 31, 59, 0.65)",
+              background: "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)"
             }}
           >
             <Box
@@ -60,11 +62,10 @@ const NavBar = () => {
               }}
             >
               <Box sx={{ display: { xs: "none", md: "flex" } }}>
-                <MenuItem disabled sx={{ py: "6px", px: "12px" }}>
-                  <Typography variant="h4" color="text.primary">
-                    CampusConnect
-                  </Typography>
-                </MenuItem>
+                <Typography variant="h4" color="text.primary" sx={{ ml: "20px"}}>
+                  CampusConnect
+                </Typography>
+
                 <MenuItem sx={{ ml: "20px", py: "6px", px: "12px" }}>
                   <Typography variant="h6" color="text.primary">
                     My Clubs

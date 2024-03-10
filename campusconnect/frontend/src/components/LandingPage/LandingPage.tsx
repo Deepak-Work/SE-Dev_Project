@@ -1,7 +1,7 @@
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-
 import { CssBaseline } from "@mui/material";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
 
 import NavBar from "./NavBar";
 import Calendar from "./Calendar";
@@ -23,39 +23,35 @@ const LandingPage = () => {
 
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Box
         sx={{
+          width: "100%",
           display: "flex",
-          height: "100vh",
-          justifyContent: "center",
+          overflow: "auto",
+          minHeight: "100vh",
           alignItems: "center",
-          background:
-            "linear-gradient(0deg, rgba(83,0,255,1) 0%, rgba(148,41,185,1) 100%)",
+          flexDirection: "column",
+          background: "linear-gradient(to right, #a68bf0, #8e63d5, #7d3ebd);",
         }}
       >
-        <CssBaseline />
         <NavBar />
-        <Box
-          sx={{
-            flex: 1,
-            padding: theme.spacing(2),
-            textAlign: "center",
-            order: 1, 
-          }}
-        >
-          <Newsletter />
-        </Box>
 
-        <Box
-          sx={{
-            flex: 1,
-            padding: theme.spacing(2),
-            textAlign: "center",
-            order: 2,
-          }}
+        <Grid
+          mt={15}
+          container
+          direction="row"
+          spacing={2}
+          justifyContent="center"
+          alignItems="center"
         >
-          <Calendar />
-        </Box>
+          <Grid item>
+            <Newsletter />
+          </Grid>
+          <Grid item>
+            <Calendar />
+          </Grid>
+        </Grid>
       </Box>
     </ThemeProvider>
   );
