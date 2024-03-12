@@ -12,7 +12,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Chip, InputAdornment, styled } from '@mui/material';
+import { InputAdornment, styled } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useState } from 'react';
 
@@ -39,72 +39,72 @@ const VisuallyHiddenInput = styled('input')({
   });
 
 interface Form{
-    club_name: string;
-    club_description: string;
-    club_location: string;
-    club_email: string;
-    club_website: string;
-    club_contact: string;
-    club_members: string;
-    club_events: string;
-    club_image: string;
+    name: string;
+    description: string;
+    location: string;
+    email: string;
+    website: string;
+    contact: string;
+    // members: string;
+    // events: string;
+    // image: string;
 }
 
 interface Errors{
-    club_name: boolean;
-    club_description: boolean;
-    club_location: boolean;
-    club_website: boolean;
-    club_contact: boolean;
-    club_email: boolean;
-    club_members: boolean;
-    club_events: boolean;
-    club_image: boolean;
+    name: boolean;
+    description: boolean;
+    location: boolean;
+    website: boolean;
+    contact: boolean;
+    email: boolean;
+    // members: boolean;
+    // events: boolean;
+    // image: boolean;
 }
 
-
+// TODO: Add validation and double check members/events/image fields
 
 const CreateClub = () => {
     const defaultTheme = createTheme();
     
     const [errors, setErrors] = useState<Errors>({
-        club_name: false,
-        club_description: false,
-        club_location: false,
-        club_website: false,
-        club_email: false,
-        club_contact: false,
-        club_members: false,
-        club_events: false,
-        club_image: false,
+        name: false,
+        description: false,
+        location: false,
+        website: false,
+        email: false,
+        contact: false,
+        // members: false,
+        // events: false,
+        // image: false,
     });
 
     const navigate = useNavigate();
 
     const handleClubNameChange = (event: any) => {
         if (event.target.validity.valid) {
-            setErrors({...errors, club_name: false});
+            setErrors({...errors, name: false});
         }
         else {
-            setErrors({...errors, club_name: true});
+            setErrors({...errors, name: true});
         }
     }
 
     const handleClubDescriptionChange = (event: any) => {
         if (event.target.validity.valid) {
-            setErrors({...errors, club_description: false});
+            setErrors({...errors, description: false});
         }
         else {
-            setErrors({...errors, club_description: true});
+            setErrors({...errors, description: true});
         }
     }
 
     const handleClubEmailChange = (event: any) => {
         if (event.target.validity.valid) {
-            setErrors({...errors, club_email: false});
+            setErrors({...errors, email: false});
         }
         else {
-            setErrors({...errors, club_email: true});
+            setErrors({...errors, email: true});
         }
     }
 
@@ -115,15 +115,15 @@ const CreateClub = () => {
 
         const data = new FormData(event.currentTarget);
         const form: Form = {
-            club_name: data.get('club_name') as string,
-            club_description: data.get('club_description') as string,
-            club_location: data.get('club_location') as string,
-            club_email: data.get('club_email') as string,
-            club_website: data.get('club_website') as string,
-            club_contact: data.get('club_contact') as string,
-            club_members: data.get('club_members') as string,
-            club_events: data.get('club_events') as string,
-            club_image: data.get('club_image') as string,
+            name: data.get('name') as string,
+            description: data.get('description') as string,
+            location: data.get('location') as string,
+            email: data.get('email') as string,
+            website: data.get('website') as string,
+            contact: data.get('contact') as string,
+            // members: data.get('members') as string,
+            // events: data.get('events') as string,
+            // image: data.get('image') as string,
         }
 
         const headers = {
@@ -131,7 +131,7 @@ const CreateClub = () => {
             'X-CSRFToken': Cookies.get('csrftoken') || '',
         }
 
-        const response: Response = await fetch('api/club/create', {
+        const response: Response = await fetch('api/clubs/create', {
             method: 'POST',
             headers: headers,
             body: JSON.stringify(form),
@@ -154,28 +154,28 @@ const CreateClub = () => {
                     <Box component="form" onSubmit={handleSubmit} sx={{mt: 3}}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
-                                <TextField onChange={handleClubNameChange} error={errors.club_name} helperText={errors.club_name ? 'Please enter a valid club name' : ''} inputProps={{pattern: '.{8,}',maxLength: 50}} autoComplete="club-name" name="club_name" required fullWidth id="club_name" label="Club Name" autoFocus/>
+                                <TextField onChange={handleClubNameChange} error={errors.name} helperText={errors.name ? 'Please enter a valid club name' : ''} inputProps={{pattern: '.{8,}',maxLength: 50}} autoComplete="club-name" name="name" required fullWidth id="name" label="Club Name" autoFocus/>
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField onChange={handleClubDescriptionChange} error={errors.club_description} helperText={errors.club_description ? 'Please enter a valid club description' : ''} inputProps={{maxLength: 500, minLength: 50}} autoComplete="club-description" multiline fullWidth rows={4} required name="club_description" id="club_description" label="Club Description" variant='outlined'/>
+                                <TextField onChange={handleClubDescriptionChange} error={errors.description} helperText={errors.description ? 'Please enter a valid club description' : ''} inputProps={{maxLength: 500, minLength: 50}} autoComplete="club-description" multiline fullWidth rows={4} required name="description" id="description" label="Club Description" variant='outlined'/>
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField autoComplete="club-location" required fullWidth id="club_location" name="club_location" label="Club Location" type='text' variant='outlined' InputProps={{startAdornment: (<InputAdornment position="start">📍</InputAdornment>),}}/>
+                                <TextField autoComplete="club-location" required fullWidth id="location" name="location" label="Club Location" type='text' variant='outlined' InputProps={{startAdornment: (<InputAdornment position="start">📍</InputAdornment>),}}/>
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField onChange={handleClubEmailChange} error={errors.club_email} helperText={errors.club_email ? 'Please enter a valid club email' : ''} inputProps={{pattern: '\@nyu\.edu$*'}} autoComplete='club-email' required fullWidth id="club_email" name="club_email" label="Club Email" type='email' variant='outlined' InputProps={{startAdornment: (<InputAdornment position="start">📧</InputAdornment>),}}/>
+                                <TextField onChange={handleClubEmailChange} error={errors.email} helperText={errors.email ? 'Please enter a valid club email' : ''} inputProps={{pattern: '\@nyu\.edu$*'}} autoComplete='club-email' required fullWidth id="email" name="email" label="Club Email" type='email' variant='outlined' InputProps={{startAdornment: (<InputAdornment position="start">📧</InputAdornment>),}}/>
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField autoComplete="club-website" fullWidth id="club_website" name="club_website" label="Club Website" type='url' variant='outlined' InputProps={{startAdornment: (<InputAdornment position="start">🌐</InputAdornment>),}} />
+                                <TextField autoComplete="club-website" fullWidth id="website" name="website" label="Club Website" type='url' variant='outlined' InputProps={{startAdornment: (<InputAdornment position="start">🌐</InputAdornment>),}} />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField autoComplete="club-contact" required fullWidth id="club_contact" name="club_contact" label="Club Contact" type='tel' variant='outlined' InputProps={{startAdornment: (<InputAdornment position="start">📞</InputAdornment>),}}/>
+                                <TextField autoComplete="club-contact" required fullWidth id="contact" name="contact" label="Club Contact" type='tel' variant='outlined' InputProps={{startAdornment: (<InputAdornment position="start">📞</InputAdornment>),}}/>
                             </Grid>
-                            <Grid item xs={12}>
+                            {/* <Grid item xs={12}>
                                 <TextField autoComplete="club-members"  
                                     fullWidth 
-                                    id="club_members" 
-                                    name="club_members" 
+                                    id="members" 
+                                    name="members" 
                                     label="Club Members" 
                                     select 
                                     SelectProps={{multiple: true, 
@@ -192,12 +192,12 @@ const CreateClub = () => {
                                             return null; // Return a default or handle other cases as needed
                                           },
                                         }}/>
-                            </Grid>
-                            <Grid item xs={12}>
+                            </Grid> */}
+                            {/* <Grid item xs={12}>
                                 <TextField autoComplete="club-events" 
                                 fullWidth 
-                                id="club_events" 
-                                name="club_events" 
+                                id="events" 
+                                name="events" 
                                 label="Club Events"
                                 select 
                                 SelectProps={{multiple: true, 
@@ -214,7 +214,7 @@ const CreateClub = () => {
                                         return null; // Return a default or handle other cases as needed
                                       },
                                     }}/>
-                            </Grid>
+                            </Grid> */}
                             <Grid item xs={12}>
                             <Button component="label"
                                 role={undefined}

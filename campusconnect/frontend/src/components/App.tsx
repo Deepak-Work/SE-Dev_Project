@@ -17,7 +17,7 @@ function App() {
           <Route path="/login" element={<Login/>}/>
           <Route path="/register" element={<Register/>}/>
           <Route path="/home" element={<LandingPage/>}/>
-          <Route path="/create-club" element={<ClubApplication/>}/>
+          <Route path="/club/application" element={<ClubApplication/>}/>
           <Route path="/club/:id" element={<ClubPage/>}/>
         </Routes>
       </Router>

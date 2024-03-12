@@ -1,8 +1,8 @@
 import { Typography } from "@mui/material";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
+// import List from "@mui/material/List";
+// import ListItem from "@mui/material/ListItem";
+// import Card from "@mui/material/Card";
+// import CardContent from "@mui/material/CardContent";
 import { Paper } from "@mui/material";
 
 const Newsletter = () => {
