@@ -6,5 +6,4 @@ from .models import Club
 class ClubSerializer(serializers.Serializer):
     class Meta:
         model = Club
-        fields = '__all__'
-        
+        exclude = ('member_count',)

@@ -1,7 +1,7 @@
 from django.urls import path
 
-from .views import ClubApplicationView
+from .views import CreateClubView
 
 urlpatterns = [
-    path("application", ClubApplicationView.as_view()),
+    path("create", CreateClubView.as_view()),
 ]
