@@ -84,35 +84,34 @@ const Login = () => {
         }}
       >
         <CssBaseline />
-        <Box component="div" sx={{
-                // backgroundImage: "url(https://cdn.pixabay.com/photo/2022/10/02/17/12/black-and-white-7494005_1280.jpg)",
-                backgroundColor: "text.primary",
-                backgroundRepeat: "no-repeat",
-                backgroundSize: "cover",
-                borderRadius: "20px",
-                width: "80%",
-                height: "60%",
-                borderColor: "#000",
-                borderWidth: "2px",
-                display: "flex",
-              }}>
-                <Container
-              component="div"
-              maxWidth="md"
-              sx={{
-                backgroundImage:
-                  "url(https://cdn.pixabay.com/photo/2022/10/02/17/12/black-and-white-7494005_1280.jpg)",
-                backgroundRepeat: "no-repeat",
-                backgroundSize: "cover",
-                borderRadius: "10px",
-                height: "100%",
-                borderColor: "#000",
-              }}
-            >
-              </Container>
-    <Container
+        <Box
+          component="div"
+          sx={{
+            backgroundColor: "text.primary",
+            width: "75%",
+            height: "65%",
+            border: "#000 solid 2px",
+            borderRadius: "20px",
+            display: "flex",
+          }}
+        >
+          <Container
+            component="div"
+            maxWidth="md"
             sx={{
-              marginTop: 8,
+              display: { xs: "none", sm: "none", md: "block" },
+              backgroundImage:
+                "url(https://cdn.pixabay.com/photo/2022/10/02/17/12/black-and-white-7494005_1280.jpg)",
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "cover",
+              height: "100%",
+              border: "#000 solid 1px",
+              borderRadius: "10px",
+            }}
+          ></Container>
+          <Container
+            sx={{
+              marginTop: 12,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -126,98 +125,104 @@ const Login = () => {
                 display: "flex",
                 margin: "0%",
                 backgroundColor: "text.primary",
+                border: "#000 solid 0px",
                 borderRadius: "20px",
-                borderColor: "#000",
-                borderWidth: "2px",
                 justifyContent: "center",
               }}
             >
               <Typography
                 component="h1"
                 variant="h5"
-                sx={{ fontSize: "2rem", color: "#8B139C" }}
+                sx={{ fontSize: "2.5rem", color: "#8B139C", fontFamily:"RampartOne" }}
               >
                 CampusConnect
               </Typography>
             </Container>
-            <Box component="main" sx={{ mt: 0, ml:0}}>
-            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 5 }}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={12}>
-                  <TextField
-                    autoComplete="username"
-                    name="username"
-                    required
-                    fullWidth
-                    id="username"
-                    label="Username"
-                    autoFocus
-                    color="secondary"
-                    sx={{input: {color: "#000"}, backgroundColor: "text.primary", borderColor:"#000", borderWidth:"10px"  }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={12}>
-                  <TextField
-                    autoComplete="password"
-                    required
-                    fullWidth
-                    name="password"
-                    type="password"
-                    id="password"
-                    label="Password"
-                    color="secondary"
-                    sx={{input: {color: "#000"}, backgroundColor: "text.primary"}}
-                  />
-                </Grid>
-              </Grid>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Login
-              </Button>
+
+            <Box component="main" sx={{ mt: 1, ml: 0 }}>
               {errorMessage && (
                 <Alert severity="error" sx={{ mt: 0 }}>
                   {errorMessage}
                 </Alert>
               )}
-            </Box>
-            <Container
+              <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={12}>
+                    <TextField
+                      autoComplete="username"
+                      name="username"
+                      required
+                      fullWidth
+                      id="username"
+                      label="Username"
+                      autoFocus
+                      color="secondary"
+                      sx={{
+                        input: { color: "#000" },
+                        backgroundColor: "text.primary",
+                        borderColor: "#000",
+                        borderWidth: "10px",
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12}>
+                    <TextField
+                      autoComplete="password"
+                      required
+                      fullWidth
+                      name="password"
+                      type="password"
+                      id="password"
+                      label="Password"
+                      color="secondary"
+                      sx={{
+                        input: { color: "#000" },
+                        backgroundColor: "text.primary",
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  Login
+                </Button>
+              </Box>
+              <Container
                 component="div"
                 sx={{
+                  backgroundColor: "#e9ecef",
+                  borderColor: "#8B139A solid 2px",
+                  borderRadius: "20px",
+                  width: "80%",
                   mt: "3%",
                   mb: "2%",
-                  backgroundColor: "#e9ecef",
-                  borderRadius: "20px",
-                  borderColor: "#8B139A",
-                  borderWidth: "2px",
-                  width: "80%",
                 }}
               ></Container>
-              <Container component="div" sx={{
+              <Container
+                component="div"
+                sx={{
                   display: "flex",
-                  justifyContent:"center",
-                  // backgroundColor: "#e9ecef",
+                  justifyContent: "center",
                   borderRadius: "20px",
                   borderColor: "transparent",
                   borderWidth: "2px",
                   mt: "2%",
-                }}>
-                <Typography variant="body1" sx={{  color: "#000" }}>
+                }}
+              >
+                <Typography variant="body1" sx={{ color: "#000" }}>
                   Don't have an account?{" "}
                   <a href="/register" style={{ color: "#8B139A" }}>
                     Register!
                   </a>
                 </Typography>
               </Container>
-              </Box>
-
-              </Container>
-          </Box>
-
-          
+            </Box>
+          </Container>
+        </Box>
       </Box>
     </ThemeProvider>
   );

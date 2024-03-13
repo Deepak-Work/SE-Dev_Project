@@ -105,44 +105,48 @@ const Register = () => {
     return (
         <ThemeProvider theme={defaultTheme}>
             <Box         sx={{
-          background: "linear-gradient(to right, #000, #8B139C)",
+backgroundImage:
+"url(https://cdn.pixabay.com/photo/2022/10/02/17/12/black-and-white-7494005_1280.jpg)",
+backgroundRepeat: "no-repeat",
+backgroundSize: "cover",
           height: "100vh",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
         }}>
-            <Container component="main" maxWidth="sm" sx={{ background: "linear-gradient(to right, #111, #7A028B)",pb: 10, border:"2px #000 solid", borderRadius: "20px"
+            <Container component="main" maxWidth="md" sx={{ background: "linear-gradient(to right, #111, #7A028B)",pb: 10, border:"2px #000 solid", borderRadius: "20px"
     }} >
                 <CssBaseline/>
-                <Box sx={{marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                <Typography
-                component="h1"
-                variant="h5"
-                sx={{ fontSize: "2rem", color: "text.primary" }}
-              >
-                Create an Account
-              </Typography>
+
+                <Box sx={{marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', }}>
+                    <Box sx={{ px: 2, backgroundColor:"transparent", border:"#000 solid 0px", borderRadius:"20px"}}>
+                    <Typography component="h1" variant="h5" sx={{ fontSize: "2.5rem", color: "text.primary", fontFamily:"RampartOne", }}>
+                        Create an Account
+                    </Typography>
+
+                    </Box>
+
                     <Box component="form" onSubmit={handleSubmit} sx={{mt: 3}}>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
-                                <TextField autoComplete="given-name" name="first_name" required fullWidth id="firstName" label="First Name" autoFocus/>
+                                <TextField autoComplete="given-name" name="first_name" required fullWidth variant="filled"  id="firstName" label="First Name" autoFocus color="secondary" sx={{input: {color: "#000"}, backgroundColor: "text.primary"}}/>
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <TextField autoComplete="family-name" required fullWidth name="last_name" id="lastName" label="Last Name"/>
+                                <TextField autoComplete="family-name" required fullWidth variant="filled" name="last_name" id="lastName" label="Last Name" color="secondary" sx={{input: {color: "#000"}, backgroundColor: "text.primary"}}/>
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField onChange={handleUsernameChange} error={errors.username} helperText={errors.username ? 'Username must be at least 10 characters long' : ''} 
-                                inputProps={{pattern: '.{10,}'}} autoComplete="username" required fullWidth id="username" name="username"label="Username"/>
+                                <TextField variant="filled" onChange={handleUsernameChange} error={errors.username} helperText={errors.username ? 'Username must be at least 10 characters long' : ''} 
+                                inputProps={{pattern: '.{10,}'}} autoComplete="username" required fullWidth id="username" name="username"label="Username" color="secondary" sx={{input: {color: "#000"}, backgroundColor: "text.primary"}}/>
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField onChange={handleEmailChange} error={errors.email} helperText={errors.email ? 'Enter a valid NYU email address (ends in @nyu.edu)' : ''} 
-                                inputProps={{pattern: '.*\@nyu\.edu$'}} autoComplete="email" required fullWidth id="email" name="email"label="Email Address"/>
+                                <TextField variant="filled" onChange={handleEmailChange} error={errors.email} helperText={errors.email ? 'Enter a valid NYU email address (ends in @nyu.edu)' : ''} 
+                                inputProps={{pattern: '.*\@nyu\.edu$'}} autoComplete="email" required fullWidth id="email" name="email"label="Email Address" color="secondary" sx={{input: {color: "#000"}, backgroundColor: "text.primary"}}/>
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField onChange={handlePasswordChange} error={errors.password} 
+                                <TextField variant="filled"  onChange={handlePasswordChange} error={errors.password} 
                                 helperText={errors.password ? 'Password needs at least 1 uppercase letter, 1 lowercase letter, 1 number, 1 special character, and at least 8 characters long': ''} 
                                 inputProps={{pattern: '(?=[A-Za-z0-9@#$%^&+!=]+$)^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+!=])(?=.{8,}).*$'}}
-                                autoComplete="new-password" required fullWidth name="password" label="Password" type="password"id="password"/>
+                                autoComplete="new-password" required fullWidth name="password" label="Password" type="password"id="password" color="secondary" sx={{input: {color: "#000"}, backgroundColor: "text.primary"}}/>
                             </Grid>
                         </Grid>
                         <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Register</Button>
