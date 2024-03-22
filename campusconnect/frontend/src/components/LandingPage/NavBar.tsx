@@ -7,7 +7,8 @@ import Typography from "@mui/material/Typography";
 import MenuItem from "@mui/material/MenuItem";
 
 import MenuIcon from "@mui/icons-material/Menu";
-import SettingsIcon from "@mui/icons-material/Settings";
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -19,6 +20,15 @@ const NavBar = () => {
       },
     },
   });
+
+  const handleLogout = () => {
+    let logout = async () => {
+      await fetch("http://127.0.0.1:8000/api/authentication/logout/", {
+        method: "GET",
+      });
+    }
+    logout();
+  }
 
   // TODO: Will have to implement logout functionality later
   
@@ -46,8 +56,7 @@ const NavBar = () => {
               borderRadius: "999px",
               backdropFilter: "blur(24px)",
               maxHeight: 40,
-              border: "1px solid",
-              borderColor: "divider",
+              border: "3px solid black",
               boxShadow: "0 0 1px rgba(2, 31, 59, 0.7), 1px 1.5px 2px -1px rgba(2, 31, 59, 0.65), 4px 4px 12px -2.5px rgba(2, 31, 59, 0.65)",
               background: "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)"
             }}
@@ -73,7 +82,7 @@ const NavBar = () => {
                 </MenuItem>
                 <MenuItem sx={{ py: "6px", px: "12px" }}>
                   <Typography variant="h6" color="text.primary">
-                    My Profile
+                    Explore
                   </Typography>
                 </MenuItem>
               </Box>
@@ -85,16 +94,8 @@ const NavBar = () => {
                 alignItems: "center",
               }}
             >
-              <SettingsIcon sx={{mr: '20px', ":hover": {cursor: 'pointer'}}}/>
-              <Button
-                color="primary"
-                variant="contained"
-                size="small"
-                component="a"
-                target="_blank"
-              >
-                Logout
-              </Button>
+              <AccountBoxIcon fontSize="large" sx={{mr: '20px', ":hover": {cursor: 'pointer'}}}/>
+              <LogoutIcon onClick={handleLogout} fontSize="large" sx={{mr: '20px', ":hover": {cursor: 'pointer'}}}/>
             </Box>
             <Box sx={{ display: { sm: "", md: "none" } }}>
               <Button

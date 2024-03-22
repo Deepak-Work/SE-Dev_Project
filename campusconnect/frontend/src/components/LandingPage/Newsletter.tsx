@@ -1,15 +1,16 @@
-import { Typography } from "@mui/material";
-// import List from "@mui/material/List";
-// import ListItem from "@mui/material/ListItem";
-// import Card from "@mui/material/Card";
-// import CardContent from "@mui/material/CardContent";
-import { Paper } from "@mui/material";
+import { useState } from "react";
+import {
+  Typography,
+  Box,
+  Paper,
+  InputLabel,
+  FormControl,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 
 const Newsletter = () => {
-  /*
-     TODO: Get data from database to fill up newsletter content.
-     If newsletter content is empty, then show message: "You are not following any clubs yet."
-    */
+  const [club, setClub] = useState("");
 
   return (
     <Paper
@@ -17,89 +18,64 @@ const Newsletter = () => {
       sx={{
         borderRadius: "15px",
         textAlign: "left",
-        width: "500px",
-        height: "250px",
+        width: "700px",
+        height: "600px",
+        display: "flex",
+        flexDirection: "column",
+        border: "5px solid #000000",
       }}
     >
-      <Typography
-        variant="h5"
-        color="#8300c4"
-        fontWeight="bold"
-        sx={{ pt: 3, pl: 3 }}
+      <Box
+        sx={{
+          borderRadius: "10px",
+          border: "3px solid #000000",
+          height: "50px",
+          background:
+            "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingRight: "10px",
+        }}
       >
-        Newsletter
-      </Typography>
-      <Typography variant="h6" color="black" sx={{ pl: 3 }}>
-        Here you will find the most recent posts from each club you follow.
-      </Typography>
-      {/* <List
-          sx={{
-            border: "1px solid #000000",
-            borderRadius: "25px",
-            width: "100%",
-            maxWidth: 360,
-            bgcolor: "background.paper",
-            margin: "auto",
-            boxShadow:
-              "0 0 1px rgba(2, 31, 59, 0.7), 1px 1.5px 2px -1px rgba(2, 31, 59, 0.65), 4px 4px 12px -2.5px rgba(2, 31, 59, 0.65)",
-          }}
+        <Typography
+          variant="h5"
+          color="white"
+          fontWeight="bold"
+          sx={{ pt: 1, pl: 3 }}
         >
-          <Typography variant="h4" color="black">
-            Here, you will find the most recent posts for all the clubs that you
-            follow.
-          </Typography>
-          <ListItem>
-            <Card
-              sx={{
-                minWidth: 320,
-                border: "1px solid #000000",
-                borderRadius: "25px",
-                boxShadow:
-                  "0 0 1px rgba(2, 31, 59, 0.7), 1px 1.5px 2px -1px rgba(2, 31, 59, 0.65), 4px 4px 12px -2.5px rgba(2, 31, 59, 0.65)",
-              }}
-            >
-              <CardContent>
-                <Typography variant="h5" color="black">
-                  Recent Post 1
-                </Typography>
-              </CardContent>
-            </Card>
-          </ListItem>
-          <ListItem>
-            <Card
-              sx={{
-                minWidth: 320,
-                border: "1px solid #000000",
-                borderRadius: "25px",
-                boxShadow:
-                  "0 0 1px rgba(2, 31, 59, 0.7), 1px 1.5px 2px -1px rgba(2, 31, 59, 0.65), 4px 4px 12px -2.5px rgba(2, 31, 59, 0.65)",
-              }}
-            >
-              <CardContent>
-                <Typography variant="h5" color="black">
-                  Recent Post 2
-                </Typography>
-              </CardContent>
-            </Card>
-          </ListItem>
-          <ListItem>
-            <Card
-              sx={{
-                minWidth: 320,
-                border: "1px solid #000000",
-                borderRadius: "25px",
-                boxShadow:
-                  "0 0 1px rgba(2, 31, 59, 0.7), 1px 1.5px 2px -1px rgba(2, 31, 59, 0.65), 4px 4px 12px -2.5px rgba(2, 31, 59, 0.65)",
-              }}
-            >
-              <CardContent>
-                <Typography variant="h5" color="black">
-                  Recent Post 3
-                </Typography>
-              </CardContent>
-            </Card>
-          </ListItem>
-        </List> */}
+          My Newsletter
+        </Typography>
+        <FormControl>
+          <InputLabel>Clubs</InputLabel>
+          <Select
+            variant="outlined"
+            sx={{
+              width: "200px",
+              height: "30px",
+              border: "1px solid black",
+              backgroundColor: "#fff",
+              color: "#fff",
+              "& .MuiSvgIcon-root": {
+                color: "black",
+              },
+              "&:focus": {
+                borderColor: "black",
+              },
+            }}
+            label="Clubs"
+            value={club}
+            onChange={(e: SelectChangeEvent) => setClub(e.target.value)}
+            // MenuProps={{ MenuListProps: { sx: { maxHeight: "200px" } } }}
+          >
+            {/* // TODO: Get list of clubs from database */}
+          </Select>
+        </FormControl>
+      </Box>
+
+      <Typography variant="h6" color="black" sx={{ pl: 3 }}>
+        Here, a summarized version of each recent post from the club you choose will be displayed.
+      </Typography>
     </Paper>
   );
 };
