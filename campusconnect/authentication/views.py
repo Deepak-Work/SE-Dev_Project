@@ -28,6 +28,7 @@ class LoginView(APIView):
             user_auth_query = authenticate(username=username, password=password)
 
             if user_auth_query is not None:
+                request.session["id"] = User.objects.get(username=username).id
                 login(request, user_auth_query)
                 return JsonResponse({"message": "Login Successful"}, status = 200)
             else:
@@ -62,3 +63,20 @@ class RegisterView(APIView):
             return Response(status=status.HTTP_201_CREATED)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+class LogoutView(APIView):
+    def get(self, request):
+        try:
+            del request.session["id"]
+            logout(request)
+        except KeyError:
+            pass
+        return Response(status=status.HTTP_200_OK)
+    
+class CheckAuthView(APIView):
+    def get(self, request):
+        if request.user.is_authenticated:
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+    

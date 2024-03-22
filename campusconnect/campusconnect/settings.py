@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     'authentication.apps.AuthenticationConfig',
+    'clubs.apps.ClubsConfig',
 ]
 
 MIDDLEWARE = [
