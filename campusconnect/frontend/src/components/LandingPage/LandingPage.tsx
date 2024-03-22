@@ -7,6 +7,8 @@ import NavBar from "./NavBar";
 import Calendar from "./Calendar";
 import Newsletter from "./Newsletter";
 
+import { useEffect } from "react";
+
 interface Props {
   isAuth: boolean;
 }
@@ -22,6 +24,10 @@ const LandingPage: React.FC<Props> = (props): JSX.Element => {
   //    // navigate('/create-club');
 
   // }
+
+  useEffect(() => {
+    console.log(props.isAuth);
+  }, [])
 
   const theme = createTheme();
 

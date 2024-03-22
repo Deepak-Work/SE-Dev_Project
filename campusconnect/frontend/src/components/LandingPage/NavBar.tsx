@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router";
+
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -13,6 +15,8 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 const NavBar = () => {
+  const navigate = useNavigate();
+
   const theme = createTheme({
     palette: {
       text: {
@@ -23,15 +27,13 @@ const NavBar = () => {
 
   const handleLogout = () => {
     let logout = async () => {
-      await fetch("http://127.0.0.1:8000/api/authentication/logout/", {
+      await fetch("http://127.0.0.1:8000/api/authentication/logout", {
         method: "GET",
       });
     }
     logout();
-  }
-
-  // TODO: Will have to implement logout functionality later
-  
+    navigate("/login");
+  }  
 
   // TODO: Add drawer/fix hamburger menu when zooming in
 

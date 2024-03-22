@@ -17,8 +17,9 @@ function App() {
   // Every time the page is re-rendered, this is called
   useEffect(() => {
     let checkAuth = async () => {
-      let response = await fetch("http://127.0.0.1:8000/api/authentication/check-auth/", {
+      let response = await fetch("http://127.0.0.1:8000/api/authentication/check-auth", {
         method: "GET",
+       
       });
       if (response.ok) {
         setAuth(true);
