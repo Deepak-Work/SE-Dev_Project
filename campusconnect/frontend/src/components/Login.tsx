@@ -13,6 +13,8 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
+import logo from "../assets/CampusConnectLogo.svg";
+
 interface Form {
   password: string;
   username: string;
@@ -109,15 +111,17 @@ const Login = () => {
               borderRadius: "10px",
             }}
           ></Container>
+                      
           <Container
             sx={{
-              marginTop: 12,
+              marginTop: 8,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               height: "30vh",
             }}
           >
+            <img width="100" height="100" src={logo} alt="CampusConnect Logo" />
             <Container
               component="main"
               maxWidth="xs"
@@ -130,12 +134,13 @@ const Login = () => {
                 justifyContent: "center",
               }}
             >
+              
               <Typography
                 component="h1"
                 variant="h5"
                 sx={{ fontSize: "2.5rem", color: "#8B139C", fontFamily:"RampartOne" }}
               >
-                CampusConnect
+                CampusConnect               
               </Typography>
             </Container>
 
@@ -215,7 +220,7 @@ const Login = () => {
               >
                 <Typography variant="body1" sx={{ color: "#000" }}>
                   Don't have an account?{" "}
-                  <a href="/register" style={{ color: "#8B139A" }}>
+                  <a href="/register" style={{ color: "#8B139A", textDecoration: "underline" }}>
                     Register!
                   </a>
                 </Typography>
