@@ -22,20 +22,16 @@ class LoginView(APIView):
             user_exist_query = User.objects.filter(username=username)
 
             if not user_exist_query.exists():
-                return JsonResponse({"error": "Username does not exist"}, status = 401) ###We can add a message here later
+                return JsonResponse({"error": "Username does not exist"}, status = 401)
 
             # If username and password match
             user_auth_query = authenticate(username=username, password=password)
 
             if user_auth_query is not None:
-                request.session["id"] = User.objects.get(username=username).id
                 login(request, user_auth_query)
                 return JsonResponse({"message": "Login Successful"}, status = 200)
             else:
                 return JsonResponse({"error": "Username and Password combination is incorrect"}, status = 401)
-
-        else:
-            print(serializer.errors)
         return JsonResponse({"error": "Bad Request"}, status=400)
 
 
@@ -67,7 +63,6 @@ class RegisterView(APIView):
 class LogoutView(APIView):
     def get(self, request):
         try:
-            del request.session["id"]
             logout(request)
         except KeyError:
             pass
