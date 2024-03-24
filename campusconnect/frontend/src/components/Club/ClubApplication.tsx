@@ -126,12 +126,16 @@ const CreateClub = () => {
             // image: data.get('image') as string,
         }
 
+        console.log(Cookies.get('csrftoken'))
+        console.log(Cookies.get('sessionid'))
+
         const headers = {
             'Content-Type': 'application/json',
             'X-CSRFToken': Cookies.get('csrftoken') || '',
+            'Cookies': `sessionid=${Cookies.get('sessionid') || ''}`
         }
 
-        const response: Response = await fetch('api/clubs/create', {
+        const response: Response = await fetch('http://127.0.0.1:8000/api/clubs/create', {
             method: 'POST',
             headers: headers,
             body: JSON.stringify(form),
@@ -163,7 +167,7 @@ const CreateClub = () => {
                                 <TextField autoComplete="club-location" required fullWidth id="location" name="location" label="Club Location" type='text' variant='outlined' InputProps={{startAdornment: (<InputAdornment position="start">📍</InputAdornment>),}}/>
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField onChange={handleClubEmailChange} error={errors.email} helperText={errors.email ? 'Please enter a valid club email' : ''} inputProps={{pattern: '\@nyu\.edu$*'}} autoComplete='club-email' required fullWidth id="email" name="email" label="Club Email" type='email' variant='outlined' InputProps={{startAdornment: (<InputAdornment position="start">📧</InputAdornment>),}}/>
+                                <TextField onChange={handleClubEmailChange} error={errors.email} helperText={errors.email ? 'Please enter a valid club email' : ''} autoComplete='club-email' required fullWidth id="email" name="email" label="Club Email" type='email' variant='outlined' InputProps={{startAdornment: (<InputAdornment position="start">📧</InputAdornment>),}}/>
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField autoComplete="club-website" fullWidth id="website" name="website" label="Club Website" type='url' variant='outlined' InputProps={{startAdornment: (<InputAdornment position="start">🌐</InputAdornment>),}} />

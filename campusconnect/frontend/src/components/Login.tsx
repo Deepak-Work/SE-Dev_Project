@@ -48,7 +48,7 @@ const Login = () => {
     };
 
     try {
-      const response: Response = await fetch("api/authentication/login", {
+      const response: Response = await fetch("http://127.0.0.1:8000/api/authentication/login", {
         method: "POST",
         headers: headers,
         body: JSON.stringify(form),

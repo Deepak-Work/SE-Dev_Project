@@ -7,8 +7,8 @@ import {
 import Login from "./Login";
 import Register from "./Register";
 import LandingPage from "./LandingPage/LandingPage";
-import ClubApplication from "./ClubApplication";
-import ClubPage from "./ClubPage";
+import ClubApplication from "./Club/ClubApplication";
+import ClubPage from "./Club/ClubPage";
 
 function App() {
   // Used to keep track of whether the user is currently logged in or not
@@ -34,11 +34,12 @@ function App() {
     <div id="root">
       <Router>
         <Routes>
+          <Route path="/" element={<Register/>}/>
           <Route path="/login" element={<Login/>}/>
           <Route path="/register" element={<Register/>}/>
           <Route path="/home" element={<LandingPage isAuth={isAuth}/>}/>
           <Route path="/club/application" element={<ClubApplication/>}/>
-          <Route path="/club/:id" element={<ClubPage/>}/>
+          <Route path="/club/:name/:id" element={<ClubPage/>}/>
         </Routes>
       </Router>
     </div>

@@ -73,7 +73,7 @@ const NavBar = () => {
               }}
             >
               <Box sx={{ display: { xs: "none", md: "flex" } }}>
-                <Typography variant="h4" color="text.primary" sx={{ ml: "20px"}}>
+                <Typography fontFamily="RampartOne" variant="h4" color="text.primary" sx={{ ml: "20px"}}>
                   CampusConnect
                 </Typography>
 
