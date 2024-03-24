@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -7,33 +9,35 @@ import NavBar from "./NavBar";
 import Calendar from "./Calendar";
 import Newsletter from "./Newsletter";
 
-import { useEffect } from "react";
-
-interface Props {
-  isAuth: boolean;
-}
-
-const LandingPage: React.FC<Props> = (props): JSX.Element => {
+const LandingPage = () => {
   // TODO: Landing page should be protected (only logged in users able to see it)
 
-  // const navigate = useNavigate();
-  // const createNewClub = () => {
+  // Used to keep track of whether the user is currently logged in or not
+  const [isAuth, setAuth] = useState(false);
 
-  //    // event?.preventDefault();
-
-  //    // navigate('/create-club');
-
-  // }
-
+  // Every time the page is re-rendered, this is called
   useEffect(() => {
-    console.log(props.isAuth);
-  }, [])
+    let checkAuth = async () => {
+      let response = await fetch(
+        "/api/authentication/isauth",
+        {
+          method: "GET",
+        }
+      );
+      if (response.ok) {
+        setAuth(true);
+      } else {
+        setAuth(false);
+      }
+    };
+    checkAuth();
+  }, []);
 
   const theme = createTheme();
 
   return (
     <>
-      {!props.isAuth ? (
+      {!isAuth ? (
         <p>You are not authorized to view this page.</p>
       ) : (
         <ThemeProvider theme={theme}>

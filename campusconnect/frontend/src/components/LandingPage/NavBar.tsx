@@ -27,7 +27,7 @@ const NavBar = () => {
 
   const handleLogout = () => {
     let logout = async () => {
-      await fetch("http://127.0.0.1:8000/api/authentication/logout", {
+      await fetch("/api/authentication/logout", {
         method: "GET",
       });
     }

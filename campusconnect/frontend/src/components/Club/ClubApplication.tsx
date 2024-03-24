@@ -126,16 +126,12 @@ const CreateClub = () => {
             // image: data.get('image') as string,
         }
 
-        console.log(Cookies.get('csrftoken'))
-        console.log(Cookies.get('sessionid'))
-
         const headers = {
             'Content-Type': 'application/json',
             'X-CSRFToken': Cookies.get('csrftoken') || '',
-            'Cookies': `sessionid=${Cookies.get('sessionid') || ''}`
         }
 
-        const response: Response = await fetch('http://127.0.0.1:8000/api/clubs/create', {
+        const response: Response = await fetch('/api/clubs/create', {
             method: 'POST',
             headers: headers,
             body: JSON.stringify(form),

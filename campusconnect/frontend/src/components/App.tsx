@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -11,24 +10,6 @@ import ClubApplication from "./Club/ClubApplication";
 import ClubPage from "./Club/ClubPage";
 
 function App() {
-  // Used to keep track of whether the user is currently logged in or not
-  const [isAuth, setAuth] = useState(false);
-
-  // Every time the page is re-rendered, this is called
-  useEffect(() => {
-    let checkAuth = async () => {
-      let response = await fetch("http://127.0.0.1:8000/api/authentication/check-auth", {
-        method: "GET",
-       
-      });
-      if (response.ok) {
-        setAuth(true);
-      } else {
-        setAuth(false);
-      }
-    }
-    checkAuth();
-  }, []);
 
   return (
     <div id="root">
@@ -37,7 +18,7 @@ function App() {
           <Route path="/" element={<Register/>}/>
           <Route path="/login" element={<Login/>}/>
           <Route path="/register" element={<Register/>}/>
-          <Route path="/home" element={<LandingPage isAuth={isAuth}/>}/>
+          <Route path="/home" element={<LandingPage/>}/>
           <Route path="/club/application" element={<ClubApplication/>}/>
           <Route path="/club/:name/:id" element={<ClubPage/>}/>
         </Routes>

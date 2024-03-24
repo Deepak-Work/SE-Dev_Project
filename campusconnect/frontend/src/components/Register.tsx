@@ -87,7 +87,7 @@ const Register = () => {
             'X-CSRFToken': Cookies.get('csrftoken') || '',
         }
 
-        const response: Response = await fetch('http://127.0.0.1:8000/api/authentication/register', {
+        const response: Response = await fetch('/api/authentication/register', {
             method: 'POST',
             headers: headers,
             body: JSON.stringify(form)

@@ -14,8 +14,6 @@ class CreateClubView(APIView):
     
     def post(self, request):
         serializer = self.serilizer_class(data=request.data)
-
-        print(request.user.is_authenticated)
         
         if serializer.is_valid():
 
@@ -25,7 +23,7 @@ class CreateClubView(APIView):
             clubEmail = serializer.data.get('email')
             clubContact = serializer.data.get('contact')
             clubWebsite = serializer.data.get('website')
-            clubOrganizer = request.session['id']
+            clubOrganizer = request.user
                         
             queryset = Club.objects.filter(name=clubName)
             if queryset.exists():
