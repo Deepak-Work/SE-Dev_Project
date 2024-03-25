@@ -2,7 +2,7 @@ from django.db import models
 
 from django.contrib.auth.models import User
 
-from campusconnect.clubs.models import Club
+from clubs.models import Club
 
 import datetime
 
