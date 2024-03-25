@@ -1,16 +1,20 @@
 import { useNavigate } from "react-router";
 
-import Box from "@mui/material/Box";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
-import MenuItem from "@mui/material/MenuItem";
+import {
+  AppBar,
+  Box,
+  Button,
+  Container,
+  Toolbar,
+  Typography,
+  MenuItem,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
 
 import MenuIcon from "@mui/icons-material/Menu";
-import AccountBoxIcon from '@mui/icons-material/AccountBox';
-import LogoutIcon from '@mui/icons-material/Logout';
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -30,10 +34,10 @@ const NavBar = () => {
       await fetch("/api/authentication/logout", {
         method: "GET",
       });
-    }
+    };
     logout();
     navigate("/login");
-  }  
+  };
 
   // TODO: Add drawer/fix hamburger menu when zooming in
 
@@ -59,8 +63,10 @@ const NavBar = () => {
               backdropFilter: "blur(24px)",
               maxHeight: 40,
               border: "3px solid black",
-              boxShadow: "0 0 1px rgba(2, 31, 59, 0.7), 1px 1.5px 2px -1px rgba(2, 31, 59, 0.65), 4px 4px 12px -2.5px rgba(2, 31, 59, 0.65)",
-              background: "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)"
+              boxShadow:
+                "0 0 1px rgba(2, 31, 59, 0.7), 1px 1.5px 2px -1px rgba(2, 31, 59, 0.65), 4px 4px 12px -2.5px rgba(2, 31, 59, 0.65)",
+              background:
+                "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
             }}
           >
             <Box
@@ -73,7 +79,12 @@ const NavBar = () => {
               }}
             >
               <Box sx={{ display: { xs: "none", md: "flex" } }}>
-                <Typography fontFamily="RampartOne" variant="h4" color="text.primary" sx={{ ml: "20px"}}>
+                <Typography
+                  fontFamily="RampartOne"
+                  variant="h4"
+                  color="text.primary"
+                  sx={{ ml: "20px" }}
+                >
                   CampusConnect
                 </Typography>
 
@@ -96,8 +107,19 @@ const NavBar = () => {
                 alignItems: "center",
               }}
             >
-              <AccountBoxIcon fontSize="large" sx={{mr: '20px', ":hover": {cursor: 'pointer'}}}/>
-              <LogoutIcon onClick={handleLogout} fontSize="large" sx={{mr: '20px', ":hover": {cursor: 'pointer'}}}/>
+              <Tooltip title="Profile Page">
+                <IconButton sx={{ color: "white", mr: "5px" }}>
+                  <AccountBoxIcon fontSize="large" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Logout">
+                <IconButton
+                  onClick={handleLogout}
+                  sx={{ color: "white", mr: "20px" }}
+                >
+                  <LogoutIcon fontSize="large" />
+                </IconButton>
+              </Tooltip>
             </Box>
             <Box sx={{ display: { sm: "", md: "none" } }}>
               <Button

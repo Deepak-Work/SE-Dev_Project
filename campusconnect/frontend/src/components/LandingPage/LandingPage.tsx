@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
@@ -9,35 +8,19 @@ import NavBar from "./NavBar";
 import Calendar from "./Calendar";
 import Newsletter from "./Newsletter";
 
-const LandingPage = () => {
+interface Props {
+  isAuth: boolean;
+}
+
+const LandingPage = ( props: Props ) => {
   // TODO: Landing page should be protected (only logged in users able to see it)
 
-  // Used to keep track of whether the user is currently logged in or not
-  const [isAuth, setAuth] = useState(false);
-
-  // Every time the page is re-rendered, this is called
-  useEffect(() => {
-    let checkAuth = async () => {
-      let response = await fetch(
-        "/api/authentication/isauth",
-        {
-          method: "GET",
-        }
-      );
-      if (response.ok) {
-        setAuth(true);
-      } else {
-        setAuth(false);
-      }
-    };
-    checkAuth();
-  }, []);
 
   const theme = createTheme();
 
   return (
     <>
-      {!isAuth ? (
+      {!props.isAuth ? (
         <p>You are not authorized to view this page.</p>
       ) : (
         <ThemeProvider theme={theme}>

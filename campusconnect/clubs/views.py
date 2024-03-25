@@ -17,6 +17,7 @@ class CreateClubView(APIView):
         
         if serializer.is_valid():
 
+
             clubName = serializer.data.get('name')
             clubDesc = serializer.data.get('description')
             clubLoc = serializer.data.get('location')
@@ -37,7 +38,7 @@ class CreateClubView(APIView):
 
             
             
-            return Response(status=status.HTTP_201_CREATED)
+            return Response({'club_id': str(club.id)}, status=status.HTTP_201_CREATED)
         
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
@@ -45,7 +46,9 @@ class GetClubView(APIView):
     def get(self, request, name, id):
         # TODO: Eventually, we'll also have to include posts, events, and members associated with this club
         c = Club.objects.filter(name=name, id=id).values().first()
-        return Response(c)
+        if c:
+            return Response({'club_data': c}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
             
             

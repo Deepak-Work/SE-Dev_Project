@@ -138,8 +138,10 @@ const CreateClub = () => {
         })
         
         if (response.ok) {
+            response.json().then((value) => {
+                navigate(`/club/${form.name}/${value.club_id}`);
+            })
             console.log("Club created successfully");
-            navigate("/home");
         } else {
             console.log("Club creation failed");
         }
