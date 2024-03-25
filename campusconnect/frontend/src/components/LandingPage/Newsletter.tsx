@@ -47,7 +47,7 @@ const Newsletter = () => {
           My Newsletter
         </Typography>
         <FormControl>
-          <InputLabel>Clubs</InputLabel>
+          {/* <InputLabel sx={{ color: "#fff" }}>Clubs</InputLabel> */}
           <Select
             variant="outlined"
             sx={{
@@ -63,6 +63,7 @@ const Newsletter = () => {
                 borderColor: "black",
               },
             }}
+            placeholder="Clubs"
             label="Clubs"
             value={club}
             onChange={(e: SelectChangeEvent) => setClub(e.target.value)}

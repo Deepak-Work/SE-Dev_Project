@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
     'authentication.apps.AuthenticationConfig',
     'clubs.apps.ClubsConfig',
+    'posts.apps.PostsConfig',
 ]
 
 MIDDLEWARE = [
