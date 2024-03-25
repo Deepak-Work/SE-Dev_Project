@@ -3,7 +3,6 @@ import {
   Typography,
   Box,
   Paper,
-  InputLabel,
   FormControl,
   Select,
   SelectChangeEvent,

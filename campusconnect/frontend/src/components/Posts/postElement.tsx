@@ -1,6 +1,7 @@
 import React from 'react';
 import { Avatar, Card, CardHeader, CardContent, CardMedia, Typography, CardActions, IconButton, TextField, List, ListItem, ListItemText, ListItemAvatar } from '@mui/material';
-import {ThumbUpAltIcon, ThumbDownIcon} from '@material-ui/icons';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 interface PostProps {
   username: string;
   userAvatar: string;

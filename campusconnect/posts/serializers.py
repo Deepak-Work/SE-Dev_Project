@@ -2,13 +2,15 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.validators import UnicodeUsernameValidator
 
+from .models import Post
+
 
 class CreatePostSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ["club", "content"]
+        model = Post
+        fields = '__all__'
         
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ["club", "content", "created_at"]
+        model = Post
+        fields = '__all__'

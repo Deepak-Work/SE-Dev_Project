@@ -9,5 +9,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/authentication/", include("authentication.urls")),
     path("api/clubs/", include("clubs.urls")),
+    path("api/posts/", include("posts.urls")),
     re_path(r'^.*$', index_view),
 ]
