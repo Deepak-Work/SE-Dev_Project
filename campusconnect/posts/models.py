@@ -12,6 +12,7 @@ class Post(models.Model):
     title = models.CharField(max_length=128)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     body = models.TextField()
+    image = models.ImageField(upload_to='images/', blank=True, null=True)
     summary = models.TextField(max_length=255)
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
     likes = models.IntegerField(default=0)
