@@ -50,7 +50,7 @@ const Login = () => {
     };
 
     try {
-      const response: Response = await fetch("api/authentication/login", {
+      const response: Response = await fetch("/api/authentication/login", {
         method: "POST",
         headers: headers,
         body: JSON.stringify(form),

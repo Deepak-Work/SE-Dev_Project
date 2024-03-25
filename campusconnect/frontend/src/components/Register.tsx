@@ -104,16 +104,16 @@ const Register = () => {
       last_name: data.get("last_name") as string,
     };
 
-    const headers = {
-      "Content-Type": "application/json",
-      "X-CSRFToken": Cookies.get("csrftoken") || "",
-    };
+        const headers = {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': Cookies.get('csrftoken') || '',
+        }
 
-    const response: Response = await fetch("api/authentication/register", {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(form),
-    });
+        const response: Response = await fetch('/api/authentication/register', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(form)
+        })
 
     if (response.ok) {
       navigate("/login");

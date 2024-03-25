@@ -1,3 +1,4 @@
+
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -7,27 +8,13 @@ import NavBar from "./NavBar";
 import Calendar from "./Calendar";
 import Newsletter from "./Newsletter";
 
-import { useEffect } from "react";
-
 interface Props {
   isAuth: boolean;
 }
 
-const LandingPage: React.FC<Props> = (props): JSX.Element => {
+const LandingPage = ( props: Props ) => {
   // TODO: Landing page should be protected (only logged in users able to see it)
 
-  // const navigate = useNavigate();
-  // const createNewClub = () => {
-
-  //    // event?.preventDefault();
-
-  //    // navigate('/create-club');
-
-  // }
-
-  useEffect(() => {
-    console.log(props.isAuth);
-  }, [])
 
   const theme = createTheme();
 

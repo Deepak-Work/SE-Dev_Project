@@ -35,7 +35,6 @@ ALLOWED_HOSTS = ['campusconnect.on.dockerize.io',
 
 INSTALLED_APPS = [
     "rest_framework",
-    'corsheaders',
     
     "django.contrib.admin",
     "django.contrib.auth",
@@ -51,7 +50,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -60,7 +58,7 @@ MIDDLEWARE = [
 ]
 
 # NOTE: not safe for now, temporary.
-CORS_ORIGIN_ALLOW_ALL = True   
+# CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = "campusconnect.urls"
 
@@ -133,15 +131,6 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = (
     BASE_DIR.joinpath('frontend', 'dist'),
 )
-
-# REST_FRAMEWORK = {
-#     "DEFAULT_PERMISSION_CLASSES": [
-#         "rest_framework.permissions.IsAuthenticated",
-#     ],
-#     "DEFAULT_AUTHENTICATION_CLASSES": [
-#         'rest_framework.authentication.SessionAuthentication',
-#     ]
-# }
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
