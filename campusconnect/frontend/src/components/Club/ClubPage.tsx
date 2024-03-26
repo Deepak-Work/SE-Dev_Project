@@ -4,6 +4,11 @@ import { useParams } from "react-router-dom";
 import Cookies from "js-cookie";
 
 import {
+  Box,
+  Paper,
+  Typography,
+  IconButton,
+  Tooltip,
   Button,
   Container,
   Dialog,
@@ -11,8 +16,11 @@ import {
   Fab,
   Grid,
   TextField,
+  List,
+  ListItem,
+  PaletteOptions
 } from "@mui/material";
-import { Box, Paper, Typography, IconButton, Tooltip } from "@mui/material";
+
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 import CreateIcon from "@mui/icons-material/Create";
@@ -20,9 +28,9 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import PeopleIcon from "@mui/icons-material/People";
 
-import { PaletteOptions } from "@mui/material";
 
 import NavBar from "../LandingPage/NavBar";
+import PostElement from "../Posts/PostElement";
 
 interface Props {
   isAuth: boolean;
@@ -36,7 +44,7 @@ interface ClubInfo {
   website: string;
 
   // members: any[];
-  // posts: any[];
+  posts: any[];
   // events: any[];
   // auditLog: any[];
 }
@@ -54,6 +62,21 @@ interface CustomPaletteOptions extends PaletteOptions {
     dark?: string;
     contrastText?: string;
   };
+}
+
+const convertDate = (date: Date) => {
+
+  // TODO: Fix this
+
+  return date.toLocaleDateString("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  });
 }
 
 type ImageFile = File | null;
@@ -80,6 +103,7 @@ const ClubPage = (props: Props) => {
   const [clubInfo, setClubInfo] = useState<ClubInfo>({} as ClubInfo);
   const [createPostOpen, setCreatePostOpen] = useState(false);
   const [createPostImage, setCreatePostImage] = useState<ImageFile>(null);
+  const [posts, setPosts] = useState<JSX.Element>();
 
   const { name, id } = useParams();
 
@@ -99,6 +123,7 @@ const ClubPage = (props: Props) => {
 
   const handleCreatePostOpen = () => setCreatePostOpen(true);
   const handleCreatePostClose = () => setCreatePostOpen(false);
+
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -123,10 +148,22 @@ const ClubPage = (props: Props) => {
 
     if (response.ok) {
       handleCreatePostClose();
+      window.location.reload();
       console.log("New Post Created Successfully");
     } else {
       console.log("New Post failed");
     }
+  };
+
+  const createPostsDisplay = (posts_data: any) => {
+    console.log(posts_data);
+    const postComponents = posts_data.map((post: any) => (
+      <ListItem key={post.id}>
+        <PostElement username={post.author} title={post.title} body={post.body} time_posted={convertDate(new Date(post.time_posted))} likes={post.likes} dislikes={post.dislikes}/>
+      </ListItem>
+    ))
+    const final = <List sx={{ml: -21}}>{postComponents}</List>
+    setPosts(final);
   };
 
   useEffect(() => {
@@ -138,6 +175,7 @@ const ClubPage = (props: Props) => {
         setClubExists(true);
         response.json().then((value) => {
           const club_data = value.club_data;
+          const posts = value.posts;
           const clubInfo: ClubInfo = {
             name: club_data.name,
             description: club_data.description,
@@ -145,7 +183,9 @@ const ClubPage = (props: Props) => {
             email: club_data.email,
             pnum: club_data.contact,
             website: club_data.website,
+            posts: posts,
           };
+          createPostsDisplay(posts);
           setClubInfo(clubInfo);
         });
       } else {
@@ -184,6 +224,8 @@ const ClubPage = (props: Props) => {
                 textAlign: "left",
                 width: "1000px",
                 height: "800px",
+                maxHeight: "800px",
+                overflow: 'auto',
                 display: "flex",
                 flexDirection: "column",
                 border: "5px solid #000000",
@@ -469,6 +511,9 @@ const ClubPage = (props: Props) => {
                   <Typography ml={4} mt={1} variant="h3" color="white">
                     Posts
                   </Typography>
+                  <div style={{ display: "flex", marginTop: '100px'}}>
+                    {posts}
+                  </div>
                 </Box>
 
                 <Box
