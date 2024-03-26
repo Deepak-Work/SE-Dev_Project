@@ -1,9 +1,13 @@
 from rest_framework.response import Response
+
 from django.shortcuts import render
+from django.contrib.auth.models import User
+
 from rest_framework.views import APIView
 from .models import Club
 from rest_framework import status
 
+from posts.models import Post
 from .models import Club
 
 from .serializers import ClubSerializer
@@ -44,10 +48,14 @@ class CreateClubView(APIView):
     
 class GetClubView(APIView):
     def get(self, request, name, id):
-        # TODO: Eventually, we'll also have to include posts, events, and members associated with this club
+        # TODO: Eventually, we'll also have to include events and members associated with this club
         c = Club.objects.filter(name=name, id=id).values().first()
+        posts = Post.objects.filter(club=id).order_by('-time_posted').values()
+        for post in posts:
+            post['author'] = User.objects.get(id=post['author_id']).username
+            del post['author_id']
         if c:
-            return Response({'club_data': c}, status=status.HTTP_200_OK)
+            return Response({'club_data': c, 'posts': posts}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
             
