@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
+import Cookies from "js-cookie";
+
+import { Button, Container, Dialog, DialogContent, DialogTitle, Fab, Grid, TextField, } from "@mui/material"
 import { Box, Paper, Typography, IconButton, Tooltip } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -12,6 +15,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import { purple } from "@mui/material/colors";
 
 import NavBar from "../LandingPage/NavBar";
+
 
 interface Props {
   isAuth: boolean;
@@ -30,18 +34,84 @@ interface ClubInfo {
   // auditLog: any[];
 }
 
+interface CreatePost {
+  title: string;
+  body: string;
+}
+
+type ImageFile = File | null;
+
 const ClubPage = (props: Props) => {
   const theme = createTheme({
     palette: {
-      primary: purple,
+        primary: {
+          main : "#7108d8",
+        },
+        secondary: {
+          main: "#8B139C",
+        },
+        back: {
+          main: "#ced4da",
+          light: "#fff",
+          dark: "#000",
+          contrastText: "purple"
+        },
     },
   });
 
   const [clubExists, setClubExists] = useState(false);
-
   const [clubInfo, setClubInfo] = useState<ClubInfo>({} as ClubInfo);
+  const [createPostOpen, setCreatePostOpen] = useState(false);
+  const [createPostImage, setCreatePostImage] = useState<ImageFile>(null); 
 
   const { name, id } = useParams();
+
+  const handleImageSelect = (event: any) => {
+    let imageFiles = event.target.files;
+
+    if(!imageFiles || imageFiles.length == 0) {
+      return;
+    }
+    
+    setCreatePostImage(imageFiles[0]);
+  }
+
+  const handleImageRemove = () => {
+    setCreatePostImage(null);
+  }
+
+  const handleCreatePostOpen = () => setCreatePostOpen(true);
+  const handleCreatePostClose = () => setCreatePostOpen(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const data = new FormData(event.currentTarget);
+    const form: CreatePost = {
+      title: data.get("create-post-title") as string,
+      body: data.get("create-post-body") as string,
+    };
+
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-CSRFToken' : Cookies.get('csrftoken') || '',
+    }
+
+    const response: Response = await fetch('<insertAPIPath>', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(form)
+    })
+
+    if(response.ok) {
+      handleCreatePostClose();
+      console.log("New Post Created Successfully");
+    }
+    else{
+      console.log("New Post failed")
+    }
+  }
+
 
   useEffect(() => {
     let fetchClub = async () => {
@@ -142,7 +212,7 @@ const ClubPage = (props: Props) => {
 
                   <div style={{ display: "flex", flexDirection: "row", marginLeft: "10px"}}>
                     <Tooltip title="Create Post">
-                      <IconButton sx={{ color: "white" }}>
+                      <IconButton onClick={handleCreatePostOpen} sx={{ color: "white" }}>
                         <CreateIcon />
                       </IconButton>
                     </Tooltip>
@@ -167,6 +237,70 @@ const ClubPage = (props: Props) => {
                 </div>
 
               </Box>
+
+              <Dialog open={createPostOpen} onClose={handleCreatePostClose}>
+                <DialogTitle sx={{background:"linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)", color:"back.light", border: "2px #000 solid", borderRadius: "0 0 0px 0px"}}>
+                  <Container component="div" sx={{display: "flex", columnGap: 5, justifyContent:"space-between",}}>
+                    <Typography component="h2" variant="h2">
+                      Create a Post
+                      </Typography>
+                    <Button onClick={handleCreatePostClose} sx={{color:"back.dark", fontSize: "2rem", "&:hover" : {
+                      color:"#F00"
+                    }}}>
+                      X
+                    </Button>
+                  </Container> 
+                </DialogTitle>
+
+                {/* <DialogContent> */}
+                  <Container component="div" sx={{py: 3, backgroundColor:"back.main", border: "2px #000 solid", borderRadius: "0px"}}>
+                    <Box component="form" onSubmit={handleSubmit}>                      
+                      <Grid container spacing={3} sx={{display: "flex", justifyContent: "space-evenly"}}>
+                        <Grid item xs={12}>
+                          <Typography component="label" variant="h5" sx={{color:"back.dark"}}>Title</Typography>
+                          <TextField component="div" name="create-post-title" id="create-post-title" required fullWidth sx={{ backgroundColor:"back.light", '&:focus': {
+                            border:"2px solid black",
+                          }}}></TextField>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <Typography component="label" variant="h5">Body</Typography>
+                          <TextField component="div" name="create-post-body" id="create-post-body" required fullWidth multiline rows={12} sx={{backgroundColor:"back.light",}}></TextField>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <Container component="div" sx={{display:"flex", flexDirection:"row nowrap", columnGap:2}}>
+                            <Fab component="label" onChange={handleImageSelect} sx={{color:"primary.contrastText", backgroundColor:"primary.main", 
+                            '&:hover': {
+                              backgroundColor:"secondary.main",
+                              color: "secondary.contrastText",
+                            }}}>
+                              +
+                            <input type="file" id="create-post-image" name="create-post-image" hidden></input>
+                            </Fab>
+
+                            <Typography component="span" sx={{ display:{xs:"none", sm: "block", md: "block"}, fontWeight: 700, textAlign:"center"}}>Image <br></br> Attachments</Typography>
+                            
+                            <Box sx={{ width:"60%", backgroundColor: "back.light", display: "flex", justifyContent:'space-between', alignItems:"center", border: "2px #000 solid", borderRadius: "10px"}}>
+                            {createPostImage &&
+                                <>
+                                <Typography component="span" color="primary" sx={{pl: 5, fontSize:"0.75rem"}}>{createPostImage.name}</Typography>
+                                <Button onClick={handleImageRemove} color="error">X</Button>
+                                </>
+                            }
+                            </Box>
+                          </Container>
+                        </Grid>
+                        <Grid item xs={12}>
+                        <Button type="submit" fullWidth variant="contained"  sx={{ mt: 3, mb: 2, color:"primary.contrastText", backgroundColor:"primary.main", 
+                            '&:hover': {
+                              backgroundColor:"secondary.main",
+                              color: "secondary.contrastText",
+                            }}}>Submit</Button>
+                        </Grid>
+                      </Grid>
+                    </Box>  
+                  </Container>
+                {/* </DialogContent> */}
+              </Dialog>
 
               <div style={{ display: "flex", flexDirection: "row" }}>
                 <Box
