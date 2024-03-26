@@ -1,12 +1,15 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Post
+from .models import Post, Comment
 from rest_framework import status
 from rest_framework import serializers
 
-from .serializers import PostSerializer
 
+from .serializers import PostSerializer, CommentSerializer
+
+
+# Post Views Functions here
 class CreatePostView(APIView):
     serializer_class = PostSerializer
 
@@ -29,7 +32,7 @@ class CreatePostView(APIView):
 
 class GetPostView(APIView):
 
-    def get(self, request, id):
+    def get(self, request):
         id = self.context['request'].parser_context['kwargs'].get('id', None)
         if id is None:
             c = Post.objects.order_by('-timestamp').values()
@@ -42,11 +45,8 @@ class GetPostView(APIView):
 
 
 
-class PostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Post
-        fields = ['title', 'body', 'image']  
-
+class EditPostView(APIView):
+    
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)
         instance.body = validated_data.get('body', instance.body)
@@ -67,3 +67,48 @@ class DeletePostView(APIView):
     pass
 
 
+
+# Comments view functions here
+class CreateCommentView(APIView):
+    serializer_class = CommentSerializer
+    
+    def post(self, request):
+        serializer_class = self.serializer_class(data=request.data)
+        if serializer_class.is_valid():
+            body = serializer_class.data.get('body')
+            author = request.user
+            post = self.context['request'].parser_context['kwargs']['id']
+            comment = Comment.objects.create(body=body, author=author, post=post)
+            
+            comment.save()
+            return Response(status=status.HTTP_201_CREATED)
+        
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class GetCommentView(APIView):
+    def get(self, request):
+        id = self.context['request'].parser_context['kwargs'].get('id', None)
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            c = Comment.objects.filter(post=id).order_by('-timestamp').values()
+            return Response({'comment_data': c}, status=status.HTTP_200_OK)
+
+class EditCommentView(APIView):
+    def put(self, request, instance_id, validated_data):
+        instance = Comment.objects.get(id=instance_id)
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            instance.body = validated_data.get('body', instance.body)
+            instance.save()
+            return Response(status=status.HTTP_200_OK)
+
+class DeleteCommentView(APIView):
+    def delete(self, request, instance_id):
+        instance = Comment.objects.get(id=instance_id)
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            Comment.objects.filter(id=id).delete()
+            return Response(status=status.HTTP_200_OK)
