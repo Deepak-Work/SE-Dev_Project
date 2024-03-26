@@ -1,10 +1,9 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Post, Comment
 from rest_framework import status
-from rest_framework import serializers
 
+from clubs.models import Club
 
 from .serializers import PostSerializer, CommentSerializer
 
@@ -14,15 +13,15 @@ class CreatePostView(APIView):
     serializer_class = PostSerializer
 
     def post(self, request):
-        serializer_class = self.serializer_class(data=request.data)
-        if serializer_class.is_valid():
-            title = serializer_class.data.get('title')
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            title = serializer.data.get('title')
             author = request.user
-            body = serializer_class.data.get('body')
-            image = serializer_class.data.get('image')
-            summary = serializer_class.data.get('summary')
-            club = self.context['request'].parser_context['kwargs']['id']
-            post = Post.objects.create(title=title, author=author, body=body, summary=summary, club=club, image=image)
+            body = serializer.data.get('body')
+            club = Club.objects.get(id=request.data['id'])
+            post = Post.objects.create(title=title, author=author, body=body, club=club)
+
+            # TODO: Add post image and summary of post
             
             post.save()
             return Response(status=status.HTTP_201_CREATED)
