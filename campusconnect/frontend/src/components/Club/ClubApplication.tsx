@@ -48,7 +48,7 @@ interface Form{
     contact: string;
     // members: string;
     // events: string;
-    // image: string;
+    image?: File;
 }
 
 interface Errors{
@@ -109,9 +109,10 @@ const CreateClub = () => {
     const [clubImage, setClubImage] = useState<ImageFile>(null);
 
     const handleImageSelect = (event: any) => {
-        let imageFiles = event.target.files;
+        const imageFiles = event.target.files;
     
         if (!imageFiles || imageFiles.length == 0) {
+          setClubImage(null);
           return;
         }
     
@@ -119,6 +120,8 @@ const CreateClub = () => {
       };
     
       const handleImageRemove = () => {
+        const fileList : HTMLInputElement = document.getElementById("image") as HTMLInputElement;
+        fileList.value = "";
         setClubImage(null);
       };
 
@@ -166,7 +169,7 @@ const CreateClub = () => {
             contact: data.get('contact') as string,
             // members: data.get('members') as string,
             // events: data.get('events') as string,
-            // image: data.get('image') as string,
+            image: data.get("image") as File,
         }
 
         const headers = {
@@ -275,12 +278,13 @@ const CreateClub = () => {
                                         >
                                         Upload Profile Pic
                                         <VisuallyHiddenInput  
-                                        id="club-image" 
-                                        name="club-image"
+                                        id="image" 
+                                        name="image"
                                         hidden
                                         type="file"
-                                        accept="image/*" 
-                                        onChange={handleImageSelect}/>
+                                        accept="image/*"
+                                        onChange={handleImageSelect}
+                                        />
                                         </Button>
 
                                     <Box

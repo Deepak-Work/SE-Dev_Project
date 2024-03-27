@@ -14,20 +14,20 @@ from .serializers import ClubSerializer
 
 # Create your views here.
 class CreateClubView(APIView):
-    serilizer_class = ClubSerializer
+    serializer_class = ClubSerializer
     
     def post(self, request):
-        serializer = self.serilizer_class(data=request.data)
+        print(request.data)
+        serializer = self.serializer_class(data=request.data)
         
         if serializer.is_valid():
-
-
             clubName = serializer.data.get('name')
             clubDesc = serializer.data.get('description')
             clubLoc = serializer.data.get('location')
             clubEmail = serializer.data.get('email')
             clubContact = serializer.data.get('contact')
             clubWebsite = serializer.data.get('website')
+            clubImage = serializer.data.get('image')
             clubOrganizer = request.user
                         
             queryset = Club.objects.filter(name=clubName)
@@ -37,13 +37,14 @@ class CreateClubView(APIView):
             # TODO - Should we immediately put the club organizer into Follows model?
             
             club = Club.objects.create(name=clubName, description=clubDesc, location=clubLoc, 
-                                            email=clubEmail, contact=clubContact, website=clubWebsite, organizer=clubOrganizer)
+                                            email=clubEmail, contact=clubContact, website=clubWebsite, organizer=clubOrganizer, image=clubImage)
             club.save()
 
             
             
             return Response({'club_id': str(club.id)}, status=status.HTTP_201_CREATED)
         
+        print("Here")
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
 class GetClubView(APIView):
