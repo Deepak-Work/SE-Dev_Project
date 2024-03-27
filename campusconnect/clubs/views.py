@@ -17,19 +17,29 @@ class CreateClubView(APIView):
     serializer_class = ClubSerializer
     
     def post(self, request):
-        print(request.data)
+        # print(request.data)
         serializer = self.serializer_class(data=request.data)
-        
+        print(serializer)
         if serializer.is_valid():
+            print(serializer)
+            print("Here")
             clubName = serializer.data.get('name')
+            print("Here")
             clubDesc = serializer.data.get('description')
+            print("Here")
             clubLoc = serializer.data.get('location')
+            print("Here")
             clubEmail = serializer.data.get('email')
+            print("Here")
             clubContact = serializer.data.get('contact')
+            print("Here")
             clubWebsite = serializer.data.get('website')
-            clubImage = serializer.data.get('image')
+            print("Here")
+            # clubImage = serializer.data.get('image', None)
+            print("Here")
             clubOrganizer = request.user
-                        
+            print("Here")
+            # Response({'club_id': str(club.id)}, status=status.HTTP_201_CREATED)
             queryset = Club.objects.filter(name=clubName)
             if queryset.exists():
                 return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -37,14 +47,14 @@ class CreateClubView(APIView):
             # TODO - Should we immediately put the club organizer into Follows model?
             
             club = Club.objects.create(name=clubName, description=clubDesc, location=clubLoc, 
-                                            email=clubEmail, contact=clubContact, website=clubWebsite, organizer=clubOrganizer, image=clubImage)
+                                            email=clubEmail, contact=clubContact, website=clubWebsite, organizer=clubOrganizer) #, image=clubImage
             club.save()
 
             
             
             return Response({'club_id': str(club.id)}, status=status.HTTP_201_CREATED)
         
-        print("Here")
+        # print("Here")
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
 class GetClubView(APIView):

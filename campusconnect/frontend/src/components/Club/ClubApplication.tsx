@@ -154,12 +154,20 @@ const CreateClub = () => {
         }
     }
 
+    
 
     const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
         // Prevent default behavior for forms. We need this other some browsers (like Firefox) blocks the request.
         event.preventDefault();
+        const dataNow = new FormData(event.currentTarget);
 
-        const data = new FormData(event.currentTarget);
+        // const image: File | null = dataNow.get("image") as File;
+        // if (!image) {
+        //     console.log("No image selected");
+        //     // Handle the absence of an image (e.g., display an error message to the user)
+        //     return;
+        // }
+            const data = new FormData(event.currentTarget);
         const form: Form = {
             name: data.get('name') as string,
             description: data.get('description') as string,
@@ -169,7 +177,7 @@ const CreateClub = () => {
             contact: data.get('contact') as string,
             // members: data.get('members') as string,
             // events: data.get('events') as string,
-            image: data.get("image") as File,
+            // image: image,
         }
 
         const headers = {
