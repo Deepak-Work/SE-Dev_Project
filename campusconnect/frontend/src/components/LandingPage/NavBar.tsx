@@ -98,6 +98,11 @@ const NavBar = () => {
                     Explore
                   </Typography>
                 </MenuItem>
+                <MenuItem  onClick={() => navigate("/club/application")}sx={{ py: "6px", px: "12px" }}>
+                  <Typography variant="h6" color="text.primary">
+                    Create a Club
+                  </Typography>
+                </MenuItem>
               </Box>
             </Box>
             <Box

@@ -12,9 +12,10 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { InputAdornment, styled } from '@mui/material';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { InputAdornment, PaletteOptions, styled } from '@mui/material';
 import { useState } from 'react';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import logo from "../../assets/CampusConnectLogo.svg";
 
 // Club Name
 // Club Description
@@ -62,10 +63,36 @@ interface Errors{
     // image: boolean;
 }
 
+interface CustomPaletteOptions extends PaletteOptions {
+    back?: {
+      main: string;
+      light?: string;
+      dark?: string;
+      contrastText?: string;
+    };
+  }
+
+  type ImageFile = File | null;
+
 // TODO: Add validation and double check members/events/image fields
 
 const CreateClub = () => {
-    const defaultTheme = createTheme();
+    const defaultTheme = createTheme({
+        palette: {
+          primary: {
+            main: "#7108d8",
+          },
+          secondary: {
+            main: "#8B139C",
+          },
+          back: {
+            main: "#ced4da",
+            light: "#fff",
+            dark: "#000",
+            contrastText: "purple",
+          },
+        } as CustomPaletteOptions,
+      });;
     
     const [errors, setErrors] = useState<Errors>({
         name: false,
@@ -78,6 +105,22 @@ const CreateClub = () => {
         // events: false,
         // image: false,
     });
+
+    const [clubImage, setClubImage] = useState<ImageFile>(null);
+
+    const handleImageSelect = (event: any) => {
+        let imageFiles = event.target.files;
+    
+        if (!imageFiles || imageFiles.length == 0) {
+          return;
+        }
+    
+        setClubImage(imageFiles[0]);
+      };
+    
+      const handleImageRemove = () => {
+        setClubImage(null);
+      };
 
     const navigate = useNavigate();
 
@@ -149,29 +192,34 @@ const CreateClub = () => {
     
     return (
         <ThemeProvider theme={defaultTheme}>
-            <Container component="main" maxWidth="xs">
+            <Box sx={{ height: "100vh", background:
+                "linear-gradient(to right, #a68bf0, #8e63d5, #7d3ebd)",}}>
+            
+            <Typography sx={{py: 3, width: "100%"}}></Typography>
+            <Container component="main" maxWidth="sm" sx={{ my: 0, py: 5, backgroundColor: "back.main" ,border: "2px solid black", borderRadius: "20px"}}>
                 <CssBaseline/>
-                <Box sx={{marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                    <Typography component="h1" variant="h5">Club Application</Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent:"center"}}>
+                    <img style={{cursor: "pointer"}} onClick={() => navigate("/home")} width="100" height="100" src={logo} alt="CampusConnect Logo" />
+                    <Typography component="h1" variant="h5" sx={{ color: "primary.main" , fontFamily: "RampartOne", fontSize: "2rem"}}>Club Application</Typography>
                     <Box component="form" onSubmit={handleSubmit} sx={{mt: 3}}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
-                                <TextField onChange={handleClubNameChange} error={errors.name} helperText={errors.name ? 'Please enter a valid club name' : ''} inputProps={{pattern: '.{8,}',maxLength: 50}} autoComplete="club-name" name="name" required fullWidth id="name" label="Club Name" autoFocus/>
+                                <TextField sx={{backgroundColor: "back.light"}} variant="filled" onChange={handleClubNameChange} error={errors.name} helperText={errors.name ? 'Please enter a valid club name' : ''} InputProps={{startAdornment: (<InputAdornment position="start">📜</InputAdornment>),}}inputProps={{ maxLength: 50,}} autoComplete="club-name" name="name" required fullWidth id="name" label="Club Name" autoFocus/>
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField onChange={handleClubDescriptionChange} error={errors.description} helperText={errors.description ? 'Please enter a valid club description' : ''} inputProps={{maxLength: 500, minLength: 50}} autoComplete="club-description" multiline fullWidth rows={4} required name="description" id="description" label="Club Description" variant='outlined'/>
+                                <TextField sx={{backgroundColor: "back.light"}} variant="filled" onChange={handleClubDescriptionChange} error={errors.description} helperText={errors.description ? 'Please enter a valid club description' : ''} inputProps={{maxLength: 500,}} autoComplete="club-description" multiline fullWidth rows={4} required name="description" id="description" label="Club Description" />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField autoComplete="club-location" required fullWidth id="location" name="location" label="Club Location" type='text' variant='outlined' InputProps={{startAdornment: (<InputAdornment position="start">📍</InputAdornment>),}}/>
+                                <TextField sx={{backgroundColor: "back.light"}} variant="filled" autoComplete="club-location" required fullWidth id="location" name="location" label="Club Location" type='text' InputProps={{startAdornment: (<InputAdornment position="start">📍</InputAdornment>),}}/>
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField onChange={handleClubEmailChange} error={errors.email} helperText={errors.email ? 'Please enter a valid club email' : ''} autoComplete='club-email' required fullWidth id="email" name="email" label="Club Email" type='email' variant='outlined' InputProps={{startAdornment: (<InputAdornment position="start">📧</InputAdornment>),}}/>
+                                <TextField sx={{backgroundColor: "back.light"}} variant="filled" onChange={handleClubEmailChange} error={errors.email} helperText={errors.email ? 'Please enter a valid club email' : ''} autoComplete='club-email' required fullWidth id="email" name="email" label="Club Email" type='email' InputProps={{startAdornment: (<InputAdornment position="start">📧</InputAdornment>),}}/>
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField autoComplete="club-website" fullWidth id="website" name="website" label="Club Website" type='url' variant='outlined' InputProps={{startAdornment: (<InputAdornment position="start">🌐</InputAdornment>),}} />
+                                <TextField sx={{backgroundColor: "back.light"}} variant="filled" autoComplete="club-website" fullWidth id="website" name="website" label="Club Website" type='url'  InputProps={{startAdornment: (<InputAdornment position="start">🌐</InputAdornment>),}} />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField autoComplete="club-contact" required fullWidth id="contact" name="contact" label="Club Contact" type='tel' variant='outlined' InputProps={{startAdornment: (<InputAdornment position="start">📞</InputAdornment>),}}/>
+                                <TextField sx={{backgroundColor: "back.light"}} variant="filled" autoComplete="club-contact" required fullWidth id="contact" name="contact" label="Club Contact" type='tel'  InputProps={{startAdornment: (<InputAdornment position="start">📞</InputAdornment>),}}/>
                             </Grid>
                             {/* <Grid item xs={12}>
                                 <TextField autoComplete="club-members"  
@@ -218,21 +266,65 @@ const CreateClub = () => {
                                     }}/>
                             </Grid> */}
                             <Grid item xs={12}>
-                            <Button component="label"
-                                role={undefined}
-                                variant="contained"
-                                tabIndex={-1}
-                                startIcon={<CloudUploadIcon />}
+                                <Box sx={{display:"flex", justifyContent:"space-between"}}>
+                                            <Button component="label"
+                                        role={undefined}
+                                        variant="contained"
+                                        tabIndex={-1}
+                                        startIcon={<CloudUploadIcon />}
+                                        >
+                                        Upload Profile Pic
+                                        <VisuallyHiddenInput  
+                                        id="club-image" 
+                                        name="club-image"
+                                        hidden
+                                        type="file"
+                                        accept="image/*" 
+                                        onChange={handleImageSelect}/>
+                                        </Button>
+
+                                    <Box
+                            sx={{
+                              width: "50%",
+                              backgroundColor: "back.light",
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              border: "2px #000 solid",
+                              borderRadius: "10px",
+                            }}
+                          >
+                            {clubImage && (
+                              <>
+                                <Typography
+                                  component="span"
+                                  color="primary"
+                                  sx={{ pl: 5, fontSize: "0.75rem" }}
                                 >
-                                Upload Profile Pic
-                                <VisuallyHiddenInput type="file" />
+                                  {clubImage.name}
+                                </Typography>
+                                <Button
+                                  onClick={handleImageRemove}
+                                  color="error"
+                                >
+                                  X
                                 </Button>
+                              </>
+                            )}
+                          </Box>
+                            
+                            </Box>
                             </Grid>
-                        </Grid>
-                        <Button type="submit" fullWidth variant="contained"  sx={{ mt: 3, mb: 2 }}>Submit Application</Button>
+
+                                
+
+                                </Grid>
+
+                        <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Submit Application</Button>
                     </Box>
                 </Box>
             </Container>
+            </Box>
         </ThemeProvider>
     );
 };

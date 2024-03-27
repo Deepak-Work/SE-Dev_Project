@@ -419,6 +419,7 @@ const ClubPage = (props: Props) => {
                               type="file"
                               id="create-post-image"
                               name="create-post-image"
+                              accept="image/*" 
                               hidden
                             ></input>
                           </Fab>
