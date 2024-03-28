@@ -24,7 +24,7 @@ class Club(models.Model):
     email = models.EmailField(max_length=100, unique=True)
     contact = models.CharField(max_length=10, unique=True)
     website = models.URLField()
-    # image = models.ImageField(upload_to='images/', null=True, blank=True)
+    image = models.ImageField(upload_to='images/', null=True, blank=True)
     member_count = models.PositiveSmallIntegerField(default=1)
     organizer = models.ForeignKey(User, on_delete=models.CASCADE)
     

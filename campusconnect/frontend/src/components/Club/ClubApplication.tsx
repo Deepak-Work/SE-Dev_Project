@@ -92,7 +92,7 @@ const CreateClub = () => {
             contrastText: "purple",
           },
         } as CustomPaletteOptions,
-      });;
+      });
     
     const [errors, setErrors] = useState<Errors>({
         name: false,
@@ -157,43 +157,58 @@ const CreateClub = () => {
     
 
     const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
+      console.log("submitting");
         // Prevent default behavior for forms. We need this other some browsers (like Firefox) blocks the request.
         event.preventDefault();
-        const dataNow = new FormData(event.currentTarget);
+        // console.log(event.currentTarget);
+        // const dataNow = new FormData(event.currentTarget);
 
-        // const image: File | null = dataNow.get("image") as File;
-        // if (!image) {
-        //     console.log("No image selected");
-        //     // Handle the absence of an image (e.g., display an error message to the user)
-        //     return;
-        // }
+        
             const data = new FormData(event.currentTarget);
-        const form: Form = {
-            name: data.get('name') as string,
-            description: data.get('description') as string,
-            location: data.get('location') as string,
-            email: data.get('email') as string,
-            website: data.get('website') as string,
-            contact: data.get('contact') as string,
-            // members: data.get('members') as string,
-            // events: data.get('events') as string,
-            // image: image,
+            // console.log(data.get("image"));
+        const image: File | null = data.get("image") as File;
+        if (!image) {
+            console.log("No image selected");
+            // Handle the absence of an image (e.g., display an error message to the user)
+            return;
         }
+        // console.log(image);
+        // const form: Form = {
+        //     name: data.get('name') as string,
+        //     description: data.get('description') as string,
+        //     location: data.get('location') as string,
+        //     email: data.get('email') as string,
+        //     website: data.get('website') as string,
+        //     contact: data.get('contact') as string,
+        //     // members: data.get('members') as string,
+        //     // events: data.get('events') as string,
+        //     image: image,
+        // }
+        const form = new FormData();
+        form.append('name', data.get('name') as string);
+        form.append('description', data.get('description') as string);
+        form.append('location', data.get('location') as string);
+        form.append('email', data.get('email') as string);
+        form.append('website', data.get('website') as string);
+        form.append('contact', data.get('contact') as string);
+        // Append the file
+        form.append('image', image);
+        // console.log(form);
 
         const headers = {
-            'Content-Type': 'application/json',
+            // 'Content-Type': 'application/json',
             'X-CSRFToken': Cookies.get('csrftoken') || '',
         }
 
         const response: Response = await fetch('/api/clubs/create', {
             method: 'POST',
             headers: headers,
-            body: JSON.stringify(form),
+            body: form,
         })
         
         if (response.ok) {
             response.json().then((value) => {
-                navigate(`/club/${form.name}/${value.club_id}`);
+                navigate(`/club/${form.get("name")}/${value.club_id}`);
             })
             console.log("Club created successfully");
         } else {
