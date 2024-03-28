@@ -10,5 +10,6 @@ urlpatterns = [
     path("api/authentication/", include("authentication.urls")),
     path("api/clubs/", include("clubs.urls")),
     path("api/posts/", include("posts.urls")),
+    path("api/events/", include("event.urls")),
     re_path(r'^.*$', index_view),
 ]
