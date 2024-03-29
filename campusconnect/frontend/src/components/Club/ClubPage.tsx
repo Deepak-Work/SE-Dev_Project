@@ -42,6 +42,7 @@ interface ClubInfo {
   email: string;
   pnum: string;
   website: string;
+  image ?: File;
 
   // members: any[];
   posts: any[];
@@ -184,6 +185,7 @@ const ClubPage = (props: Props) => {
             pnum: club_data.contact,
             website: club_data.website,
             posts: posts,
+            image : club_data.image
           };
           createPostsDisplay(posts);
           setClubInfo(clubInfo);
