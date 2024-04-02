@@ -6,34 +6,47 @@ import {
   Typography,
   CardActions,
   IconButton,
-  Tooltip
+  Tooltip,
+  Button
 } from "@mui/material";
 
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
-interface PostProps {
+interface EventProps {
+  id: number;
   username: string;
   title: string;
   body: string;
+  event_date : string;
+  event_time : string;
   time_posted: string;
+//   userAvatar: object;
   likes: number;
   dislikes: number;
-  // userAvatar: string;
   // postImage: string;
   // caption: string;
 }
 
 /**
- * Post Component
+ * Event Component
  *
- * This component renders a single post on the posts page
+ * This component renders a single Event on the Events page
  */
-const PostElement: React.FC<PostProps> = ({
+const EventElement: React.FC<EventProps> = ({
+  id,
   username,
   title,
   body,
+  event_date,
+  event_time,
   time_posted,
+//   userAvatar
 }) => {
+
+  const isUserAttending : () => boolean = () => {
+    //TODO : Check if current user is attending the event specified in this card...
+    return true;
+  }
 
   // Render the post
   return (
@@ -57,7 +70,7 @@ const PostElement: React.FC<PostProps> = ({
           // }
           color="white"
           title={title} // The title is the username of the user
-          subheader={`${username} ~ ${time_posted}`} // The subheader is the post date
+          subheader={`${username} ~ Event Time: ${event_date} @ ${event_time}`} // The subheader is the post date
         />
         {/* Post Image */}
         {/* <CardMedia
@@ -86,7 +99,9 @@ const PostElement: React.FC<PostProps> = ({
                 <ThumbDownIcon />
               </IconButton>
             </Tooltip>
-
+            <Tooltip title="Attending">
+                <Button>{isUserAttending() ? "Un-RSVP" : "RSVP"}</Button>
+            </Tooltip>
           </CardActions>
 
           {/* Comments */}
@@ -114,4 +129,4 @@ const PostElement: React.FC<PostProps> = ({
   );
 };
 
-export default PostElement;
+export default EventElement;
