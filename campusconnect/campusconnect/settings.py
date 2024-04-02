@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     'authentication.apps.AuthenticationConfig',
+    'clubs.apps.ClubsConfig',
+    'posts.apps.PostsConfig',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +57,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+# NOTE: not safe for now, temporary.
+# CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = "campusconnect.urls"
 
@@ -127,15 +132,6 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = (
     BASE_DIR.joinpath('frontend', 'dist'),
 )
-
-# REST_FRAMEWORK = {
-#     "DEFAULT_PERMISSION_CLASSES": [
-#         "rest_framework.permissions.IsAuthenticated",
-#     ],
-#     "DEFAULT_AUTHENTICATION_CLASSES": [
-#         'rest_framework.authentication.SessionAuthentication',
-#     ]
-# }
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

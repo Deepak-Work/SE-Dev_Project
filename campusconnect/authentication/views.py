@@ -11,7 +11,7 @@ from rest_framework.response import Response
 class LoginView(APIView):
     serializer_class = LoginUserSerializer
 
-    def post(self, request):         
+    def post(self, request, format=None):         
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             username = serializer.data.get('username')
@@ -22,19 +22,16 @@ class LoginView(APIView):
             user_exist_query = User.objects.filter(username=username)
 
             if not user_exist_query.exists():
-                return JsonResponse({"error": "Username does not exist"}, status = 401) ###We can add a message here later
+                return JsonResponse({"error": "Username does not exist"}, status = 401)
 
             # If username and password match
-            user_auth_query = authenticate(username=username, password=password)
+            user = authenticate(request, username=username, password=password)
 
-            if user_auth_query is not None:
-                login(request, user_auth_query)
+            if user is not None:
+                login(request, user)
                 return JsonResponse({"message": "Login Successful"}, status = 200)
             else:
                 return JsonResponse({"error": "Username and Password combination is incorrect"}, status = 401)
-
-        else:
-            print(serializer.errors)
         return JsonResponse({"error": "Bad Request"}, status=400)
 
 
@@ -62,3 +59,16 @@ class RegisterView(APIView):
             return Response(status=status.HTTP_201_CREATED)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+class LogoutView(APIView):
+    def get(self, request):
+        logout(request)
+        return Response(status=status.HTTP_200_OK)
+    
+class CheckAuthView(APIView):
+    def get(self, request):
+        if request.user.is_authenticated:
+            return Response({"authenticated": True}, status=status.HTTP_200_OK)
+        else:
+            return Response({'authenticated': False}, status=status.HTTP_400_BAD_REQUEST)
+    
