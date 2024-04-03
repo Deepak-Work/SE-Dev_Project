@@ -22,7 +22,7 @@ const CreatePost = (props: CreatePostProps) => {
 
   const {createPostOpen, handleCreatePostClose } = props;
   const [createPostImage, setCreatePostImage] = useState<ImageFile>(null);
-  const { name, id } = useParams();
+  const { id } = useParams();
 
   const handlePostImageSelect = (event: any) => {
     let imageFiles = event.target.files;

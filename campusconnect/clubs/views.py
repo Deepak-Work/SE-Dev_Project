@@ -70,23 +70,38 @@ class GetClubView(APIView):
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     
-class FollowClubView(APIView):
-    def post(self, request, id):
-        club = self.context['club'].parse_context['kwargs'].get('id', None)
-        if id is None:
+class getFollowStatus(APIView):
+    def get(self, request, name, id):
+        club = Club.objects.get(id=id)
+        if club is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            Follows = Follows.objects.create(user=request.user, club=club)
-        return Response(status=status.HTTP_200_OK)
+            if Follows.objects.filter(user=request.user, club=club).exists():
+                return Response({'follow_status': True}, status=status.HTTP_200_OK)
+            else:
+                return Response({'follow_status': False}, status=status.HTTP_200_OK)
+            
+            
+class FollowClubView(APIView):
+    def post(self, request, name, id):
+        print("Here")
+        club = Club.objects.get(id=id)
+        print(request.user)
+        if club is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            Follows.objects.create(user=request.user, club=club)
+            return Response(status=status.HTTP_200_OK)
 
 class UnfollowClubView(APIView):
-    def post(self, request, id):
-        club = self.context['club'].parse_context['kwargs'].get('id', None)
-        if id is None:
+    def get(self, request, name, id):
+        club = Club.objects.get(id=id)
+        print(request.user)
+        if club is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            Follows = Follows.objects.filter(user=request.user, club=club).delete()
-        return Response(status=status.HTTP_200_OK)
+            Follows.objects.filter(user=request.user, club=club).delete()
+            return Response(status=status.HTTP_200_OK)
     
     
             

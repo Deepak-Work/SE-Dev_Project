@@ -94,13 +94,33 @@ const ClubPage = (props: Props) => {
   const [posts, setPosts] = useState<JSX.Element>();
   const { name, id } = useParams();
   const [followed, setFollowed] = useState(false);
+
+  const getFollowStatus = async () => {
+    const response: Response = await fetch(`/api/clubs/follow/${name}/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+    });
+    if ((await response).ok) {
+      setFollowed(true);
+    }
+    console.log(followed);
+  }
+
+  useEffect(() => {
+    getFollowStatus();
+  });
   
 
   const handleCreatePostOpen = () => setCreatePostOpen(true);
   const handleCreatePostClose = () => setCreatePostOpen(false);
 
   const handleFollowClub = async () => {
-    const response = fetch(`/api/clubs/follow/${name}/${id}`, {
+
+    console.log("Followed! starting fetch");
+    const response: Response = fetch(`/api/clubs/follow/${name}/${id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -115,10 +135,10 @@ const ClubPage = (props: Props) => {
 
   const handleUnfollowClub = async () => {
     const response = fetch(`/api/clubs/unfollow/${name}/${id}`, {
-      method: "POST",
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${Cookies.get("token")}`,
+        // Authorization: `Bearer ${Cookies.get("token")}`,
       },
     });
     if ((await response).ok) {
@@ -282,7 +302,7 @@ const ClubPage = (props: Props) => {
                     </Tooltip>
                     <Tooltip title="Follow Club">
                       <IconButton 
-                      onAbort={followed ? handleUnfollowClub : handleFollowClub}
+                      onClick={followed ? handleUnfollowClub : handleFollowClub}
                       sx={{ color: "white" }}>
                         <AddBoxIcon />
                       </IconButton>

@@ -33,13 +33,11 @@ interface EventProps {
  * This component renders a single Event on the Events page
  */
 const EventElement: React.FC<EventProps> = ({
-  id,
   username,
   title,
   body,
   event_date,
   event_time,
-  time_posted,
 //   userAvatar
 }) => {
 

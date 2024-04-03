@@ -73,4 +73,4 @@ class CheckAuthView(APIView):
         if request.user.is_authenticated:
             return Response({"authenticated": True}, status=status.HTTP_200_OK)
         else:
-            return redirect('/login')
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
