@@ -70,7 +70,8 @@ class LogoutView(APIView):
     
 class CheckAuthView(APIView):
     def get(self, request):
+        print(request.session, request.user.is_authenticated)
         if request.user.is_authenticated:
             return Response({"authenticated": True}, status=status.HTTP_200_OK)
         else:
-            return redirect('/login')
+            return Response(status=status.HTTP_400_BAD_REQUEST)
