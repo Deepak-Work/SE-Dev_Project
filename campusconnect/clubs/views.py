@@ -17,29 +17,17 @@ class CreateClubView(APIView):
     serializer_class = ClubSerializer
     
     def post(self, request):
-        print(request.data)
         serializer = self.serializer_class(data=request.data)
-        print(serializer)
         if serializer.is_valid():
-            print(serializer)
-            print("Here")
             clubName = serializer.data.get('name')
-            print("Here")
             clubDesc = serializer.data.get('description')
-            print("Here")
             clubLoc = serializer.data.get('location')
-            print("Here")
             clubEmail = serializer.data.get('email')
-            print("Here")
             clubContact = serializer.data.get('contact')
-            print("Here")
             clubWebsite = serializer.data.get('website')
-            print("Here")
-            clubImage = serializer.data.get('image', None)
-            print("Here")
+            clubImage = request.data['image']
             clubOrganizer = request.user
-            print("Here")
-            # Response({'club_id': str(club.id)}, status=status.HTTP_201_CREATED)
+
             queryset = Club.objects.filter(name=clubName)
             if queryset.exists():
                 return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -54,13 +42,14 @@ class CreateClubView(APIView):
             
             return Response({'club_id': str(club.id)}, status=status.HTTP_201_CREATED)
         
-        # print("Here")
+        # 
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
 class GetClubView(APIView):
     def get(self, request, name, id):
         # TODO: Eventually, we'll also have to include events and members associated with this club
         c = Club.objects.filter(name=name, id=id).values().first()
+
         posts = Post.objects.filter(club=id).order_by('-time_posted').values()
         for post in posts:
             post['author'] = User.objects.get(id=post['author_id']).username
