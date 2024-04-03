@@ -39,17 +39,17 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
   });
 
-interface Form{
-    name: string;
-    description: string;
-    location: string;
-    email: string;
-    website: string;
-    contact: string;
-    // members: string;
-    // events: string;
-    image?: File;
-}
+// interface Form{
+//     name: string;
+//     description: string;
+//     location: string;
+//     email: string;
+//     website: string;
+//     contact: string;
+//     // members: string;
+//     // events: string;
+//     image?: File;
+// }
 
 interface Errors{
     name: boolean;

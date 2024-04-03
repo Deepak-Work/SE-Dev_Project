@@ -16,16 +16,20 @@ class CreatePostView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             title = serializer.data.get('title')
+            print(request.user)
             author = request.user
             body = serializer.data.get('body')
             club = Club.objects.get(id=request.data['id'])
             post = Post.objects.create(title=title, author=author, body=body, club=club)
 
-            # TODO: Add post image and summary of post
-            
+            # TODO: Add post image and summary of post            
             post.save()
             return Response(status=status.HTTP_201_CREATED)
         
+        else:
+            print("serializer invalid")
+        
+
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 

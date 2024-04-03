@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
+
+
 import Cookies from "js-cookie";
 
 import {
@@ -132,7 +134,7 @@ const ClubPage = (props: Props) => {
     const form: CreatePost = {
       title: data.get("create-post-title") as string,
       body: data.get("create-post-body") as string,
-      id: id as string,
+      id: id as string
     };
 
     const headers = {
@@ -159,7 +161,7 @@ const ClubPage = (props: Props) => {
     console.log(posts_data);
     const postComponents = posts_data.map((post: any) => (
       <ListItem key={post.id}>
-        <PostElement username={post.author} title={post.title} body={post.body} time_posted={convertDate(new Date(post.time_posted))} likes={post.likes} dislikes={post.dislikes}/>
+        <PostElement username={post.author} title={post.title} body={post.body} time_posted={convertDate(new Date(post.time_posted))} likes={post.likes} dislikes={post.dislikes} post_id = {post.id}/>
       </ListItem>
     ))
     const final = <List sx={{ml: -21}}>{postComponents}</List>

@@ -6,7 +6,9 @@ import Register from "./Register";
 import LandingPage from "./LandingPage/LandingPage";
 import ClubApplication from "./Club/ClubApplication";
 import ClubPage from "./Club/ClubPage";
+import PostComponent from "./Posts/PostPage"
 import LoadingIndicator from "./Utils/LoadingIndicator";
+
 
 function App() {
   // Used to keep track of whether the user is currently logged in or not
@@ -36,9 +38,9 @@ function App() {
           <Route path="/register" element={<Register />} />
           {/* <Route path="/home" element={<LandingPage isAuth={isAuth}/>} /> */}
           <Route path="/home" element={isAuth === null ? <LoadingIndicator /> : <LandingPage isAuth={isAuth} />} />
-
           <Route path="/club/application" element={<ClubApplication />} />
           <Route path="/club/:name/:id" element={isAuth === null ? <LoadingIndicator /> : <ClubPage isAuth={isAuth}/>} />
+          <Route path="/post/:postId" element={isAuth === null ? <LoadingIndicator /> : <PostComponent isAuth={isAuth}/>} />
         </Routes>
       </Router>
     </div>

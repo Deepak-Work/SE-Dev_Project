@@ -1,4 +1,6 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+
 import {
   Card,
   CardHeader,
@@ -6,11 +8,17 @@ import {
   Typography,
   CardActions,
   IconButton,
-  Tooltip
+  Tooltip,
 } from "@mui/material";
 
+// import Menu from '@mui/material/Menu';
+// import MenuItem from '@mui/material/MenuItem';
+// import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
+
+// import Cookies from "js-cookie";
+
 interface PostProps {
   username: string;
   title: string;
@@ -18,34 +26,114 @@ interface PostProps {
   time_posted: string;
   likes: number;
   dislikes: number;
+  post_id: string;
   // userAvatar: string;
   // postImage: string;
   // caption: string;
 }
+
+
 
 /**
  * Post Component
  *
  * This component renders a single post on the posts page
  */
+
+
+
 const PostElement: React.FC<PostProps> = ({
   username,
   title,
   body,
   time_posted,
+  post_id
 }) => {
+
+  const navigate = useNavigate()
+
+  const handlePostClick = async(event: React.MouseEvent<HTMLDivElement>) =>{
+    event.preventDefault();
+
+    console.log("Direct to post page")
+
+    console.log(post_id)
+
+    // const data = new FormData(event.currentTarget)
+
+
+    navigate(`/posts/${post_id}`)
+
+
+    // const headers = {
+    //         "Content-Type": "application/json",
+    //         "X-CSRFToken": Cookies.get("csrftoken") || "",
+    //       };
+      
+    //       const response: Response = await fetch('/api/posts/$}', {
+    //         method: "DELETE",
+    //         headers: headers,
+    //         // body: JSON.stringify(form),
+    //       });
+          
+    //       if (response.ok) {
+    //         // handleCreatePostClose();
+    //         window.location.reload();
+    //         console.log("Post Deleted Successfully");
+    //       } else {
+    //         console.log("Post deletion failed");
+    //       }
+          
+    //       console.log('Deleting post');
+    
+  }
+
+  // const handleClose = async (action : string) => {
+  //   if (action === 'delete') {
+  //     // Perform deletion logic here
+  //     // const form: DeletePost = {name: name as string,
+  //     //   id: id as string,
+  //     // };
+  //     const headers = {
+  //       "Content-Type": "application/json",
+  //       "X-CSRFToken": Cookies.get("csrftoken") || "",
+  //     };
+  
+  //     const response: Response = await fetch("/api/posts/delete", {
+  //       method: "DELETE",
+  //       headers: headers,
+  //       // body: JSON.stringify(form),
+  //     });
+      
+  //     if (response.ok) {
+  //       // handleCreatePostClose();
+  //       window.location.reload();
+  //       console.log("Post Deleted Successfully");
+  //     } else {
+  //       console.log("Post deletion failed");
+  //     }
+      
+  //     console.log('Deleting post');
+
+
+  //   }
+  //   if (action === 'edit') {
+  //     // Perform deletion logic here
+  //     console.log('Editing post');
+  //   }
+  //   setAnchorEl(null);
+  // };
 
   // Render the post
   return (
-      <Card
-        sx={{
+    <div id = {post_id} onClick={handlePostClick}>
+      <Card sx={{
           border: "3px solid black",
           borderRadius: "15px",
           width: "450px",
           maxWidth: "450px",
           textWrap: "balance"
-        }}
-      >
+        }}>
         {/* Post Header */}
         <CardHeader
           // The avatar of the user who posted the post
@@ -85,9 +173,11 @@ const PostElement: React.FC<PostProps> = ({
               <IconButton aria-label="dislike post">
                 <ThumbDownIcon />
               </IconButton>
-            </Tooltip>
-
+            </Tooltip>            
           </CardActions>
+
+          {/* Additional Options */}
+            
 
           {/* Comments */}
           {/* <CardContent sx={{ mt: 2 }}>
@@ -110,7 +200,7 @@ const PostElement: React.FC<PostProps> = ({
           </List> */}
           {/* </CardContent> */}
         </CardContent>
-      </Card>
+      </Card></div>
   );
 };
 

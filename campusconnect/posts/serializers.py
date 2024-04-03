@@ -3,14 +3,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.validators import UnicodeUsernameValidator
 
 from .models import Post
-
-
-
         
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ('title', 'body')
+        fields = ('title', 'body', 'id')
         
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
