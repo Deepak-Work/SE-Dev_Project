@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
 import Login from "./Login";
 import Register from "./Register";
 import LandingPage from "./LandingPage/LandingPage";
@@ -12,6 +12,7 @@ function App() {
   // Used to keep track of whether the user is currently logged in or not
   const [isAuth, setAuth] = useState(false);
 
+  const navigate = useNavigate();
   // Every time the page is re-rendered, this is called
   useEffect(() => {
     let checkAuth = async () => {
@@ -22,6 +23,7 @@ function App() {
         setAuth(true);
       } else {
         setAuth(false);
+        navigate("/login");
       }
     };
     checkAuth();

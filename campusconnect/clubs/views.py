@@ -8,7 +8,7 @@ from .models import Club
 from rest_framework import status
 
 from posts.models import Post
-from .models import Club
+from .models import Club, Follows
 
 from .serializers import ClubSerializer
 
@@ -68,6 +68,26 @@ class GetClubView(APIView):
         if c:
             return Response({'club_data': c, 'posts': posts}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    
+class FollowClubView(APIView):
+    def post(self, request, id):
+        club = self.context['club'].parse_context['kwargs'].get('id', None)
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            Follows = Follows.objects.create(user=request.user, club=club)
+        return Response(status=status.HTTP_200_OK)
 
+class UnfollowClubView(APIView):
+    def post(self, request, id):
+        club = self.context['club'].parse_context['kwargs'].get('id', None)
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            Follows = Follows.objects.filter(user=request.user, club=club).delete()
+        return Response(status=status.HTTP_200_OK)
+    
+    
             
             
