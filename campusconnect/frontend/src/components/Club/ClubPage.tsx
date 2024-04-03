@@ -93,10 +93,39 @@ const ClubPage = (props: Props) => {
   const [createEventOpen, setCreateEventOpen] = useState(false);
   const [posts, setPosts] = useState<JSX.Element>();
   const { name, id } = useParams();
+  const [followed, setFollowed] = useState(false);
+  
 
   const handleCreatePostOpen = () => setCreatePostOpen(true);
   const handleCreatePostClose = () => setCreatePostOpen(false);
 
+  const handleFollowClub = async () => {
+    const response = fetch(`/api/clubs/follow/${name}/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+    });
+    if ((await response).ok) {
+      console.log("Followed!");
+      setFollowed(true);
+    }
+  }
+
+  const handleUnfollowClub = async () => {
+    const response = fetch(`/api/clubs/unfollow/${name}/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+    });
+    if ((await response).ok) {
+      console.log("Unfollowed!");
+      setFollowed(false);
+    }
+  }
   const handleCreateEventOpen = () => setCreateEventOpen(true);
   const handleCreateEventClose = () => setCreateEventOpen(false);
 
@@ -252,7 +281,9 @@ const ClubPage = (props: Props) => {
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Follow Club">
-                      <IconButton sx={{ color: "white" }}>
+                      <IconButton 
+                      onAbort={followed ? handleUnfollowClub : handleFollowClub}
+                      sx={{ color: "white" }}>
                         <AddBoxIcon />
                       </IconButton>
                     </Tooltip>
