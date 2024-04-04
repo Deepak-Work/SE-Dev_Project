@@ -96,7 +96,8 @@ const ClubPage = (props: Props) => {
   const [followed, setFollowed] = useState(false);
 
   const getFollowStatus = async () => {
-    const response: Response = await fetch(`/api/clubs/follow/${name}/${id}`, {
+    console.log("Checking Follow Status");
+    const response: Response = await fetch(`/api/clubs/getfollowStatus/${name}/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -111,7 +112,7 @@ const ClubPage = (props: Props) => {
 
   useEffect(() => {
     getFollowStatus();
-  });
+  }, []);
   
 
   const handleCreatePostOpen = () => setCreatePostOpen(true);
@@ -120,8 +121,8 @@ const ClubPage = (props: Props) => {
   const handleFollowClub = async () => {
 
     console.log("Followed! starting fetch");
-    const response: Response = fetch(`/api/clubs/follow/${name}/${id}`, {
-      method: "POST",
+    const response: Response = await fetch(`/api/clubs/follow/${name}/${id}`, {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${Cookies.get("token")}`,

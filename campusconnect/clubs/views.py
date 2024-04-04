@@ -83,14 +83,15 @@ class getFollowStatus(APIView):
             
             
 class FollowClubView(APIView):
-    def post(self, request, name, id):
+    def get(self, request, name, id):
         print("Here")
         club = Club.objects.get(id=id)
         print(request.user)
         if club is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            Follows.objects.create(user=request.user, club=club)
+            follows = Follows.objects.create(user=request.user, club=club)
+            follows.save()
             return Response(status=status.HTTP_200_OK)
 
 class UnfollowClubView(APIView):
