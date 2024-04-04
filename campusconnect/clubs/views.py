@@ -8,7 +8,7 @@ from .models import Club
 from rest_framework import status
 
 from posts.models import Post
-from .models import Club, Follows
+from .models import Club, Follow
 
 from .serializers import ClubSerializer
 
@@ -76,7 +76,7 @@ class getFollowStatus(APIView):
         if club is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            if Follows.objects.filter(user=request.user, club=club).exists():
+            if Follow.objects.filter(user=request.user, club=club).exists():
                 return Response({'follow_status': True}, status=status.HTTP_200_OK)
             else:
                 return Response({'follow_status': False}, status=status.HTTP_200_OK)
@@ -90,7 +90,7 @@ class FollowClubView(APIView):
         if club is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            follows = Follows.objects.create(user=request.user, club=club)
+            follows = Follow.objects.create(user=request.user, club=club)
             follows.save()
             return Response(status=status.HTTP_200_OK)
 
@@ -101,7 +101,7 @@ class UnfollowClubView(APIView):
         if club is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            Follows.objects.filter(user=request.user, club=club).delete()
+            Follow.objects.filter(user=request.user, club=club).delete()
             return Response(status=status.HTTP_200_OK)
     
     

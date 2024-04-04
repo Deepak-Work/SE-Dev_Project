@@ -32,7 +32,7 @@ class Club(models.Model):
         # TODO: Add validation here 
         pass
 
-class Follows(models.Model):
+class Follow(models.Model):
     """
     Follows - stores the relationship between user and club
 
