@@ -59,70 +59,9 @@ const PostElement: React.FC<PostProps> = ({
 
     console.log(post_id)
 
-    // const data = new FormData(event.currentTarget)
-
-
-    navigate(`/posts/${post_id}`)
-
-
-    // const headers = {
-    //         "Content-Type": "application/json",
-    //         "X-CSRFToken": Cookies.get("csrftoken") || "",
-    //       };
-      
-    //       const response: Response = await fetch('/api/posts/$}', {
-    //         method: "DELETE",
-    //         headers: headers,
-    //         // body: JSON.stringify(form),
-    //       });
-          
-    //       if (response.ok) {
-    //         // handleCreatePostClose();
-    //         window.location.reload();
-    //         console.log("Post Deleted Successfully");
-    //       } else {
-    //         console.log("Post deletion failed");
-    //       }
-          
-    //       console.log('Deleting post');
+    navigate(`/post/${post_id}`)
     
   }
-
-  // const handleClose = async (action : string) => {
-  //   if (action === 'delete') {
-  //     // Perform deletion logic here
-  //     // const form: DeletePost = {name: name as string,
-  //     //   id: id as string,
-  //     // };
-  //     const headers = {
-  //       "Content-Type": "application/json",
-  //       "X-CSRFToken": Cookies.get("csrftoken") || "",
-  //     };
-  
-  //     const response: Response = await fetch("/api/posts/delete", {
-  //       method: "DELETE",
-  //       headers: headers,
-  //       // body: JSON.stringify(form),
-  //     });
-      
-  //     if (response.ok) {
-  //       // handleCreatePostClose();
-  //       window.location.reload();
-  //       console.log("Post Deleted Successfully");
-  //     } else {
-  //       console.log("Post deletion failed");
-  //     }
-      
-  //     console.log('Deleting post');
-
-
-  //   }
-  //   if (action === 'edit') {
-  //     // Perform deletion logic here
-  //     console.log('Editing post');
-  //   }
-  //   setAnchorEl(null);
-  // };
 
   // Render the post
   return (

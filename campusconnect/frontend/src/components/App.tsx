@@ -40,7 +40,7 @@ function App() {
           <Route path="/home" element={isAuth === null ? <LoadingIndicator /> : <LandingPage isAuth={isAuth} />} />
           <Route path="/club/application" element={<ClubApplication />} />
           <Route path="/club/:name/:id" element={isAuth === null ? <LoadingIndicator /> : <ClubPage isAuth={isAuth}/>} />
-          <Route path="/post/:postId" element={isAuth === null ? <LoadingIndicator /> : <PostComponent isAuth={isAuth}/>} />
+          <Route path="/post/:id" element={isAuth === null ? <LoadingIndicator /> : <PostComponent isAuth={isAuth}/>} />
         </Routes>
       </Router>
     </div>

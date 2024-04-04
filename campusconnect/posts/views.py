@@ -35,13 +35,14 @@ class CreatePostView(APIView):
 
 class GetPostView(APIView):
 
-    def get(self, request):
-        id = self.context['request'].parser_context['kwargs'].get('id', None)
+    def get(self, request, name, id):
+        print("Here")
         if id is None:
-            c = Post.objects.order_by('-timestamp').values()
+            c = Post.objects.order_by('-time_posted').values()
         else:
-            c = Post.objects.filter(id=id).order_by('-timestamp').values()
+            c = Post.objects.filter(id=id).order_by('-time_posted').values()
         if c:
+            print(c[0])
             return Response({'post_data': c}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
     

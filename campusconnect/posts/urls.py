@@ -7,4 +7,6 @@ urlpatterns = [
     path("edit", EditPostView.as_view()),
     path("delete", DeletePostView.as_view()),
     path("fetch/<str:name>/<int:id>", GetPostView.as_view()),
+    path("fetch/post/<int:id>", GetPostView.as_view()),
+
 ]

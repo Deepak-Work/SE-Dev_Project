@@ -15,7 +15,6 @@ interface Props{
 }
 
 interface PostProps {
-    username: string;
     title: string;
     body: string;
     time_posted: string;
@@ -24,7 +23,6 @@ interface PostProps {
     author: string;
     summary: string;
     club: string;
-    id: number;
     // userAvatar: string;
     // postImage: string;
     // caption: string;
@@ -32,7 +30,7 @@ interface PostProps {
 
 interface Comment {
   id: number;
-  postId: number;
+  postId: any;
   text: string;
 }
 
@@ -69,17 +67,16 @@ const PostComponent = (props: Props) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [postInfo, setPostInfo] = useState<PostProps>({} as PostProps);
 
-  const { name, id } = useParams();
 
   const toggleComments = () => {
     setShowComments(!showComments);
     // Fetch comments from server when toggling comments
     if (!showComments) {
-      fetchComments(postInfo.id);
+      fetchComments(id);
     }
   };
 
-  const fetchComments = (postId: number) => {
+  const fetchComments = (postId: any) => {
     // Simulating fetching comments from server
     // Replace this with your actual API call
     const mockComments: Comment[] = [
@@ -90,6 +87,8 @@ const PostComponent = (props: Props) => {
     setComments(mockComments);
   };
 
+  const {id} = useParams();
+
   const handleLike = () => {
     // Implement like functionality
   };
@@ -99,13 +98,14 @@ const PostComponent = (props: Props) => {
   };
 
   useEffect(() => {
-    let fetchPost = async () => {
-      let response = await fetch(`/api/posts/fetch/${name}/${id}`, {
+    const fetchPost = async () => {
+      let response = await fetch(`/api/posts/fetch/post/${id}`, {
         method: "GET",
       });
       if (response.ok) {
         response.json().then((value) => {
-          const posts = value.posts;
+          const posts = value.post_data[0];
+
           const postInfo: PostProps = {
             body: posts.body,
             title: posts.title,
@@ -114,11 +114,10 @@ const PostComponent = (props: Props) => {
             author: posts.author,
             summary: posts.summary,
             club: posts.club,
-            id: posts.id,
             time_posted: posts.time_posted,
-            username: posts.username
           };
           setPostInfo(postInfo);
+          console.log(postInfo)
         });
       } else {
         console.log("Post cannot be laoded")
@@ -136,7 +135,14 @@ const PostComponent = (props: Props) => {
         </p>
       ) : (
         <ThemeProvider theme={theme}>
-    <Box>
+    <Box sx={{
+                    width: 300,
+                    height: 100,
+                    backgroundColor: "white",
+                    borderRadius: "5px",
+                    ml: 2,
+                    mt: 1,
+                  }}>
       <h2>{postInfo.title}</h2>
       <p>{postInfo.body}</p>
       <Button onClick={handleLike} variant="contained" color="primary">
