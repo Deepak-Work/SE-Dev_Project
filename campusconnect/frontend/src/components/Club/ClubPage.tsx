@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-import Cookies from "js-cookie";
-
-
 import {
   Box,
   Paper,
@@ -140,7 +137,6 @@ const ClubPage = (props: Props) => {
           };
           createPostsDisplay(posts);
           setClubInfo(clubInfo);
-          console.log(`../../../../media/${clubInfo.image}`);
         });
       } else {
         setClubExists(false);
@@ -207,11 +203,10 @@ const ClubPage = (props: Props) => {
                     ml: 2,
                     mt: 1,
                   }}
-                  alt="Club image"
-                  src={`../../../../media/${clubInfo.image}`}
+                  // alt="Club image"
+                  src={clubInfo.image}
 
-                ></Box>
-
+                />
 
                 <div
                   style={{

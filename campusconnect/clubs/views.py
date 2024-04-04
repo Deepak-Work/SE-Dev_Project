@@ -2,6 +2,7 @@ from rest_framework.response import Response
 
 from django.shortcuts import render
 from django.contrib.auth.models import User
+from django.forms.models import model_to_dict
 
 from rest_framework.views import APIView
 from .models import Club
@@ -34,6 +35,7 @@ class CreateClubView(APIView):
                         
             # TODO - Should we immediately put the club organizer into Follows model?
             
+            
             club = Club.objects.create(name=clubName, description=clubDesc, location=clubLoc, 
                                             email=clubEmail, contact=clubContact, website=clubWebsite, organizer=clubOrganizer, image=clubImage)
             club.save()
@@ -48,14 +50,17 @@ class CreateClubView(APIView):
 class GetClubView(APIView):
     def get(self, request, name, id):
         # TODO: Eventually, we'll also have to include events and members associated with this club
-        c = Club.objects.filter(name=name, id=id).values().first()
+        
+        c = Club.objects.get(id=id)
+        c_json = model_to_dict(c)
+        c_json['image'] = c.image.url
 
         posts = Post.objects.filter(club=id).order_by('-time_posted').values()
         for post in posts:
             post['author'] = User.objects.get(id=post['author_id']).username
             del post['author_id']
         if c:
-            return Response({'club_data': c, 'posts': posts}, status=status.HTTP_200_OK)
+            return Response({'club_data': c_json, 'posts': posts}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
             

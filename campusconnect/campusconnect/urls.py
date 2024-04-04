@@ -14,7 +14,8 @@ urlpatterns = [
     path("api/clubs/", include("clubs.urls")),
     path("api/posts/", include("posts.urls")),
     path("api/events/", include("event.urls")),
-    re_path(r'^.*$', index_view),
+    
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += [re_path(r'^.*$', index_view)]
