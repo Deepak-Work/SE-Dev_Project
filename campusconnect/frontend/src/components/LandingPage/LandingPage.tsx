@@ -17,7 +17,6 @@ const LandingPage = ( props: Props ) => {
 
 
   const theme = createTheme();
-
   return (
     <>
       {!props.isAuth ? (

@@ -89,17 +89,30 @@ const ClubPage = (props: Props) => {
   const [clubExists, setClubExists] = useState(false);
   const [clubInfo, setClubInfo] = useState<ClubInfo>({} as ClubInfo);
 
-  const [createPostOpen, setCreatePostOpen] = useState(false);
-  const [createEventOpen, setCreateEventOpen] = useState(false);
+ 
+
   const [posts, setPosts] = useState<JSX.Element>();
   const { name, id } = useParams();
+
+  // Create a Post Modal
+  const [createPostOpen, setCreatePostOpen] = useState(false);
 
   const handleCreatePostOpen = () => setCreatePostOpen(true);
   const handleCreatePostClose = () => setCreatePostOpen(false);
 
+  //Create an Event Modal
+  const [createEventOpen, setCreateEventOpen] = useState(false);
+
   const handleCreateEventOpen = () => setCreateEventOpen(true);
   const handleCreateEventClose = () => setCreateEventOpen(false);
 
+  // Explore Modal
+  const [exploreOpen, setExploreOpen] = useState<boolean>(false);
+    
+  const handleExploreOpen : () => void = () => setExploreOpen(true);
+  const handleExploreClose : () => void = () => setExploreOpen(false);
+
+  // CreatePostsDisplay
   const createPostsDisplay = (posts_data: any) => {
     console.log(posts_data);
     const postComponents = posts_data.map((post: any) => (

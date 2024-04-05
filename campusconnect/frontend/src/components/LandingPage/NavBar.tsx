@@ -17,9 +17,16 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import LogoutIcon from "@mui/icons-material/Logout";
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { useState } from "react";
+import Explore from "./Explore";
 
 const NavBar = () => {
   const navigate = useNavigate();
+  
+  const [exploreOpen, setExploreOpen] = useState<boolean>(false);
+    
+  const handleExploreOpen : () => void = () => setExploreOpen(true);
+  const handleExploreClose : () => void = () => setExploreOpen(false);
 
   const theme = createTheme({
     palette: {
@@ -94,7 +101,7 @@ const NavBar = () => {
                   </Typography>
                 </MenuItem>
                 <MenuItem sx={{ py: "6px", px: "12px" }}>
-                  <Typography variant="h6" color="text.primary">
+                  <Typography variant="h6" color="text.primary" onClick={handleExploreOpen}>
                     Explore
                   </Typography>
                 </MenuItem>
@@ -139,6 +146,9 @@ const NavBar = () => {
           </Toolbar>
         </Container>
       </AppBar>
+
+      <Explore exploreOpen={exploreOpen} handleExploreOpen={handleExploreOpen} handleExploreClose={handleExploreClose} />
+      
     </ThemeProvider>
   );
 };
