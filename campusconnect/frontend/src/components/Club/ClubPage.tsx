@@ -89,8 +89,8 @@ const ClubPage = (props: Props) => {
   const [clubExists, setClubExists] = useState(false);
   const [clubInfo, setClubInfo] = useState<ClubInfo>({} as ClubInfo);
 
-  const [createPostOpen, setCreatePostOpen] = useState(false);
-  const [createEventOpen, setCreateEventOpen] = useState(false);
+ 
+
   const [posts, setPosts] = useState<JSX.Element>();
   const { name, id } = useParams();
   const [followed, setFollowed] = useState(false);
@@ -115,41 +115,25 @@ const ClubPage = (props: Props) => {
   }, []);
   
 
+  // Create a Post Modal
+  const [createPostOpen, setCreatePostOpen] = useState(false);
+
   const handleCreatePostOpen = () => setCreatePostOpen(true);
   const handleCreatePostClose = () => setCreatePostOpen(false);
 
-  const handleFollowClub = async () => {
+  //Create an Event Modal
+  const [createEventOpen, setCreateEventOpen] = useState(false);
 
-    console.log("Followed! starting fetch");
-    const response: Response = await fetch(`/api/clubs/follow/${name}/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${Cookies.get("token")}`,
-      },
-    });
-    if ((await response).ok) {
-      console.log("Followed!");
-      setFollowed(true);
-    }
-  }
-
-  const handleUnfollowClub = async () => {
-    const response = fetch(`/api/clubs/unfollow/${name}/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        // Authorization: `Bearer ${Cookies.get("token")}`,
-      },
-    });
-    if ((await response).ok) {
-      console.log("Unfollowed!");
-      setFollowed(false);
-    }
-  }
   const handleCreateEventOpen = () => setCreateEventOpen(true);
   const handleCreateEventClose = () => setCreateEventOpen(false);
 
+  // Explore Modal
+  const [exploreOpen, setExploreOpen] = useState<boolean>(false);
+    
+  const handleExploreOpen : () => void = () => setExploreOpen(true);
+  const handleExploreClose : () => void = () => setExploreOpen(false);
+
+  // CreatePostsDisplay
   const createPostsDisplay = (posts_data: any) => {
     const postComponents = posts_data.map((post: any) => (
       <ListItem key={post.id}>
@@ -305,7 +289,7 @@ const ClubPage = (props: Props) => {
                     </Tooltip>
                     <Tooltip title="Follow Club">
                       <IconButton 
-                      onClick={followed ? handleUnfollowClub : handleFollowClub}
+                      // onClick={followed ? handleUnfollowClub : handleFollowClub}
                       sx={{ color: "white" }}>
                         <AddBoxIcon />
                       </IconButton>
