@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-import Cookies from "js-cookie";
-
 import {
   Box,
   Paper,
@@ -37,7 +35,7 @@ interface ClubInfo {
   email: string;
   pnum: string;
   website: string;
-  image?: File;
+  image?: string;
 
   // members: any[];
   posts: any[];
@@ -151,7 +149,6 @@ const ClubPage = (props: Props) => {
   const handleCreateEventClose = () => setCreateEventOpen(false);
 
   const createPostsDisplay = (posts_data: any) => {
-    console.log(posts_data);
     const postComponents = posts_data.map((post: any) => (
       <ListItem key={post.id}>
         <PostElement
@@ -248,15 +245,18 @@ const ClubPage = (props: Props) => {
                 }}
               >
                 <Box
+                  component="img"
                   sx={{
                     width: 300,
                     height: 100,
-                    backgroundColor: "white",
                     borderRadius: "5px",
                     ml: 2,
                     mt: 1,
                   }}
-                ></Box>
+                  // alt="Club image"
+                  src={clubInfo.image}
+
+                />
 
                 <div
                   style={{
