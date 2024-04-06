@@ -12,6 +12,8 @@ import {
   PaletteOptions,
 } from "@mui/material";
 
+import Cookies from "js-cookie";
+
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 import CreateIcon from "@mui/icons-material/Create";
