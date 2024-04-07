@@ -20,17 +20,18 @@ import { TransitionProps } from "@mui/material/transitions";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import ClubLogo from "../../assets/pngtree-pencil-icon-png-image_1753753.jpg";
-
-
 interface Club {
-  name: string;
-  description: string;
-  member_count: number;
-  organizer: string;
-  image?: string;
   id: number;
+  name: string;
+  member_count: number;
+  image?: string;
 }
+
+// interface ClubInfo {
+//   name: string;
+//   member_count: number;
+//   image:
+// }
 
 interface ExploreProps {
   exploreOpen: boolean;
@@ -66,117 +67,53 @@ const Explore = (props: ExploreProps) => {
   });
 
   const navigate = useNavigate();
+
   const { exploreOpen, handleExploreOpen, handleExploreClose } = props;
-  const [clubs, setClubs] = useState<Club[] | null>([
-    {
-      image: ClubLogo,
-      name: "TimeWatchClub2",
-      description:
-        "falmefalmefalfalmefalmefalmeffalmefalmefalmeffalmefalmefalmeffalmefalmefalmeffalmefalmefalmeffalmefalmefalmeffalmefalmefalmeffalmefalmefalmefmefalmefalmefalmefalmefalmefalmefalmefalmefalmefalmefalmefalme",
-      member_count: 3,
-      organizer: "ThatGuy111",
-      id: 2,
-    },
-    {
-      image: ClubLogo,
-      name: "TimeWatchClub2",
-      description: "falme",
-      member_count: 3,
-      organizer: "ThatGuy111",
-      id: 2,
-    },
-    {
-      image: ClubLogo,
-      name: "TimeWatchClub2",
-      description: "falme",
-      member_count: 3,
-      organizer: "ThatGuy111",
-      id: 2,
-    },
-    {
-      image: ClubLogo,
-      name: "TimeWatchClub2",
-      description: "falme",
-      member_count: 3,
-      organizer: "ThatGuy111",
-      id: 2,
-    },
-    {
-      image: ClubLogo,
-      name: "TimeWatchClub2",
-      description: "falme",
-      member_count: 3,
-      organizer: "ThatGuy111",
-      id: 2,
-    },
-    {
-      image: ClubLogo,
-      name: "TimeWatchClub2",
-      description: "falme",
-      member_count: 3,
-      organizer: "ThatGuy111",
-      id: 2,
-    },
-    {
-      image: ClubLogo,
-      name: "TimeWatchClub2",
-      description: "falme",
-      member_count: 3,
-      organizer: "ThatGuy111",
-      id: 2,
-    },
-    {
-      image: ClubLogo,
-      name: "TimeWatchClub2",
-      description: "falme",
-      member_count: 3,
-      organizer: "ThatGuy111",
-      id: 2,
-    },
-    {
-      image: ClubLogo,
-      name: "TimeWatchClub2",
-      description: "falme",
-      member_count: 3,
-      organizer: "ThatGuy111",
-      id: 2,
-    },
-    {
-      image: ClubLogo,
-      name: "TimeWatchClub2",
-      description: "falme",
-      member_count: 3,
-      organizer: "ThatGuy111",
-      id: 2,
-    },
-    {
-      image: ClubLogo,
-      name: "TimeWatchClub2",
-      description: "falme",
-      member_count: 3,
-      organizer: "ThatGuy111",
-      id: 2,
-    },
-    {
-      image: ClubLogo,
-      name: "TimeWatchClub2",
-      description: "falme",
-      member_count: 3,
-      organizer: "ThatGuy111",
-      id: 2,
-    },
-  ]);
 
-  const username = "";
+  const [clubs, setClubs] = useState<Club[] | null>([]);
+  const [followedClubs, setFollowedClubs] = useState<Map<number, number>>(
+    new Map()
+  );
 
-  const isUserFollowingClub: (username: string, clubName: string) => boolean = (
-    username,
-    clubName
-  ) => {
-    return true;
-  };
+  useEffect(() => {
+    const fetchFollowedClubsID: () => Promise<void> = async () => {
+      let response = await fetch(`api/clubs/fetch/GetFollowedClubs`, {
+        method: "GET",
+      });
 
-  useEffect(() => {}, []);
+      if (response.ok) {
+        response.json().then((value) => {
+          console.log("FollowedClubs: " + value.clubs_id);
+          for (let clubID of value.clubs_id) {
+            setFollowedClubs(followedClubs.set(clubID, 1));
+          }
+        });
+      } else {
+        console.log("No Clubs Found");
+        setFollowedClubs(new Map());
+      }
+    };
+
+    const fetchClubs: () => Promise<void> = async () => {
+      let response = await fetch(`api/clubs/fetch/GetExploreClubs`, {
+        method: "GET",
+      });
+      if (response.ok) {
+        response.json().then((value) => {
+          const club_data = value.clubs_data;
+          console.log("ExploreClubs: " + club_data);
+          setClubs(club_data);
+        });
+      } else {
+        console.log("No Clubs Found");
+        setClubs([]);
+      }
+    };
+
+    fetchClubs();
+    fetchFollowedClubsID();
+    console.log(followedClubs);
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
@@ -237,7 +174,13 @@ const Explore = (props: ExploreProps) => {
               minHeight: "95%",
             }}
           >
-            <Box sx={{ display:"flex", justifyContent:"center", alignItems:"center",}}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               {clubs && clubs.length != 0 ? (
                 <Grid
                   container
@@ -286,6 +229,7 @@ const Explore = (props: ExploreProps) => {
                               navigate(`/club/${club.name}/${club.id}`)
                             }
                             sx={{
+                              wordBreak: "break-word",
                               color: "back.dark",
                               cursor: "pointer",
                               "&:hover": { color: "primary.main" },
@@ -322,18 +266,20 @@ const Explore = (props: ExploreProps) => {
                           display: "flex",
                           flexFlow: "column wrap",
                           justifyContent: "center",
+                          minWidth: "30%",
                         }}
                       >
                         <Button
+                          key={club.id}
                           sx={{
                             backgroundColor: "primary.main",
                             color: "back.light",
+                            border: "2px solid #000",
+                            borderRadius: "20px",
                             "&:hover": { backgroundColor: "secondary.main" },
                           }}
                         >
-                          {isUserFollowingClub(username, club.name)
-                            ? "Unfollow"
-                            : "Follow"}
+                          {followedClubs.has(club.id) ? "Unfollow" : "Follow"}
                         </Button>
                       </Box>
                     </Grid>
@@ -341,7 +287,12 @@ const Explore = (props: ExploreProps) => {
                 </Grid>
               ) : (
                 <Box
-                  sx={{ height: "100%", display: "flex", flexFlow:"column nowrap", alignItems: "center" }}
+                  sx={{
+                    height: "100%",
+                    display: "flex",
+                    flexFlow: "column nowrap",
+                    alignItems: "center",
+                  }}
                 >
                   <Typography
                     component="h2"
