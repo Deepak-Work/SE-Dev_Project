@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'clubs.apps.ClubsConfig',
     'posts.apps.PostsConfig',
     'event.apps.EventConfig',
+    'prof.apps.ProfConfig',
 ]
 
 MIDDLEWARE = [
