@@ -22,11 +22,11 @@ import Explore from "./Explore";
 
 const NavBar = () => {
   const navigate = useNavigate();
-  
+
   const [exploreOpen, setExploreOpen] = useState<boolean>(false);
-    
-  const handleExploreOpen : () => void = () => setExploreOpen(true);
-  const handleExploreClose : () => void = () => setExploreOpen(false);
+
+  const handleExploreOpen: () => void = () => setExploreOpen(true);
+  const handleExploreClose: () => void = () => setExploreOpen(false);
 
   const theme = createTheme({
     palette: {
@@ -101,11 +101,18 @@ const NavBar = () => {
                   </Typography>
                 </MenuItem>
                 <MenuItem sx={{ py: "6px", px: "12px" }}>
-                  <Typography variant="h6" color="text.primary" onClick={handleExploreOpen}>
+                  <Typography
+                    variant="h6"
+                    color="text.primary"
+                    onClick={handleExploreOpen}
+                  >
                     Explore
                   </Typography>
                 </MenuItem>
-                <MenuItem  onClick={() => navigate("/club/application")}sx={{ py: "6px", px: "12px" }}>
+                <MenuItem
+                  onClick={() => navigate("/club/application")}
+                  sx={{ py: "6px", px: "12px" }}
+                >
                   <Typography variant="h6" color="text.primary">
                     Create a Club
                   </Typography>
@@ -120,7 +127,10 @@ const NavBar = () => {
               }}
             >
               <Tooltip title="Profile Page">
-                <IconButton sx={{ color: "white", mr: "5px" }}>
+                <IconButton
+                  onClick={() => navigate("/profile")}
+                  sx={{ color: "white", mr: "5px" }}
+                >
                   <AccountBoxIcon fontSize="large" />
                 </IconButton>
               </Tooltip>
@@ -147,8 +157,11 @@ const NavBar = () => {
         </Container>
       </AppBar>
 
-      <Explore exploreOpen={exploreOpen} handleExploreOpen={handleExploreOpen} handleExploreClose={handleExploreClose} />
-      
+      <Explore
+        exploreOpen={exploreOpen}
+        handleExploreOpen={handleExploreOpen}
+        handleExploreClose={handleExploreClose}
+      />
     </ThemeProvider>
   );
 };

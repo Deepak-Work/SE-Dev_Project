@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
 import Login from "./Login";
 import Register from "./Register";
 import LandingPage from "./LandingPage/LandingPage";
 import ClubApplication from "./Club/ClubApplication";
 import ClubPage from "./Club/ClubPage";
+import Profile from "./Profile/Profile";
+
 import LoadingIndicator from "./Utils/LoadingIndicator";
 
 function App() {
@@ -48,6 +51,7 @@ function App() {
           <Route path="/home" element={isAuth === null ? <LoadingIndicator /> : <LandingPage isAuth={isAuth} />} />
           <Route path="/club/application" element={<ClubApplication />} />
           <Route path="/club/:name/:id" element={isAuth === null ? <LoadingIndicator /> : <ClubPage isAuth={isAuth}/>} />
+          <Route path="/profile" element={isAuth === null ? <LoadingIndicator /> : <Profile isAuth={isAuth}/>} />
         </Routes>
       </Router>
     </div>
