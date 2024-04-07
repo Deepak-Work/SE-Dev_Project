@@ -1,7 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from django.shortcuts import redirect
 
 from .serializers import CreateUserSerializer,LoginUserSerializer
 
@@ -70,8 +69,8 @@ class LogoutView(APIView):
     
 class CheckAuthView(APIView):
     def get(self, request):
-        #print(request.session, request.user.is_authenticated)
         if request.user.is_authenticated:
             return Response({"authenticated": True}, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
