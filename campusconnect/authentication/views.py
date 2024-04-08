@@ -2,6 +2,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 
+from prof.models import Profile
+
 from .serializers import CreateUserSerializer,LoginUserSerializer
 
 from rest_framework import status
@@ -55,6 +57,11 @@ class RegisterView(APIView):
             user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, 
                                             email=email, password=password)
             user.save()
+
+            # For profile pictures
+            profile = Profile.objects.create(user=user)
+            profile.save()
+
             
             return Response(status=status.HTTP_201_CREATED)
 
