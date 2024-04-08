@@ -24,6 +24,7 @@ interface User {
   name: string;
   username: string;
   email: string;
+  image: string;
 }
 
 const Profile = (props: Props) => {
@@ -54,7 +55,6 @@ const Profile = (props: Props) => {
       if (response.ok) {
         response.json().then((value) => {
           setUser(value);
-          console.log("tes");
         });
       }
     };
@@ -103,6 +103,7 @@ const Profile = (props: Props) => {
                 }}
               >
                 <Box
+                  component="img"
                   sx={{
                     borderRadius: "10px",
                     border: "3px solid #000000",
@@ -114,6 +115,7 @@ const Profile = (props: Props) => {
                     alignItems: "center",
                     paddingRight: "10px",
                   }}
+                  src={user.image}
                 ></Box>
                 <div
                   style={{
