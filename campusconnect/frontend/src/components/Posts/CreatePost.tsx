@@ -55,7 +55,7 @@ const CreatePost = (props: CreatePostProps) => {
       "X-CSRFToken": Cookies.get("csrftoken") || "",
     };
 
-    const response: Response = await fetch("/api/posts/create", {
+    const response: Response = await fetch("/api/posts/new-post", {
       method: "POST",
       headers: headers,
       body: JSON.stringify(form),

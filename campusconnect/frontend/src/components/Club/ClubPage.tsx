@@ -96,7 +96,7 @@ const ClubPage = (props: Props) => {
 
   const getFollowStatus = async () => {
     console.log("Checking Follow Status");
-    const response: Response = await fetch(`/api/clubs/getfollowStatus/${name}/${id}`, {
+    const response: Response = await fetch(`/api/clubs/follow-status/${name}/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -152,7 +152,7 @@ const ClubPage = (props: Props) => {
 
   useEffect(() => {
     let fetchClub = async () => {
-      let response = await fetch(`/api/clubs/fetch/${name}/${id}`, {
+      let response = await fetch(`/api/clubs/${name}/${id}`, {
         method: "GET",
       });
       if (response.ok) {
