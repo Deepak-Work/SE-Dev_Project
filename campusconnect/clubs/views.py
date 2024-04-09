@@ -70,7 +70,15 @@ class GetClubView(APIView):
         if c:
             return Response({'club_data': c, 'posts': posts}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
-    
+
+class getAllFollowedClubsByUser(APIView):
+    def get(self, request, name, id):
+        user = User.objects.get(id=id)
+        if user is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            clubs = Follow.objects.filter(user=user).values()
+            return Response({'followed_clubs': clubs}, status=status.HTTP_200_OK)
     
 class getFollowStatus(APIView):
     def get(self, request, name, id):
