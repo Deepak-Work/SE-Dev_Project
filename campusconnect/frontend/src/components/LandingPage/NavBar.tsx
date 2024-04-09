@@ -216,7 +216,10 @@ const NavBar = () => {
               }}
             >
               <Tooltip title="Profile Page">
-                <IconButton sx={{ color: "white", mr: "5px" }}>
+                <IconButton
+                  onClick={() => navigate("/profile")}
+                  sx={{ color: "white", mr: "5px" }}
+                >
                   <AccountBoxIcon fontSize="large" />
                 </IconButton>
               </Tooltip>

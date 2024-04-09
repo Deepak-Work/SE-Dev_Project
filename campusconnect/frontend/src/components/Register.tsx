@@ -104,16 +104,16 @@ const Register = () => {
       last_name: data.get("last_name") as string,
     };
 
-        const headers = {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': Cookies.get('csrftoken') || '',
-        }
+    const headers = {
+      "Content-Type": "application/json",
+      "X-CSRFToken": Cookies.get("csrftoken") || "",
+    };
 
-        const response: Response = await fetch('/api/authentication/register', {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(form)
-        })
+    const response: Response = await fetch("/api/authentication/register", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(form),
+    });
 
     if (response.ok) {
       navigate("/login");
@@ -171,19 +171,25 @@ const Register = () => {
                 borderRadius: "20px",
               }}
             >
-              <Box sx={{ px : 2, backgroundColor:"text.primary", border: "#000 solid 0px", borderRadius:"20px"}}>
-
-              <Typography
-                component="h1"
-                variant="h5"
+              <Box
                 sx={{
-                  fontSize: "2.5rem",
-                  color: "text.secondary",
-                  fontFamily: "RampartOne",
+                  px: 2,
+                  backgroundColor: "text.primary",
+                  border: "#000 solid 0px",
+                  borderRadius: "20px",
                 }}
               >
-                Create an Account
-              </Typography>
+                <Typography
+                  component="h1"
+                  variant="h5"
+                  sx={{
+                    fontSize: "2.5rem",
+                    color: "text.secondary",
+                    fontFamily: "RampartOne",
+                  }}
+                >
+                  Create an Account
+                </Typography>
               </Box>
             </Box>
 
@@ -301,7 +307,10 @@ const Register = () => {
               </Button>
               <Typography variant="body2" color="text.primary" align="center">
                 Already have an account?{" "}
-                <a href="/login" style={{ color: "#1976d2", textDecoration: "underline" }}>
+                <a
+                  href="/login"
+                  style={{ color: "#1976d2", textDecoration: "underline" }}
+                >
                   Login
                 </a>
               </Typography>
