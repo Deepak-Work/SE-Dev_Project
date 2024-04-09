@@ -11,9 +11,11 @@ import Profile from "./Profile/Profile";
 
 import LoadingIndicator from "./Utils/LoadingIndicator";
 
+
 function App() {
   // Used to keep track of whether the user is currently logged in or not
   const [isAuth, setAuth] = useState(false);
+  const [username, setUsername] = useState("");
   // const navigate = useNavigate();
 
   // const navigate = useNavigate();
@@ -25,12 +27,10 @@ function App() {
           method: "GET",
         });
         if (response.ok) {
-          console.log("True")
           setAuth(true);
+          response.json().then((value) => setUsername(value.username));
         } else {
-          console.log("False")
           setAuth(false);
-          // navigate("/login");
         }
       } catch (error) {
         console.error("Error checking authentication:", error);
@@ -48,10 +48,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           {/* <Route path="/home" element={<LandingPage isAuth={isAuth}/>} /> */}
-          <Route path="/home" element={isAuth === null ? <LoadingIndicator /> : <LandingPage isAuth={isAuth} />} />
+          <Route path="/home" element={isAuth === null ? <LoadingIndicator /> : <LandingPage username={username} isAuth={isAuth} />} />
           <Route path="/club/application" element={<ClubApplication />} />
-          <Route path="/club/:name/:id" element={isAuth === null ? <LoadingIndicator /> : <ClubPage isAuth={isAuth}/>} />
-          <Route path="/profile" element={isAuth === null ? <LoadingIndicator /> : <Profile isAuth={isAuth}/>} />
+          <Route path="/club/:name/:id" element={isAuth === null ? <LoadingIndicator /> : <ClubPage username={username} isAuth={isAuth}/>} />
+          <Route path="/profile/:name" element={isAuth === null ? <LoadingIndicator /> : <Profile isAuth={isAuth}/>} />
         </Routes>
       </Router>
     </div>

@@ -28,6 +28,7 @@ import CreatePost from "../Posts/CreatePost";
 import CreateEvent from "../Events/CreateEvent";
 
 interface Props {
+  username: string;
   isAuth: boolean;
 }
 interface ClubInfo {
@@ -203,7 +204,7 @@ const ClubPage = (props: Props) => {
                 "linear-gradient(to right, #a68bf0, #8e63d5, #7d3ebd);",
             }}
           >
-            <NavBar />
+            <NavBar username={props.username}/>
             <Paper
               elevation={3}
               sx={{

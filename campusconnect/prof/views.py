@@ -13,9 +13,15 @@ from rest_framework.response import Response
 # Create your views here.
 
 class ProfileView(APIView):
-    def get(self, request):
+    def get(self, request, name):
         if request.user.is_authenticated:
-            return Response({"name": request.user.first_name + " " + request.user.last_name, "username": request.user.username, "email": request.user.email, "image": request.user.profile.image.url}, status=status.HTTP_200_OK)
+            if not User.objects.filter(username=name).exists():
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            if name == request.user.username:
+                return Response({"is_self": True, "name": request.user.first_name + " " + request.user.last_name, "username": request.user.username, "email": request.user.email, "image": request.user.profile.image.url}, status=status.HTTP_200_OK)
+            else:
+                user = User.objects.get(username=name)
+                return Response({"is_self": False, "name": user.first_name + " " + user.last_name, "username": user.username, "email": user.email, "image": user.profile.image.url}, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         

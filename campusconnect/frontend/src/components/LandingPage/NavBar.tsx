@@ -23,6 +23,10 @@ import { useEffect, useState } from "react";
 import Explore from "./Explore";
 import MyClubs from "./MyClubs";
 
+interface Props {
+  username: string;
+}
+
 interface Club {
   id: number;
   name: string;
@@ -30,7 +34,7 @@ interface Club {
   image: string | null;
 }
 
-const NavBar = () => {
+const NavBar = ( { username }: Props) => {
   const navigate = useNavigate();
 
   const [clubs, setClubs] = useState<Club[] | null>([]);
@@ -222,7 +226,7 @@ const NavBar = () => {
             >
               <Tooltip title="Profile Page">
                 <IconButton
-                  onClick={() => navigate("/profile")}
+                  onClick={() => navigate(`/profile/${username}`)}
                   sx={{ color: "white", mr: "5px" }}
                 >
                   <AccountBoxIcon fontSize="large" />
