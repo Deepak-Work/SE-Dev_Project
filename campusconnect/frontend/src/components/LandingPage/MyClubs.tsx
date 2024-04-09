@@ -77,7 +77,7 @@ const MyClubs = (props: MyClubsProps) => {
   } = props;
 
   const fetchFollowedClubs: () => Promise<void> = async () => {
-    let response = await fetch(`api/clubs/fetch/GetFollowedClubs`, {
+    let response = await fetch(`api/clubs/followed-clubs`, {
       method: "GET",
     });
 
@@ -102,7 +102,7 @@ const MyClubs = (props: MyClubsProps) => {
     clubID: number
   ) => Promise<void> = async (clubName, clubID) => {
     const response = await fetch(
-      `api/clubs/GetFollowStatus/${clubName}/${clubID}`,
+      `api/clubs/follow-status/${clubName}/${clubID}`,
       {
         method: "GET",
       }

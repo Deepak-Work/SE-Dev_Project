@@ -88,7 +88,7 @@ const Explore = (props: ExploreProps) => {
   // );
 
   const fetchFollowedClubsID: () => Promise<void> = async () => {
-    let response = await fetch(`api/clubs/fetch/GetFollowedClubs`, {
+    let response = await fetch(`api/clubs/followed-clubs`, {
       method: "GET",
     });
 
@@ -106,7 +106,7 @@ const Explore = (props: ExploreProps) => {
   };
 
   const fetchClubs: () => Promise<void> = async () => {
-    let response = await fetch(`api/clubs/fetch/GetExploreClubs`, {
+    let response = await fetch(`api/clubs/explore-clubs`, {
       method: "GET",
     });
     if (response.ok) {
@@ -126,7 +126,7 @@ const Explore = (props: ExploreProps) => {
     clubID: number
   ) => Promise<void> = async (clubName, clubID) => {
     const response = await fetch(
-      `api/clubs/GetFollowStatus/${clubName}/${clubID}`,
+      `api/clubs/follow-status/${clubName}/${clubID}`,
       {
         method: "GET",
       }

@@ -37,7 +37,7 @@ const NavBar = () => {
   );
 
   const fetchFollowedClubs: () => Promise<void> = async () => {
-    let response = await fetch(`api/clubs/fetch/GetFollowedClubs`, {
+    let response = await fetch(`api/clubs/followed-clubs`, {
       method: "GET",
     });
 
@@ -57,7 +57,7 @@ const NavBar = () => {
   };
 
   const fetchFollowedClubsID: () => Promise<void> = async () => {
-    let response = await fetch(`api/clubs/fetch/GetFollowedClubs`, {
+    let response = await fetch(`api/clubs/followed-clubs`, {
       method: "GET",
     });
 
@@ -75,7 +75,7 @@ const NavBar = () => {
   };
 
   const fetchClubs: () => Promise<void> = async () => {
-    let response = await fetch(`api/clubs/fetch/GetExploreClubs`, {
+    let response = await fetch(`api/clubs/explore-clubs`, {
       method: "GET",
     });
     if (response.ok) {
