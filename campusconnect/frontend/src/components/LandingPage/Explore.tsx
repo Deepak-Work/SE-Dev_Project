@@ -24,7 +24,7 @@ interface Club {
   id: number;
   name: string;
   member_count: number;
-  image: string | undefined;
+  image: string | null;
 }
 
 // interface ClubInfo {
@@ -37,7 +37,7 @@ interface ExploreProps {
   exploreOpen: boolean;
   handleExploreOpen: () => void;
   handleExploreClose: () => void;
-  clubs: Club[];
+  clubs: Club[] | null;
   setClubs: (club: Club[] | null) => void;
   followedClubs: Map<number, number>;
   setFollowedClubs: (club: Map<number, number>) => void;

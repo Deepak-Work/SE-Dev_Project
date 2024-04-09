@@ -1,3 +1,4 @@
+import json
 from rest_framework.response import Response
 
 from django.shortcuts import render
@@ -65,7 +66,7 @@ class GetClubView(APIView):
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     
-class getFollowStatus(APIView):
+class GetFollowStatus(APIView):
     def get(self, request, name, id):
         club = Club.objects.get(id=id)
         if club is None:
@@ -88,7 +89,17 @@ class FollowClubView(APIView):
             follows = Follow.objects.create(user=request.user, club=club)
             follows.save()
             return Response(status=status.HTTP_200_OK)
-        
+
+class UnfollowClubView(APIView):
+    def get(self, request, name, id):
+        club = Club.objects.get(id=id)
+        print(request.user)
+        if club is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            Follow.objects.filter(user=request.user, club=club).delete()
+            return Response(status=status.HTTP_200_OK)
+          
 class GetClubsView(APIView):
     def get(self, request):
         # TODO: Eventually, we'll also have to include events and members associated with this club
@@ -100,16 +111,26 @@ class GetClubsView(APIView):
 class GetFollowedClubsView(APIView):
     def get(self, request):
         follows = Follow.objects.filter(user=request.user).values("club_id")
-        clubs = [Club.objects.filter(id=f['club_id']).values() for f in follows]
+        clubs = [Club.objects.filter(id=f['club_id']).values()[0] for f in follows]
         clubs_id = [f['club_id'] for f in follows.values()]
-        if clubs:
+        if clubs and len(clubs) > 0:
             return Response({'clubs_data' : clubs, "clubs_id": clubs_id}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 class GetExploreClubsView(APIView):
     def get(self, request):
         clubs = Club.objects.all().values("id", "name", "member_count", "image")
-        if clubs:
+        clubs_res = []
+        for c in clubs:
+            print(json.dumps(c))
+            clubs_json = json.loads(json.dumps(c))
+            # clubs_json['image'] = clubs_json['image']
+            clubs_res.append(clubs_json)
+        # clubsI = [(model_to_dict(c)['image']) for c in clubs]
+        # clubs_json = model_to_dict(clubs)
+        # clubs_json['image'] = clubs.image.url
+        print(clubs_res)
+        if clubs_res:
             return Response({'clubs_data' : clubs}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -121,8 +142,8 @@ class GetMyClubsView(APIView):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-class UnfollowClubView(APIView):
-    def get(self, request, name, id):
+class ToggleFollowClubView(APIView):
+    def get(self, request, id):
         club = Club.objects.get(id=id)
         print(request.user)
         if club is None:
@@ -130,7 +151,5 @@ class UnfollowClubView(APIView):
         else:
             Follow.objects.filter(user=request.user, club=club).delete()
             return Response(status=status.HTTP_200_OK)
-    
-    
             
             

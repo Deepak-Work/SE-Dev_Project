@@ -25,7 +25,7 @@ interface Club {
   id: number;
   name: string;
   member_count: number;
-  image?: string;
+  image: string | null;
 }
 
 const NavBar = () => {
