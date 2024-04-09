@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect} from "react";
+
+import { useParams } from "react-router-dom";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
@@ -25,15 +27,18 @@ interface User {
   username: string;
   email: string;
   image: string;
+  is_self: boolean;
 }
 
 const Profile = (props: Props) => {
+  const { name } = useParams();
+
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
   const handleSettingsOpen: () => void = () => setSettingsOpen(true);
   const handleSettingsClose: () => void = () => setSettingsOpen(false);
   
   const [user, setUser] = useState<User>({} as User);
-
+  const [userExists, setUserExists] = useState<boolean>(false);
 
   const theme = createTheme({
     palette: {
@@ -48,14 +53,19 @@ const Profile = (props: Props) => {
 
   useEffect(() => {
     let fetchUser = async () => {
-      let response = await fetch("/api/prof/profile", {
+      let response = await fetch(`/api/prof/profile/${name}`, {
         method: "GET",
       });
 
       if (response.ok) {
-        response.json().then((value) => {
+      response.json().then((value) => {
           setUser(value);
+          setUserExists(true);
+          console.log(value);
         });
+      } else {
+        
+        setUserExists(false);
       }
     };
     fetchUser();
@@ -65,7 +75,10 @@ const Profile = (props: Props) => {
     <>
       {!props.isAuth ? (
         <p>You are not authorized to view this page.</p>
-      ) : (
+      ) : !userExists ? (
+        <p>User does not exist.</p>
+      )
+      : (
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Box
@@ -80,7 +93,7 @@ const Profile = (props: Props) => {
                 "linear-gradient(to right, #a68bf0, #8e63d5, #7d3ebd);",
             }}
           >
-            <NavBar />
+            <NavBar username={user.username}/>
             <Box
               sx={{
                 mt: 15,
@@ -148,13 +161,19 @@ const Profile = (props: Props) => {
                   </Link>
                   {/* <Typography variant="h5">{us}</Typography> */}
                 </div>
-                <div style={{ marginLeft: "200px" }}>
-                  <Tooltip title="Profile Settings">
-                    <IconButton onClick={handleSettingsOpen} sx={{ color: "white" }}>
-                      <SettingsIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                </div>
+
+                {user.is_self ? (
+                        <div style={{ marginLeft: "200px" }}>
+                        <Tooltip title="Profile Settings">
+                          <IconButton onClick={handleSettingsOpen} sx={{ color: "white" }}>
+                            <SettingsIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </div>          
+                ) : (
+                  <></>
+                )}
+
 
               </div>
             </Box>

@@ -77,7 +77,7 @@ class LogoutView(APIView):
 class CheckAuthView(APIView):
     def get(self, request):
         if request.user.is_authenticated:
-            return Response({"authenticated": True}, status=status.HTTP_200_OK)
+            return Response({"username": request.user.username, "authenticated": True}, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
     
