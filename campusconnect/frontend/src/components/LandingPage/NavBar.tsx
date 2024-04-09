@@ -81,7 +81,7 @@ const NavBar = () => {
     if (response.ok) {
       response.json().then((value) => {
         const club_data = value.clubs_data;
-        console.log("ExploreClubs: " + club_data);
+        console.log("ExploreClubs2: " + club_data[0].image);
         setClubs(club_data);
       });
     } else {
@@ -96,7 +96,8 @@ const NavBar = () => {
 
   const handleExploreOpen: () => void = async () => {
     // console.log("Followed Clubs: ", followedClubs)
-    fetchClubs().then(() => fetchFollowedClubsID());
+    fetchClubs();
+    fetchFollowedClubsID();
     // console.log("Followed Clubs2: ", followedClubs);
     setExploreOpen(true);
     // console.log("Clubs: ", clubs)

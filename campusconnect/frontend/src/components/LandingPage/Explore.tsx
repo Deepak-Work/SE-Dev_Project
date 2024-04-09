@@ -24,7 +24,7 @@ interface Club {
   id: number;
   name: string;
   member_count: number;
-  image?: string;
+  image: string | undefined;
 }
 
 // interface ClubInfo {
@@ -37,10 +37,10 @@ interface ExploreProps {
   exploreOpen: boolean;
   handleExploreOpen: () => void;
   handleExploreClose: () => void;
-  clubs: Club[] | null;
+  clubs: Club[];
   setClubs: (club: Club[] | null) => void;
   followedClubs: Map<number, number>;
-  setFollowedClubs: (club: Map<number, number> | null) => void;
+  setFollowedClubs: (club: Map<number, number>) => void;
 }
 
 const slideTransition = React.forwardRef(function Transition(
@@ -72,12 +72,20 @@ const Explore = (props: ExploreProps) => {
 
   const navigate = useNavigate();
 
-  const { exploreOpen, handleExploreOpen, handleExploreClose } = props;
+  const {
+    exploreOpen,
+    handleExploreOpen,
+    handleExploreClose,
+    clubs,
+    setClubs,
+    followedClubs,
+    setFollowedClubs,
+  } = props;
 
-  const [clubs, setClubs] = useState<Club[] | null>([]);
-  const [followedClubs, setFollowedClubs] = useState<Map<number, number>>(
-    new Map()
-  );
+  // const [clubs, setClubs] = useState<Club[] | null>([]);
+  // const [followedClubs, setFollowedClubs] = useState<Map<number, number>>(
+  //   new Map()
+  // );
 
   const fetchFollowedClubsID: () => Promise<void> = async () => {
     let response = await fetch(`api/clubs/fetch/GetFollowedClubs`, {
@@ -104,7 +112,7 @@ const Explore = (props: ExploreProps) => {
     if (response.ok) {
       response.json().then((value) => {
         const club_data = value.clubs_data;
-        console.log("ExploreClubs: " + club_data);
+        console.log("ExploreClubs1: " + club_data.id);
         setClubs(club_data);
       });
     } else {
@@ -113,48 +121,54 @@ const Explore = (props: ExploreProps) => {
     }
   };
 
+  const ToggleFollow: (
+    clubName: string,
+    clubID: number
+  ) => Promise<void> = async (clubName, clubID) => {
+    const response = await fetch(
+      `api/clubs/GetFollowStatus/${clubName}/${clubID}`,
+      {
+        method: "GET",
+      }
+    );
 
-  const ToggleFollow : (clubName : string, clubID: number) => Promise<void> = async (clubName, clubID) => {
-    const response = await fetch(`api/clubs/GetFollowStatus/${clubName}/${clubID}`, {
-      method: "GET",
-    });
-
-    if(response.ok) {
+    if (response.ok) {
       response.json().then(async (value) => {
-        if(value.follow_status && followedClubs.has(clubID)){
-          const followResponse = await fetch(`api/clubs/unfollow/${clubName}/${clubID}`, {
-            method:"GET",
-          })
-          
-          if(followResponse.ok){
+        if (value.follow_status && followedClubs.has(clubID)) {
+          const followResponse = await fetch(
+            `api/clubs/unfollow/${clubName}/${clubID}`,
+            {
+              method: "GET",
+            }
+          );
+
+          if (followResponse.ok) {
             followedClubs.delete(clubID);
             setFollowedClubs(new Map(followedClubs));
-          }
-          else {
+          } else {
             console.log("Follow Status: true - " + response.status);
           }
+        } else {
+          const followResponse = await fetch(
+            `api/clubs/follow/${clubName}/${clubID}`,
+            {
+              method: "GET",
+            }
+          );
 
-        }
-        else {
-          const followResponse = await fetch(`api/clubs/follow/${clubName}/${clubID}`, {
-            method:"GET",
-          })
-          
-          if(followResponse.ok){
+          if (followResponse.ok) {
             setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
-          }
-          else {
+          } else {
             console.log("Follow Status: false - " + response.status);
           }
-
-        }   
+        }
       });
     }
   };
 
   useEffect(() => {
-    fetchClubs();
-    fetchFollowedClubsID();
+    // fetchClubs();
+    // fetchFollowedClubsID();
   }, []);
 
   return (
@@ -245,32 +259,29 @@ const Explore = (props: ExploreProps) => {
                       }}
                     >
                       <Box
+                       component="img"
+                       alt="Club Logo"
+                       src={"../../../../media/" + club.image}
                         sx={{
-                          width: 50,
-                          height: 50,
+                          width: "50px",
+                          height: "50px",
                           border: "2px solid black",
                           borderRadius: "10px",
                           display: { xs: "none", sm: "block", md: "block" },
                         }}
                       >
-                        <img
-                          width={50}
-                          height={50}
-                          src={club.image}
-                          alt="Club Logo"
-                          style={{ borderRadius: "10px" }}
-                        />
                       </Box>
                       <Box
-                        sx={{ display: "flex", flexFlow: "column wrap", px: 2 }}
+                        sx={{ display: "flex", flexFlow: "column wrap", justifyContent:"flex-start", px: 2 }}
                       >
-                        <Box>
+                        <Box sx={{border:"0px black solid",  width: "13.5vw", maxWidth: "20vw"}}>
                           <Link
                             variant="h5"
                             onClick={() =>
                               navigate(`/club/${club.name}/${club.id}`)
                             }
                             sx={{
+                              
                               wordBreak: "break-word",
                               color: "back.dark",
                               cursor: "pointer",
@@ -281,6 +292,7 @@ const Explore = (props: ExploreProps) => {
                           >
                             {club.name}
                           </Link>
+
                         </Box>
                         <Box>
                           {/* <Typography
