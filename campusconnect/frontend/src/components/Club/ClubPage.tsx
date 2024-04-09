@@ -89,11 +89,10 @@ const ClubPage = (props: Props) => {
   const [clubExists, setClubExists] = useState(false);
   const [clubInfo, setClubInfo] = useState<ClubInfo>({} as ClubInfo);
 
- 
-
   const [posts, setPosts] = useState<JSX.Element>();
   const { name, id } = useParams();
   const [followed, setFollowed] = useState(false);
+
 
   const getFollowStatus = async () => {
     console.log("Checking Follow Status");
@@ -104,15 +103,15 @@ const ClubPage = (props: Props) => {
         Authorization: `Bearer ${Cookies.get("token")}`,
       },
     });
-    if ((await response).ok) {
+    if (response.ok) {
       setFollowed(true);
     }
     console.log(followed);
   }
 
-  useEffect(() => {
-    getFollowStatus();
-  }, []);
+  // useEffect(() => {
+  //   getFollowStatus();
+  // }, []);
   
 
   // Create a Post Modal
@@ -176,9 +175,12 @@ const ClubPage = (props: Props) => {
         });
       } else {
         setClubExists(false);
+        console.log("ce: " + clubExists + " " + response.status);
       }
     };
     fetchClub();
+    console.log("club exists:" + clubExists)
+    console.log("auth: " + props.isAuth);
   }, []);
 
   return (

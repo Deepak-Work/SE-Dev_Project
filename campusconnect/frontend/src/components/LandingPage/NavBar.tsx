@@ -17,16 +17,101 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import LogoutIcon from "@mui/icons-material/Logout";
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Explore from "./Explore";
+import MyClubs from "./MyClubs";
+
+interface Club {
+  id: number;
+  name: string;
+  member_count: number;
+  image?: string;
+}
 
 const NavBar = () => {
   const navigate = useNavigate();
-  
+
+  const [clubs, setClubs] = useState<Club[] | null>([]);
+  const [followedClubs, setFollowedClubs] = useState<Map<number, number>>(
+    new Map()
+  );
+
+  const fetchFollowedClubs: () => Promise<void> = async () => {
+    let response = await fetch(`api/clubs/fetch/GetFollowedClubs`, {
+      method: "GET",
+    });
+
+    if (response.ok) {
+      response.json().then((value) => {
+        console.log("FollowedClubs: " + value.clubs_id);
+        for (let clubID of value.clubs_id) {
+          setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
+        }
+        setClubs(value.clubs_data);
+      });
+    } else {
+      console.log("fetchFollowedClubs: No Clubs Found");
+      setFollowedClubs(new Map());
+      setClubs([]);
+    }
+  };
+
+  const fetchFollowedClubsID: () => Promise<void> = async () => {
+    let response = await fetch(`api/clubs/fetch/GetFollowedClubs`, {
+      method: "GET",
+    });
+
+    if (response.ok) {
+      response.json().then((value) => {
+        console.log("FollowedClubs: " + value.clubs_id);
+        for (let clubID of value.clubs_id) {
+          setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
+        }
+      });
+    } else {
+      console.log("FetchFolowedClubsID: No Clubs Found");
+      setFollowedClubs(new Map());
+    }
+  };
+
+  const fetchClubs: () => Promise<void> = async () => {
+    let response = await fetch(`api/clubs/fetch/GetExploreClubs`, {
+      method: "GET",
+    });
+    if (response.ok) {
+      response.json().then((value) => {
+        const club_data = value.clubs_data;
+        console.log("ExploreClubs: " + club_data);
+        setClubs(club_data);
+      });
+    } else {
+      console.log("fetchClubs: No Clubs Found");
+      setClubs([]);
+    }
+  };
+
+
+
   const [exploreOpen, setExploreOpen] = useState<boolean>(false);
-    
-  const handleExploreOpen : () => void = () => setExploreOpen(true);
-  const handleExploreClose : () => void = () => setExploreOpen(false);
+
+  const handleExploreOpen: () => void = async () => {
+    // console.log("Followed Clubs: ", followedClubs)
+    fetchClubs().then(() => fetchFollowedClubsID());
+    // console.log("Followed Clubs2: ", followedClubs);
+    setExploreOpen(true);
+    // console.log("Clubs: ", clubs)
+  };
+  const handleExploreClose: () => void = () => setExploreOpen(false);
+
+
+  const [myClubsOpen, setMyClubsOpen] = useState<boolean>(false);
+
+  const handleMyClubsOpen: () => void = () => {
+    // setFollowedClubs(new Map());
+    fetchFollowedClubs();
+    setMyClubsOpen(true);
+  };
+  const handleMyClubsClose: () => void = () => setMyClubsOpen(false);
 
   const theme = createTheme({
     palette: {
@@ -95,17 +180,27 @@ const NavBar = () => {
                   CampusConnect
                 </Typography>
 
-                <MenuItem sx={{ ml: "20px", py: "6px", px: "12px" }}>
+                <MenuItem
+                  sx={{ ml: "20px", py: "6px", px: "12px" }}
+                  onClick={handleMyClubsOpen}
+                >
                   <Typography variant="h6" color="text.primary">
                     My Clubs
                   </Typography>
                 </MenuItem>
                 <MenuItem sx={{ py: "6px", px: "12px" }}>
-                  <Typography variant="h6" color="text.primary" onClick={handleExploreOpen}>
+                  <Typography
+                    variant="h6"
+                    color="text.primary"
+                    onClick={handleExploreOpen}
+                  >
                     Explore
                   </Typography>
                 </MenuItem>
-                <MenuItem  onClick={() => navigate("/club/application")}sx={{ py: "6px", px: "12px" }}>
+                <MenuItem
+                  onClick={() => navigate("/club/application")}
+                  sx={{ py: "6px", px: "12px" }}
+                >
                   <Typography variant="h6" color="text.primary">
                     Create a Club
                   </Typography>
@@ -147,8 +242,24 @@ const NavBar = () => {
         </Container>
       </AppBar>
 
-      <Explore exploreOpen={exploreOpen} handleExploreOpen={handleExploreOpen} handleExploreClose={handleExploreClose} />
-      
+      <Explore
+        exploreOpen={exploreOpen}
+        handleExploreOpen={handleExploreOpen}
+        handleExploreClose={handleExploreClose}
+        clubs={clubs}
+        setClubs={setClubs}
+        followedClubs={followedClubs}
+        setFollowedClubs={setFollowedClubs}
+      />
+      <MyClubs
+        myClubsOpen={myClubsOpen}
+        handleMyClubsOpen={handleMyClubsOpen}
+        handleMyClubsClose={handleMyClubsClose}
+        clubs={clubs}
+        setClubs={setClubs}
+        followedClubs={followedClubs}
+        setFollowedClubs={setFollowedClubs}
+      />
     </ThemeProvider>
   );
 };

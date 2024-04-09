@@ -37,6 +37,10 @@ interface ExploreProps {
   exploreOpen: boolean;
   handleExploreOpen: () => void;
   handleExploreClose: () => void;
+  clubs: Club[] | null;
+  setClubs: (club: Club[] | null) => void;
+  followedClubs: Map<number, number>;
+  setFollowedClubs: (club: Map<number, number> | null) => void;
 }
 
 const slideTransition = React.forwardRef(function Transition(
@@ -75,44 +79,82 @@ const Explore = (props: ExploreProps) => {
     new Map()
   );
 
-  useEffect(() => {
-    const fetchFollowedClubsID: () => Promise<void> = async () => {
-      let response = await fetch(`api/clubs/fetch/GetFollowedClubs`, {
-        method: "GET",
-      });
+  const fetchFollowedClubsID: () => Promise<void> = async () => {
+    let response = await fetch(`api/clubs/fetch/GetFollowedClubs`, {
+      method: "GET",
+    });
 
-      if (response.ok) {
-        response.json().then((value) => {
-          console.log("FollowedClubs: " + value.clubs_id);
-          for (let clubID of value.clubs_id) {
-            setFollowedClubs(followedClubs.set(clubID, 1));
+    if (response.ok) {
+      response.json().then((value) => {
+        console.log("FollowedClubs: " + value.clubs_id);
+        for (let clubID of value.clubs_id) {
+          setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
+        }
+      });
+    } else {
+      console.log("No Clubs Found");
+      setFollowedClubs(new Map());
+    }
+  };
+
+  const fetchClubs: () => Promise<void> = async () => {
+    let response = await fetch(`api/clubs/fetch/GetExploreClubs`, {
+      method: "GET",
+    });
+    if (response.ok) {
+      response.json().then((value) => {
+        const club_data = value.clubs_data;
+        console.log("ExploreClubs: " + club_data);
+        setClubs(club_data);
+      });
+    } else {
+      console.log("No Clubs Found");
+      setClubs([]);
+    }
+  };
+
+
+  const ToggleFollow : (clubName : string, clubID: number) => Promise<void> = async (clubName, clubID) => {
+    const response = await fetch(`api/clubs/GetFollowStatus/${clubName}/${clubID}`, {
+      method: "GET",
+    });
+
+    if(response.ok) {
+      response.json().then(async (value) => {
+        if(value.follow_status && followedClubs.has(clubID)){
+          const followResponse = await fetch(`api/clubs/unfollow/${clubName}/${clubID}`, {
+            method:"GET",
+          })
+          
+          if(followResponse.ok){
+            followedClubs.delete(clubID);
+            setFollowedClubs(new Map(followedClubs));
           }
-        });
-      } else {
-        console.log("No Clubs Found");
-        setFollowedClubs(new Map());
-      }
-    };
+          else {
+            console.log("Follow Status: true - " + response.status);
+          }
 
-    const fetchClubs: () => Promise<void> = async () => {
-      let response = await fetch(`api/clubs/fetch/GetExploreClubs`, {
-        method: "GET",
+        }
+        else {
+          const followResponse = await fetch(`api/clubs/follow/${clubName}/${clubID}`, {
+            method:"GET",
+          })
+          
+          if(followResponse.ok){
+            setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
+          }
+          else {
+            console.log("Follow Status: false - " + response.status);
+          }
+
+        }   
       });
-      if (response.ok) {
-        response.json().then((value) => {
-          const club_data = value.clubs_data;
-          console.log("ExploreClubs: " + club_data);
-          setClubs(club_data);
-        });
-      } else {
-        console.log("No Clubs Found");
-        setClubs([]);
-      }
-    };
+    }
+  };
 
+  useEffect(() => {
     fetchClubs();
     fetchFollowedClubsID();
-    console.log(followedClubs);
   }, []);
 
   return (
@@ -278,6 +320,7 @@ const Explore = (props: ExploreProps) => {
                             borderRadius: "20px",
                             "&:hover": { backgroundColor: "secondary.main" },
                           }}
+                          onClick={() => ToggleFollow(club.name, club.id)}
                         >
                           {followedClubs.has(club.id) ? "Unfollow" : "Follow"}
                         </Button>
