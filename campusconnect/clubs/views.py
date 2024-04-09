@@ -49,6 +49,8 @@ class CreateClubView(APIView):
             club = Club.objects.create(name=clubName, description=clubDesc, location=clubLoc, 
                                             email=clubEmail, contact=clubContact, website=clubWebsite, organizer=clubOrganizer, image=clubImage)
             club.save()
+            follow = Follow.objects.create(user=clubOrganizer, club=club)
+            follow.save()
 
             
             
@@ -86,6 +88,8 @@ class FollowClubView(APIView):
     def get(self, request, name, id):
         print("Here")
         club = Club.objects.get(id=id)
+        club.member_count += 1
+        club.save()
         print(request.user)
         if club is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -97,6 +101,8 @@ class FollowClubView(APIView):
 class UnfollowClubView(APIView):
     def get(self, request, name, id):
         club = Club.objects.get(id=id)
+        club.member_count -= 1
+        club.save()
         print(request.user)
         if club is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
