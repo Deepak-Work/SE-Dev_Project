@@ -50,7 +50,7 @@ function App() {
           {/* <Route path="/home" element={<LandingPage isAuth={isAuth}/>} /> */}
           <Route path="/home" element={isAuth === null ? <LoadingIndicator /> : <LandingPage username={username} isAuth={isAuth} />} />
           <Route path="/club/application" element={<ClubApplication />} />
-          <Route path="/club/:name/:id" element={isAuth === null ? <LoadingIndicator /> : <ClubPage isAuth={isAuth}/>} />
+          <Route path="/club/:name/:id" element={isAuth === null ? <LoadingIndicator /> : <ClubPage username={username} isAuth={isAuth}/>} />
           <Route path="/profile/:name" element={isAuth === null ? <LoadingIndicator /> : <Profile isAuth={isAuth}/>} />
         </Routes>
       </Router>
