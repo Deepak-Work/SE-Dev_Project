@@ -6,19 +6,29 @@ from rest_framework import status
 from .models import Event
 from .serializers import EventSerializer
 
+from datetime import datetime
+
 class CreateEventView(APIView):
     serializer_class = EventSerializer
     
     def post(self, request):
         serializer_class = self.serializer_class(data=request.data)
+        request.data['event_date'] = datetime.strptime(request.data['event_date'], '%m/%d/%Y').date()
+        
+        request.data['event_time'] = datetime.strptime(request.data['event_time'], '%I:%M %p')
+        request.data['event_time'] = request.data['event_time'].strftime("%H:%M:%S")
+
+        print(request.data) 
         if serializer_class.is_valid():
             name = serializer_class.data.get('name')
             description = serializer_class.data.get('description')
-            date = serializer_class.data.get('date')
-            time = serializer_class.data.get('time')
-            event = Event.objects.create(name=name, description=description, date=date, time=time)
+            date = serializer_class.data.get('event_date')
+            time = serializer_class.data.get('event_time')
+            event = Event.objects.create(name=name, description=description, event_date=date, event_time=time, user=request.user)
             event.save()
             return Response(status=status.HTTP_201_CREATED)
+        else:
+            print(serializer_class.errors)
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
 

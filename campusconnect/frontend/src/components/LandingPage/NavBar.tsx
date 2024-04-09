@@ -15,6 +15,8 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import LogoutIcon from "@mui/icons-material/Logout";
+import logo from "../../assets/CampusConnectLogo.svg";
+
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useEffect, useState } from "react";
@@ -172,6 +174,8 @@ const NavBar = () => {
               }}
             >
               <Box sx={{ display: { xs: "none", md: "flex" } }}>
+                <Box sx={{display:{xs:"none", md: "flex"}, flexFlow: "row nowrap" , alignItems: "center"}}>
+                <img style={{cursor: "pointer"}} onClick={() => navigate("/home")} width="100" height="100" src={logo} alt="CampusConnect Logo"/>
                 <Typography
                   fontFamily="RampartOne"
                   variant="h4"
@@ -180,6 +184,7 @@ const NavBar = () => {
                 >
                   CampusConnect
                 </Typography>
+                </Box>
 
                 <MenuItem
                   sx={{ ml: "20px", py: "6px", px: "12px" }}
