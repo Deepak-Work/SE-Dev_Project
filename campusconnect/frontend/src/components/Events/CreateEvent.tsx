@@ -177,7 +177,7 @@ const CreateEvent = (props: CreateEventProps) => {
   }}sx= {{ width: "45%", backgroundColor:"back.light"}} />
                 </LocalizationProvider>
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <Container
                   component="div"
                   sx={{
@@ -249,7 +249,7 @@ const CreateEvent = (props: CreateEventProps) => {
                     )}
                   </Box>
                 </Container>
-              </Grid>
+              </Grid> */}
               <Grid item xs={12}>
                 <Button
                   type="submit"
