@@ -1,10 +1,10 @@
 import  { useState, useEffect} from 'react';
-
 import { useParams, useNavigate } from 'react-router-dom';
+
+import Cookies from "js-cookie";
 
 import {
     Box,
-    Button,
     PaletteOptions,
     Paper,
     Typography,
@@ -93,15 +93,27 @@ const PostComponent = (props: Props) => {
   const navigate = useNavigate()
 
   const handleClose = async (action: string) => {
+
+    const headers = {
+      "Content-Type": "application/json",
+      "X-CSRFToken": Cookies.get("csrftoken") || "",
+    };
+
     if (action === 'delete') {
       // Perform deletion logic here
       console.log('Deleting post start')
       let response = await fetch(`/api/posts/fetch/post/${id}/delete`, {
         method: "DELETE",
+        headers: headers,
       });
       if (response.ok) {
         console.log('Deleting post');
-        navigate(`/home`)
+        console.log(response)
+        
+        const data = await response.json();
+        const { clubname, clubid } = data;
+
+        navigate(`/club/${clubname}/${clubid}`)
       }
       else {
         console.log('Could not delete post');
@@ -267,7 +279,7 @@ const PostComponent = (props: Props) => {
         {postInfo.body}
         </Typography>
         </Paper>
-        <IconButton onClick={handleDislike} aria-label="dislike post">
+        <IconButton onClick={handleLike} aria-label="Like post">
         <ThumbUpAltIcon/>
         {postInfo.likes}
         </IconButton>

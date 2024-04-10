@@ -70,14 +70,16 @@ class EditPostView(APIView):
 
 class DeletePostView(APIView):
     def delete(self, request, id):
-        id = self.context['request'].parser_context['kwargs'].get('id', None)
+        # id = self.context['request'].parser_context['kwargs'].get('id', None)
         if id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            clubid = Post.objects.filter(id=id).club
+            clubid = Post.objects.get(id=id).club.id
             clubname = Club.objects.get(id=clubid).name
-            Post.objects.filter(id=id).delete()
-            return Response(status=status.HTTP_200_OK)
+            post = Post.objects.get(id=id)
+            post.delete()
+            print(clubname)
+            return Response({'clubname':clubname,'clubid':clubid},status=status.HTTP_200_OK)
     pass
 
 
