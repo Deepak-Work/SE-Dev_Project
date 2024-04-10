@@ -26,6 +26,7 @@ import NavBar from "../LandingPage/NavBar";
 import PostElement from "../Posts/PostElement";
 import CreatePost from "../Posts/CreatePost";
 import CreateEvent from "../Events/CreateEvent";
+import EventElement from "../Events/EventElement";
 
 interface Props {
   username: string;
@@ -42,8 +43,31 @@ interface ClubInfo {
 
   // members: any[];
   posts: any[];
-  // events: any[];
+  events: any[];
   // auditLog: any[];
+}
+
+interface Post {
+  id: number;
+  username: string;
+  title: string;
+  body: string;
+  time_posted: string;
+  author: string;
+  likes: number;
+  dislikes: number;
+}
+
+interface Event {
+  id: number;
+  name: string;
+  description: string;
+  event_date: string;
+  event_time: string;
+  time_posted: string;
+  author: string;
+  likes: number;
+  dislikes: number;
 }
 
 interface CustomPaletteOptions extends PaletteOptions {
@@ -87,33 +111,15 @@ const ClubPage = (props: Props) => {
     } as CustomPaletteOptions,
   });
 
+  const { name, id } = useParams();
+
   const [clubExists, setClubExists] = useState(false);
   const [clubInfo, setClubInfo] = useState<ClubInfo>({} as ClubInfo);
 
-  const [posts, setPosts] = useState<JSX.Element>();
-  const { name, id } = useParams();
+  const [posts, setPosts] = useState<Post[] | null>(null);
+  const [events, setEvents] = useState<Event[] | null>(null);
   const [followed, setFollowed] = useState(false);
 
-
-  const getFollowStatus = async () => {
-    console.log("Checking Follow Status");
-    const response: Response = await fetch(`/api/clubs/follow-status/${name}/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${Cookies.get("token")}`,
-      },
-    });
-    if (response.ok) {
-      setFollowed(true);
-    }
-    console.log(followed);
-  }
-
-  // useEffect(() => {
-  //   getFollowStatus();
-  // }, []);
-  
 
   // Create a Post Modal
   const [createPostOpen, setCreatePostOpen] = useState(false);
@@ -121,34 +127,72 @@ const ClubPage = (props: Props) => {
   const handleCreatePostOpen = () => setCreatePostOpen(true);
   const handleCreatePostClose = () => setCreatePostOpen(false);
 
-  //Create an Event Modal
+  // Create an Event Modal
   const [createEventOpen, setCreateEventOpen] = useState(false);
 
   const handleCreateEventOpen = () => setCreateEventOpen(true);
   const handleCreateEventClose = () => setCreateEventOpen(false);
 
-  // Explore Modal
-  const [exploreOpen, setExploreOpen] = useState<boolean>(false);
-    
-  const handleExploreOpen : () => void = () => setExploreOpen(true);
-  const handleExploreClose : () => void = () => setExploreOpen(false);
+  // // Explore Modal
+  // const [exploreOpen, setExploreOpen] = useState<boolean>(false);
+
+  // const handleExploreOpen: () => void = () => setExploreOpen(true);
+  // const handleExploreClose: () => void = () => setExploreOpen(false);
 
   // CreatePostsDisplay
-  const createPostsDisplay = (posts_data: any) => {
-    const postComponents = posts_data.map((post: any) => (
-      <ListItem key={post.id}>
-        <PostElement
-          username={post.author}
-          title={post.title}
-          body={post.body}
-          time_posted={convertDate(new Date(post.time_posted))}
-          likes={post.likes}
-          dislikes={post.dislikes}
-        />
-      </ListItem>
-    ));
-    const final = <List sx={{ ml: -21 }}>{postComponents}</List>;
-    setPosts(final);
+  // const createPostsDisplay = (posts_data: any) => {
+  //   const PostsComponent = posts_data.map((post: any) => (
+  //     <ListItem key={post.id}>
+  //       <PostElement
+  //         username={post.author}
+  //         title={post.title}
+  //         body={post.body}
+  //         time_posted={convertDate(new Date(post.time_posted))}
+  //         likes={post.likes}
+  //         dislikes={post.dislikes}
+  //       />
+  //     </ListItem>
+  //   ));
+  //   const final = <List sx={{ ml: 0 }}>{PostsComponent}</List>;
+  //   setPosts(final);
+  // };
+
+  // CreatePostsDisplay
+  //  const createEventsDisplay = (events_data: any) => {
+  //   const EventsComponent = events_data.map((event: any) => (
+  //     <ListItem key={event.id}>
+  //       <EventElement
+  //         id={event.id}
+  //         username={event.author}
+  //         name={event.name}
+  //         description={event.description}
+  //         event_time={event.event_time}
+  //         event_date={event.event_date}
+  //         // likes={event.likes}
+  //         // dislikes={event.dislikes}
+  //       />
+  //     </ListItem>
+  //   ));
+  //   const final = <List sx={{ ml: 0 }}>{EventsComponent}</List>;
+  //   setEvents(final);
+  // };
+
+  const getFollowStatus = async () => {
+    console.log("Checking Follow Status");
+    const response: Response = await fetch(
+      `/api/clubs/follow-status/${name}/${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      }
+    );
+    if (response.ok) {
+      setFollowed(true);
+    }
+    console.log(followed);
   };
 
   useEffect(() => {
@@ -161,6 +205,7 @@ const ClubPage = (props: Props) => {
         response.json().then((value) => {
           const club_data = value.club_data;
           const posts = value.posts;
+          const events = value.events;
           const clubInfo: ClubInfo = {
             name: club_data.name,
             description: club_data.description,
@@ -169,9 +214,11 @@ const ClubPage = (props: Props) => {
             pnum: club_data.contact,
             website: club_data.website,
             posts: posts,
+            events: events,
             image: club_data.image,
           };
-          createPostsDisplay(posts);
+          setPosts(posts);
+          setEvents(events);
           setClubInfo(clubInfo);
         });
       } else {
@@ -180,7 +227,8 @@ const ClubPage = (props: Props) => {
       }
     };
     fetchClub();
-    console.log("club exists:" + clubExists)
+    getFollowStatus();
+    console.log("club exists:" + clubExists);
     console.log("auth: " + props.isAuth);
   }, []);
 
@@ -204,26 +252,30 @@ const ClubPage = (props: Props) => {
                 "linear-gradient(to right, #a68bf0, #8e63d5, #7d3ebd);",
             }}
           >
-            <NavBar username={props.username}/>
+            <NavBar username={props.username} />
             <Paper
               elevation={3}
               sx={{
                 mt: 15,
-                borderRadius: "15px",
+                borderRadius: "20px",
                 textAlign: "left",
-                width: "1000px",
+                // width: "1000px",
                 height: "800px",
                 maxHeight: "800px",
                 overflow: "auto",
                 display: "flex",
                 flexDirection: "column",
                 border: "5px solid #000000",
+                "&::-webkit-scrollbar": {
+                  display: "none",
+                },
               }}
             >
               <Box
                 sx={{
-                  borderRadius: "10px",
-                  border: "3px solid #000000",
+                  borderRadius: "10px 10px 0 0",
+                  border: "2px solid #000000",
+                  borderBottom: "5px solid #000",
                   height: "125px",
                   background:
                     "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
@@ -239,12 +291,11 @@ const ClubPage = (props: Props) => {
                     width: 300,
                     height: 100,
                     borderRadius: "5px",
-                    ml: 2,
-                    mt: 1,
+                    mx: 2,
+                    my: 1,
                   }}
                   // alt="Club image"
                   src={clubInfo.image}
-
                 />
 
                 <div
@@ -291,9 +342,10 @@ const ClubPage = (props: Props) => {
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Follow Club">
-                      <IconButton 
-                      // onClick={followed ? handleUnfollowClub : handleFollowClub}
-                      sx={{ color: "white" }}>
+                      <IconButton
+                        // onClick={followed ? handleUnfollowClub : handleFollowClub}
+                        sx={{ color: "white" }}
+                      >
                         <AddBoxIcon />
                       </IconButton>
                     </Tooltip>
@@ -315,53 +367,115 @@ const ClubPage = (props: Props) => {
                 handleCreateEventClose={handleCreateEventClose}
               />
 
-              <div style={{ display: "flex", flexDirection: "row" }}>
-                <Box
-                  sx={{
-                    borderRadius: "10px",
+              <Box sx={{ display: "flex", flexFlow: "row nowrap" }}>
+                <Box> 
+                <Box sx={{
                     border: "3px solid #000000",
-                    height: "75px",
-                    width: "200px",
+                    borderRadius: "10px 10px 0 0",
                     background:
                       "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
                     display: "flex",
+                    flexFlow: "column nowrap",
                     alignItems: "left",
-                    paddingRight: "10px",
-                    mt: 2,
-                    ml: 2,
                     textAlign: "center",
-                  }}
-                >
-                  <Typography ml={4} mt={1} variant="h3" color="white">
+                    mt: 2,
+                    mx: 2,
+                  }}>
+                  <Typography
+                    ml={4}
+                    my={1}
+                    variant="h3"
+                    color="white"
+                    sx={{ width: "30%" }}
+                  >
                     Posts
                   </Typography>
-                  <div style={{ display: "flex", marginTop: "100px" }}>
-                    {posts}
-                  </div>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexFlow: "column wrap",
+                      backgroundColor: "back.main",
+                      border: "2px solid black",
+                      borderRadius: "0 0 20px 20px",
+                      px: 2,
+                      mb: 1,
+                      mx: 2,
+                    }}
+                  >
+                    {posts &&
+                      posts.map((post: Post) => (
+                        <Box key={post.id} sx={{ my: 1 }}>
+                          <PostElement
+                            username={post.author}
+                            title={post.title}
+                            body={post.body}
+                            time_posted={convertDate(
+                              new Date(post.time_posted)
+                            )}
+                            likes={post.likes}
+                            dislikes={post.dislikes}
+                          />
+                        </Box>
+                      ))}
+                  </Box>
+
                 </Box>
 
-                <Box
-                  sx={{
-                    borderRadius: "10px",
+                <Box> 
+                <Box sx={{
                     border: "3px solid #000000",
-                    height: "75px",
-                    width: "200px",
+                    borderRadius: "10px 10px 0 0",
                     background:
-                      "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
+                      "linear-gradient(90deg, rgba(126,2,237,1) 0%, rgba(78,26,157,1) 99%)",
                     display: "flex",
-
+                    flexFlow: "column nowrap",
                     alignItems: "left",
-                    paddingRight: "10px",
-                    mt: 2,
-                    ml: 50,
                     textAlign: "center",
-                  }}
-                >
-                  <Typography ml={3} mt={1} variant="h3" color="white">
+                    mt: 2,
+                    mx: 2,
+                  }}>
+                  <Typography
+                    ml={4}
+                    my={1}
+                    variant="h3"
+                    color="white"
+                    sx={{ width: "30%" }}
+                  >
                     Events
                   </Typography>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexFlow: "column wrap",
+                      backgroundColor: "back.main",
+                      border: "2px solid black",
+                      borderRadius: "0 0 20px 20px",
+                      px: 2,
+                      mb: 1,
+                      mx: 2,
+                    }}
+                  >
+                    {events &&
+                      events.map((event: Event) => (
+                        <Box key={event.id} sx={{ my: 1 }}>
+                          <EventElement
+                            id={event.id}
+                            username={event.author}
+                            name={event.name}
+                            description={event.description}
+                            event_time={event.event_time}
+                            event_date={event.event_date}
+                            // likes={event.likes}
+                            // dislikes={event.dislikes}
+                          />
+                        </Box>
+                      ))}
+                  </Box>
                 </Box>
-              </div>
+              </Box>
             </Paper>
           </Box>
         </ThemeProvider>

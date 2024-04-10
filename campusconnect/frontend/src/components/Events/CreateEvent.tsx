@@ -5,13 +5,14 @@ import React, { useState } from "react";
 
 import Cookies from "js-cookie";
 import dayjs, { Dayjs } from "dayjs";
+import { useParams } from "react-router-dom";
 
 
 type ImageFile = File | null;
 
 interface CreateEvent {
-    title: string;
-    body: string;
+    name: string;
+    description: string;
     event_date: string;
     event_time: string;
     image? : string;
@@ -28,7 +29,7 @@ const CreateEvent = (props: CreateEventProps) => {
     const [createEventImage, setCreateEventImage] = useState<ImageFile>(null);
     const [date, setDate] = useState<Dayjs | null>(dayjs(Date().toString()));
     const [time, setTime] = useState<Dayjs | null>(dayjs(Date.now() - Date.now() % FIVE_MINUTES + FIVE_MINUTES));
-    // const { name, id } = useParams();
+    const { name, id } = useParams();
     
     const handleEventImageSelect = (event: any) => {
         let imageFiles = event.target.files;
@@ -60,7 +61,7 @@ const CreateEvent = (props: CreateEventProps) => {
           "X-CSRFToken": Cookies.get("csrftoken") || "",
         };
     
-        const response: Response = await fetch("/api/events/create", {
+        const response: Response = await fetch(`/api/events/new-event/${name}/${id}`, {
           method: "POST",
           headers: headers,
           body: JSON.stringify(eventForm),

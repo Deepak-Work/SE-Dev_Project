@@ -10,6 +10,7 @@ from .models import Club, Follow
 from rest_framework import status
 
 from posts.models import Post
+from event.models import Event
 
 from .serializers import ClubSerializer
 
@@ -61,8 +62,14 @@ class GetClubView(APIView):
         for post in posts:
             post['author'] = User.objects.get(id=post['author_id']).username
             del post['author_id']
+        
+        events = Event.objects.filter(club=id).order_by('-time_posted').values()
+        for event in events:
+            event['author'] = User.objects.get(id=event['author_id']).username
+            del event['author_id']
+
         if c:
-            return Response({'club_data': c_json, 'posts': posts}, status=status.HTTP_200_OK)
+            return Response({'club_data': c_json, 'posts': posts, 'events': events}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     

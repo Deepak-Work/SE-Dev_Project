@@ -22,6 +22,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import Explore from "./Explore";
 import MyClubs from "./MyClubs";
+import CustomPaletteOptions from "../UI/CustomPaletteOptions";
 
 interface Props {
   username: string;
@@ -122,11 +123,20 @@ const NavBar = ( { username }: Props) => {
 
   const theme = createTheme({
     palette: {
-      text: {
-        primary: "#ffffff",
+      primary: {
+        main: "#7108d8",
       },
-    },
-  });
+      secondary: {
+        main: "#8B139C",
+      },
+      back: {
+        main: "#ced4da",
+        light: "#fff",
+        dark: "#000",
+        contrastText: "purple",
+      },
+    } as CustomPaletteOptions,
+  })
 
   const handleLogout = () => {
     let logout = async () => {
@@ -166,25 +176,25 @@ const NavBar = ( { username }: Props) => {
                 "0 0 1px rgba(2, 31, 59, 0.7), 1px 1.5px 2px -1px rgba(2, 31, 59, 0.65), 4px 4px 12px -2.5px rgba(2, 31, 59, 0.65)",
               background:
                 "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
-            }}
+              
+              }}
           >
             <Box
               sx={{
                 flexGrow: 1,
                 display: "flex",
                 alignItems: "center",
-                ml: "-18px",
+                ml: "0px",
                 px: 0,
               }}
             >
-              <Box sx={{ display: { xs: "none", md: "flex" } }}>
-                <Box sx={{display:{xs:"none", md: "flex"}, flexFlow: "row nowrap" , alignItems: "center"}}>
-                <img style={{cursor: "pointer"}} onClick={() => navigate("/home")} width="100" height="100" src={logo} alt="CampusConnect Logo"/>
+              <Box sx={{ display: {xs:"none", sm:"none", md: "flex", } }}>
+                <Box sx={{display:{xs:"none", sm:"none", md: "flex"}, flexFlow: "row nowrap" , alignItems: "center",justifyContent: "space-between"}}>
+                <Box component="img" sx={{ width: "60px", height:"40px", cursor: "pointer", backgroundColor:"back.light", border: "1px solid black", borderRadius: "20px"}} onClick={() => navigate("/home")}  src={logo} alt="CampusConnect Logo"/>
                 <Typography
-                  fontFamily="RampartOne"
                   variant="h4"
-                  color="text.primary"
-                  sx={{ ml: "20px" }}
+                  color="back.light"
+                  sx={{ fontSize:"1.75rem", ml: "5px", fontFamily:"RampartOne", }}
                 >
                   CampusConnect
                 </Typography>
@@ -194,15 +204,16 @@ const NavBar = ( { username }: Props) => {
                   sx={{ ml: "20px", py: "6px", px: "12px" }}
                   onClick={handleMyClubsOpen}
                 >
-                  <Typography variant="h6" color="text.primary">
+                  <Typography variant="h6" color="back.light" sx={{fontFamily:"RampartOne",}}>
                     My Clubs
                   </Typography>
                 </MenuItem>
                 <MenuItem sx={{ py: "6px", px: "12px" }}>
                   <Typography
                     variant="h6"
-                    color="text.primary"
+                    color="back.light"
                     onClick={handleExploreOpen}
+                    sx={{fontFamily:"RampartOne",}}
                   >
                     Explore
                   </Typography>
@@ -211,7 +222,7 @@ const NavBar = ( { username }: Props) => {
                   onClick={() => navigate("/club/application")}
                   sx={{ py: "6px", px: "12px" }}
                 >
-                  <Typography variant="h6" color="text.primary">
+                  <Typography variant="h6" color="back.light" sx={{fontFamily:"RampartOne",}}>
                     Create a Club
                   </Typography>
                 </MenuItem>

@@ -15,16 +15,22 @@ import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 interface EventProps {
   id: number;
   username: string;
-  title: string;
-  body: string;
+  name: string;
+  description: string;
   event_date : string;
   event_time : string;
-  time_posted: string;
-//   userAvatar: object;
-  likes: number;
-  dislikes: number;
+  time_posted?: string;
+  likes?: number;
+  dislikes?: number;
   // postImage: string;
   // caption: string;
+  //   userAvatar: object;
+}
+
+const StandardTime: (time:string) => string = (time: string) => {
+  const date = new Date();
+  date.setHours(parseInt(time.substring(0,2)),parseInt(time.substring(3,5)), parseInt(time.substring(6)));
+  return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 }
 
 /**
@@ -33,9 +39,10 @@ interface EventProps {
  * This component renders a single Event on the Events page
  */
 const EventElement: React.FC<EventProps> = ({
+  id,
   username,
-  title,
-  body,
+  name,
+  description,
   event_date,
   event_time,
 //   userAvatar
@@ -67,8 +74,8 @@ const EventElement: React.FC<EventProps> = ({
           //   />
           // }
           color="white"
-          title={title} // The title is the username of the user
-          subheader={`${username} ~ Event Time: ${event_date} @ ${event_time}`} // The subheader is the post date
+          title={name} // The title is the username of the user
+          subheader={`${username} ~ Event Time: ${event_date} @ ${StandardTime(event_time)}`} // The subheader is the post date
         />
         {/* Post Image */}
         {/* <CardMedia
@@ -82,7 +89,7 @@ const EventElement: React.FC<EventProps> = ({
         {/* Post Caption */}
         <CardContent>
           <Typography variant="body2"  sx={{ overflowWrap: "break-word" }}>
-            {body}
+            {description}
           </Typography>
 
           {/* Reactions */}
