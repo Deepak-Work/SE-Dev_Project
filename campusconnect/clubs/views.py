@@ -22,23 +22,14 @@ class CreateClubView(APIView):
         print(serializer)
         if serializer.is_valid():
             print(serializer)
-            print("Here")
             clubName = serializer.data.get('name')
-            print("Here")
             clubDesc = serializer.data.get('description')
-            print("Here")
             clubLoc = serializer.data.get('location')
-            print("Here")
             clubEmail = serializer.data.get('email')
-            print("Here")
             clubContact = serializer.data.get('contact')
-            print("Here")
             clubWebsite = serializer.data.get('website')
-            print("Here")
             clubImage = serializer.data.get('image', None)
-            print("Here")
             clubOrganizer = request.user
-            print("Here")
             # Response({'club_id': str(club.id)}, status=status.HTTP_201_CREATED)
             queryset = Club.objects.filter(name=clubName)
             if queryset.exists():
@@ -64,6 +55,7 @@ class GetClubView(APIView):
         posts = Post.objects.filter(club=id).order_by('-time_posted').values()
         for post in posts:
             post['author'] = User.objects.get(id=post['author_id']).username
+            post['clubname'] = name
             del post['author_id']
         if c:
             return Response({'club_data': c, 'posts': posts}, status=status.HTTP_200_OK)

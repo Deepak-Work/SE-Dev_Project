@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Post, Comment
 from rest_framework import status
+from django.contrib.auth.models import User
 
 from clubs.models import Club
 
@@ -38,12 +39,19 @@ class GetPostView(APIView):
     def get(self, request, name, id):
         print("Here")
         if id is None:
-            c = Post.objects.order_by('-time_posted').values()
+            posts = Post.objects.order_by('-time_posted').values()
+            for post in posts:
+                post['author'] = User.objects.get(id=post['author_id']).username
+                post['clubname'] = Club.objects.get(id=post['club_id']).name
+                del post['author_id']
         else:
-            c = Post.objects.filter(id=id).order_by('-time_posted').values()
-        if c:
-            print(c[0])
-            return Response({'post_data': c}, status=status.HTTP_200_OK)
+            posts = Post.objects.filter(id=id).order_by('-time_posted').values()[0]
+            posts['author'] = User.objects.get(id=posts['author_id']).username
+            posts['clubname'] = Club.objects.get(id=posts['club_id']).name
+            del posts['author_id']
+        if posts:
+            print(posts)
+            return Response({'post_data': posts}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
     
 
@@ -66,6 +74,8 @@ class DeletePostView(APIView):
         if id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
+            clubid = Post.objects.filter(id=id).club
+            clubname = Club.objects.get(id=clubid).name
             Post.objects.filter(id=id).delete()
             return Response(status=status.HTTP_200_OK)
     pass

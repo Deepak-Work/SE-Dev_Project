@@ -1,14 +1,30 @@
 import  { useState, useEffect} from 'react';
 
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import {
     Box,
     Button,
-    PaletteOptions
+    PaletteOptions,
+    Paper,
+    Typography,
+    Grid,
+    Tooltip,
+    IconButton,
+    Menu,
+    MenuItem
   } from "@mui/material";
 
+// import MoreVertIcon from '@mui/icons-material/MoreVert';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+
+
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+
+import NavBar from "../LandingPage/NavBar";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
+import CommentIcon from '@mui/icons-material/Comment';
 
 interface Props{
     isAuth: boolean;
@@ -22,7 +38,7 @@ interface PostProps {
     dislikes: number;
     author: string;
     summary: string;
-    club: string;
+    clubname: string;
     // userAvatar: string;
     // postImage: string;
     // caption: string;
@@ -66,6 +82,36 @@ const PostComponent = (props: Props) => {
   const [showComments, setShowComments] = useState<boolean>(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [postInfo, setPostInfo] = useState<PostProps>({} as PostProps);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const {id} = useParams();
+
+  const navigate = useNavigate()
+
+  const handleClose = async (action: string) => {
+    if (action === 'delete') {
+      // Perform deletion logic here
+      console.log('Deleting post start')
+      let response = await fetch(`/api/posts/fetch/post/${id}/delete`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        console.log('Deleting post');
+        navigate(`/home`)
+      }
+      else {
+        console.log('Could not delete post');
+      }}
+    if (action === 'edit') {
+      // Perform deletion logic here
+      console.log('Editing post');
+    }
+    setAnchorEl(null);
+  };
 
 
   const toggleComments = () => {
@@ -87,7 +133,6 @@ const PostComponent = (props: Props) => {
     setComments(mockComments);
   };
 
-  const {id} = useParams();
 
   const handleLike = () => {
     // Implement like functionality
@@ -97,6 +142,8 @@ const PostComponent = (props: Props) => {
     // Implement dislike functionality
   };
 
+
+
   useEffect(() => {
     const fetchPost = async () => {
       let response = await fetch(`/api/posts/fetch/post/${id}`, {
@@ -104,7 +151,7 @@ const PostComponent = (props: Props) => {
       });
       if (response.ok) {
         response.json().then((value) => {
-          const posts = value.post_data[0];
+          const posts = value.post_data;
 
           const postInfo: PostProps = {
             body: posts.body,
@@ -113,7 +160,7 @@ const PostComponent = (props: Props) => {
             dislikes: posts.dislikes,
             author: posts.author,
             summary: posts.summary,
-            club: posts.club,
+            clubname: posts.clubname,
             time_posted: posts.time_posted,
           };
           setPostInfo(postInfo);
@@ -135,37 +182,171 @@ const PostComponent = (props: Props) => {
         </p>
       ) : (
         <ThemeProvider theme={theme}>
-    <Box sx={{
-                    width: 300,
-                    height: 100,
-                    backgroundColor: "white",
-                    borderRadius: "5px",
-                    ml: 2,
-                    mt: 1,
-                  }}>
-      <h2>{postInfo.title}</h2>
-      <p>{postInfo.body}</p>
-      <Button onClick={handleLike} variant="contained" color="primary">
-        Like
-      </Button>
-      <Button onClick={handleDislike} variant="contained" color="secondary">
-        Dislike
-      </Button>
-      <Button onClick={toggleComments} variant="contained">
-        {showComments ? 'Hide Comments' : 'Show Comments'}
-      </Button>
-      {showComments && (
-        <Box sx={{ float: 'right', width: '50%' }}>
-          <h3>Comments</h3>
-          <ul>
-            {comments.map(comment => (
-              <li key={comment.id}>{comment.text}</li>
-            ))}
-          </ul>
+        <Box sx={{
+              width: "100%",
+              minheight: "100vh",
+              backgroundColor: "white",
+              borderRadius: "5px",
+              ml: 2,
+              mt: 1
+            }}>
+        <NavBar />
+        <Box
+          sx={{
+            borderRadius: "10px",
+            border: "3px solid #000000",
+            height: "75px",
+            width: "fit",
+            background:
+              "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
+            display: "flex",
+
+            alignItems: "left",
+            paddingRight: "10px",
+            paddingleft: "10px",
+            mt: 16,
+            mr: 4,
+            textAlign: "center"
+          }}
+        > 
+        <Typography ml={4} mt={1}variant="h3" color="white">
+            {postInfo.clubname}
+          </Typography>
+          </Box> 
+        
+        <Grid
+              mt={3}
+              container
+              direction="row"
+              spacing={2}
+              justifyContent="center"
+            >
+        <Grid item>
+        <Paper
+          elevation={3}
+          sx={{
+            mt: 2,
+            borderRadius: "15px",
+            textAlign: "left",
+            width: "850px",
+            minHeight: "400px",
+            maxHeight: "800px",
+            overflow: 'auto',
+            display: "flex",
+            flexDirection: "column",
+            border: "5px solid #000000",
+            float: 'top'
+          }}>
+        <Box
+        sx={{
+          borderRadius: "10px",
+          border: "3px solid #000000",
+          height: "fit",
+          background:
+            "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingRight: "10px",
+        }}
+      >
+        <Typography
+          variant="h5"
+          color="white"
+          fontWeight="bold"
+          sx={{ pt: 1, pl: 3 }}
+        >
+          {postInfo.title} <br/>
+
+          Posted on {postInfo.time_posted} by {postInfo.author}
+        </Typography>
         </Box>
-      )}
-    </Box>
-    </ThemeProvider>
+        <Typography
+          sx={{ pt: 1, pl: 3 }}
+        >
+        {postInfo.body}
+        </Typography>
+        </Paper>
+        <IconButton onClick={handleDislike} aria-label="dislike post">
+        <ThumbUpAltIcon/>
+        {postInfo.likes}
+        </IconButton>
+        <IconButton onClick={handleDislike} aria-label="dislike post">
+        <ThumbDownIcon />
+        {postInfo.dislikes}
+        </IconButton>
+        <IconButton onClick={toggleComments} aria-label="dislike post">
+        <CommentIcon />
+        </IconButton>
+        <Tooltip title="Options">
+          <IconButton
+            aria-label="more"
+            aria-controls="three-dotted-menu"
+            aria-haspopup="true"
+            onClick={handleClick}
+            size="large">
+            < MoreHorizIcon />
+          </IconButton>
+        </Tooltip>
+        <Menu
+          id="three-dotted-menu"
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={() => handleClose('')}
+        >
+          <MenuItem onClick={() => handleClose('delete')}>Delete Post</MenuItem>
+          <MenuItem onClick={() => handleClose('edit')}>Edit Post</MenuItem>
+        </Menu>
+      </Grid>
+      <Grid item>
+      {showComments && (
+          <Paper
+          elevation={3}
+          sx={{
+            mt: 2,
+            borderRadius: "15px",
+            textAlign: "left",
+            minHeight: "400px",
+            maxHeight: "800px",
+            overflow: 'auto',
+            display: "flex",
+            flexDirection: "column",
+            border: "5px solid #000000",
+            float: 'right'
+          }}>
+            <Box
+            sx={{
+              borderRadius: "10px",
+              border: "3px solid #000000",
+              height: "fit",
+              background:
+                "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Typography
+              variant="h5"
+              color="white"
+              fontWeight="bold"
+              sx={{ pt: 1, pl: 3, pr: 3 }}
+            >
+              Comments
+            </Typography>
+        </Box>
+            <ul>
+              {comments.map(comment => (
+                <li key={comment.id}>{comment.text}</li>
+              ))}
+            </ul>
+          </Paper>
+        )}
+      </Grid>
+        
+      </Grid>
+      </Box>
+      </ThemeProvider>
   )}
 </>
 );

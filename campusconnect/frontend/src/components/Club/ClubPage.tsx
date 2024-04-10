@@ -161,7 +161,7 @@ const ClubPage = (props: Props) => {
     console.log(posts_data);
     const postComponents = posts_data.map((post: any) => (
       <ListItem key={post.id}>
-        <PostElement username={post.author} title={post.title} body={post.body} time_posted={convertDate(new Date(post.time_posted))} likes={post.likes} dislikes={post.dislikes} post_id = {post.id}/>
+        <PostElement username={post.author} title={post.title} body={post.body} time_posted={convertDate(new Date(post.time_posted))} likes={post.likes} dislikes={post.dislikes} post_id = {post.id} clubname = {post.clubname}/>
       </ListItem>
     ))
     const final = <List sx={{ml: -21}}>{postComponents}</List>

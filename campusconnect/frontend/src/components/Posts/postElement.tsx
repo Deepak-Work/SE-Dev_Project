@@ -8,12 +8,11 @@ import {
   Typography,
   CardActions,
   IconButton,
-  Tooltip,
+  Tooltip
 } from "@mui/material";
 
 // import Menu from '@mui/material/Menu';
 // import MenuItem from '@mui/material/MenuItem';
-// import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 
@@ -27,6 +26,7 @@ interface PostProps {
   likes: number;
   dislikes: number;
   post_id: string;
+  clubname: string;
   // userAvatar: string;
   // postImage: string;
   // caption: string;
@@ -47,7 +47,9 @@ const PostElement: React.FC<PostProps> = ({
   title,
   body,
   time_posted,
-  post_id
+  post_id,
+  likes,
+  dislikes
 }) => {
 
   const navigate = useNavigate()
@@ -106,11 +108,13 @@ const PostElement: React.FC<PostProps> = ({
             <Tooltip title="Like">
               <IconButton aria-label="like post">
                 <ThumbUpAltIcon />
+              {likes}
               </IconButton>
             </Tooltip>
             <Tooltip title="Dislike">
               <IconButton aria-label="dislike post">
-                <ThumbDownIcon />
+              <ThumbDownIcon />
+              {dislikes}
               </IconButton>
             </Tooltip>            
           </CardActions>
