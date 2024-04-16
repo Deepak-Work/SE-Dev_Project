@@ -82,17 +82,13 @@ const Explore = (props: ExploreProps) => {
     setFollowedClubs,
   } = props;
 
-  // const [clubs, setClubs] = useState<Club[] | null>([]);
-  // const [followedClubs, setFollowedClubs] = useState<Map<number, number>>(
-  //   new Map()
-  // );
-
   const fetchFollowedClubsID: () => Promise<void> = async () => {
-    let response = await fetch(`api/clubs/followed-clubs`, {
+    let response = await fetch(`http://127.0.0.1:8000/api/clubs/followed-clubs`, {
       method: "GET",
     });
 
     if (response.ok) {
+      console.log(response);
       response.json().then((value) => {
         console.log("FollowedClubs: " + value.clubs_id);
         for (let clubID of value.clubs_id) {
@@ -106,10 +102,11 @@ const Explore = (props: ExploreProps) => {
   };
 
   const fetchClubs: () => Promise<void> = async () => {
-    let response = await fetch(`api/clubs/explore-clubs`, {
+    let response = await fetch(`http://127.0.0.1:8000/api/clubs/explore-clubs`, {
       method: "GET",
     });
     if (response.ok) {
+      console.log(response);
       response.json().then((value) => {
         const club_data = value.clubs_data;
         console.log("ExploreClubs1: " + club_data.id);
@@ -126,7 +123,7 @@ const Explore = (props: ExploreProps) => {
     clubID: number
   ) => Promise<void> = async (clubName, clubID) => {
     const response = await fetch(
-      `api/clubs/follow-status/${clubName}/${clubID}`,
+      `http://127.0.0.1:8000/api/clubs/follow-status/${clubName}/${clubID}`,
       {
         method: "GET",
       }
@@ -136,7 +133,7 @@ const Explore = (props: ExploreProps) => {
       response.json().then(async (value) => {
         if (value.follow_status && followedClubs.has(clubID)) {
           const followResponse = await fetch(
-            `api/clubs/unfollow/${clubName}/${clubID}`,
+            `http://127.0.0.1:8000/api/clubs/unfollow/${clubName}/${clubID}`,
             {
               method: "GET",
             }
@@ -150,7 +147,7 @@ const Explore = (props: ExploreProps) => {
           }
         } else {
           const followResponse = await fetch(
-            `api/clubs/follow/${clubName}/${clubID}`,
+            `http://127.0.0.1:8000/api/clubs/follow/${clubName}/${clubID}`,
             {
               method: "GET",
             }
@@ -167,8 +164,8 @@ const Explore = (props: ExploreProps) => {
   };
 
   useEffect(() => {
-    // fetchClubs();
-    // fetchFollowedClubsID();
+    fetchClubs();
+    fetchFollowedClubsID();
   }, []);
 
   return (
@@ -277,8 +274,11 @@ const Explore = (props: ExploreProps) => {
                         <Box sx={{border:"0px black solid",  width: "13.5vw", maxWidth: "20vw"}}>
                           <Link
                             variant="h5"
-                            onClick={() =>
+                            onClick={() => {
                               navigate(`/club/${club.name}/${club.id}`)
+                              location.reload();
+                            }
+                              
                             }
                             sx={{
                               

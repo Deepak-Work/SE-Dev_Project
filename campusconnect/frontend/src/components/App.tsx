@@ -44,14 +44,14 @@ function App() {
     <div id="root">
       <Router>
         <Routes>
-          <Route path="/" element={<Register />} />
+          <Route path="/" element={<Register /> } />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           {/* <Route path="/home" element={<LandingPage isAuth={isAuth}/>} /> */}
-          <Route path="/home" element={isAuth === null ? <LoadingIndicator /> : <LandingPage username={username} isAuth={isAuth} />} />
-          <Route path="/club/application" element={<ClubApplication />} />
-          <Route path="/club/:name/:id" element={isAuth === null ? <LoadingIndicator /> : <ClubPage username={username} isAuth={isAuth}/>} />
-          <Route path="/profile/:name" element={isAuth === null ? <LoadingIndicator /> : <Profile isAuth={isAuth}/>} />
+          <Route path="/home" element={!isAuth? <LoadingIndicator /> : <LandingPage username={username} isAuth={isAuth} />} />
+          <Route path="/club/application" element={<ClubApplication username={username} isAuth={isAuth} />} />
+          <Route path="/club/:name/:id" element={!isAuth? <LoadingIndicator /> : <ClubPage username={username} isAuth={isAuth}/>} />
+          <Route path="/profile/:name" element={!isAuth? <LoadingIndicator /> : <Profile isAuth={isAuth}/>} />
         </Routes>
       </Router>
     </div>

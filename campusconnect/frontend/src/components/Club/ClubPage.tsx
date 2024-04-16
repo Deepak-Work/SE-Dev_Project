@@ -180,7 +180,7 @@ const ClubPage = (props: Props) => {
   const getFollowStatus = async () => {
     console.log("Checking Follow Status");
     const response: Response = await fetch(
-      `/api/clubs/follow-status/${name}/${id}`,
+      `http://127.0.0.1:8000//api/clubs/follow-status/${name}/${id}`,
       {
         method: "GET",
         headers: {
@@ -197,12 +197,13 @@ const ClubPage = (props: Props) => {
 
   useEffect(() => {
     let fetchClub = async () => {
-      let response = await fetch(`/api/clubs/${name}/${id}`, {
+      let response = await fetch(`http://127.0.0.1:8000/api/clubs/${name}/${id}`, {
         method: "GET",
       });
       if (response.ok) {
         setClubExists(true);
         response.json().then((value) => {
+          // console.log(value)
           const club_data = value.club_data;
           const posts = value.posts;
           const events = value.events;

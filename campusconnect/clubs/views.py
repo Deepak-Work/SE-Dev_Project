@@ -36,18 +36,23 @@ class CreateClubView(APIView):
                         
             # TODO - Should we immediately put the club organizer into Follows model?
             
+            if clubImage:
+                club = Club.objects.create(name=clubName, description=clubDesc, location=clubLoc, 
+                                                email=clubEmail, contact=clubContact, website=clubWebsite, organizer=clubOrganizer, image=clubImage)
+                club.save()
+            else:
+                club = Club.objects.create(name=clubName, description=clubDesc, location=clubLoc, 
+                                                email=clubEmail, contact=clubContact, website=clubWebsite, organizer=clubOrganizer, image='clubs/CampusConnectLogo.svg')
+                club.save()
             
-            club = Club.objects.create(name=clubName, description=clubDesc, location=clubLoc, 
-                                            email=clubEmail, contact=clubContact, website=clubWebsite, organizer=clubOrganizer, image=clubImage)
-            club.save()
-
             follow = Follow.objects.create(user=request.user, club=club)
             follow.save()
             
             
             return Response({'club_id': str(club.id)}, status=status.HTTP_201_CREATED)
         
-        # 
+        print(serializer.errors)
+
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
 class GetClubView(APIView):
@@ -121,6 +126,8 @@ class GetFollowedClubsView(APIView):
         clubs = [Club.objects.filter(id=f['club_id']).values()[0] for f in follows]
         clubs_id = [f['club_id'] for f in follows.values()]
         if clubs and len(clubs) > 0:
+            print(clubs)
+            print(clubs_id)
             return Response({'clubs_data' : clubs, "clubs_id": clubs_id}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
