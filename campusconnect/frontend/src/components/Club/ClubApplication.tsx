@@ -159,70 +159,66 @@ const CreateClub = (props: Props) => {
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    console.log("submitting");
-    // Prevent default behavior for forms. We need this other some browsers (like Firefox) blocks the request.
-    event.preventDefault();
-    // console.log(event.currentTarget);
-    // const dataNow = new FormData(event.currentTarget);
-
-    const data = new FormData(event.currentTarget);
-    // console.log(data.get("image"));
-    const image: File | null = data.get("image") as File;
-    // if (!image) {
-    //     console.log("No image selected");
-    //     // Handle the absence of an image (e.g., display an error message to the user)
-    //     return;
-    // }
-    // console.log(image);
-    // const form: Form = {
-    //     name: data.get('name') as string,
-    //     description: data.get('description') as string,
-    //     location: data.get('location') as string,
-    //     email: data.get('email') as string,
-    //     website: data.get('website') as string,
-    //     contact: data.get('contact') as string,
-    //     // members: data.get('members') as string,
-    //     // events: data.get('events') as string,
-    //     image: image,
-    // }
-    const form = new FormData();
-    form.append("name", data.get("name") as string);
-    form.append("description", data.get("description") as string);
-    form.append("location", data.get("location") as string);
-    form.append("email", data.get("email") as string);
-    form.append("website", data.get("website") as string);
-    form.append("contact", data.get("contact") as string);
-    // Append the file
-    if (image) {
-      form.append("image", image);
-    }
-    // else {
-    //   form.append("image", logo);
-    // }
-
-    // console.log(form);
-
-    const headers = {
-      "Content-Type": "application/json",
-      "X-CSRFToken": Cookies.get("csrftoken") || "",
-    };
-
-    const response: Response = await fetch("/api/clubs/create", {
-      method: "POST",
-      headers: headers,
-      body: form,
-    });
-
-    if (response.ok) {
-      response.json().then((value) => {
-        navigate(`/club/${form.get("name")}/${value.club_id}`);
-      });
-      console.log("Club created successfully");
-    } else {
-      console.log("Club creation failed");
-    }
-  };
+  const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
+       console.log("submitting");
+        // Prevent default behavior for forms. We need this other some browsers (like Firefox) blocks the request.
+        event.preventDefault();
+        // console.log(event.currentTarget);
+        // const dataNow = new FormData(event.currentTarget);
+    
+        
+          const data = new FormData(event.currentTarget);
+          // console.log(data.get("image"));
+        const image: File | null = data.get("image") as File;
+        if (!image) {
+          console.log("No image selected");
+          // Handle the absence of an image (e.g., display an error message to the user)
+          return;
+        }
+        // console.log(image);
+        // const form: Form = {
+        //   name: data.get('name') as string,
+        //   description: data.get('description') as string,
+        //   location: data.get('location') as string,
+        //   email: data.get('email') as string,
+        //   website: data.get('website') as string,
+        //   contact: data.get('contact') as string,
+        //   // members: data.get('members') as string,
+        //   // events: data.get('events') as string,
+        //   image: image,
+        // }
+        const form = new FormData();
+        form.append('name', data.get('name') as string);
+        form.append('description', data.get('description') as string);
+        form.append('location', data.get('location') as string);
+        form.append('email', data.get('email') as string);
+        form.append('website', data.get('website') as string);
+        form.append('contact', data.get('contact') as string);
+        // Append the file
+        if(image)
+        form.append('image', image);
+        // console.log(form);
+    
+        const headers = {
+          // 'Content-Type': 'application/json', // Leave this commented out or club application submission will not work
+          'X-CSRFToken': Cookies.get('csrftoken') || '',
+        }
+    
+        const response: Response = await fetch('/api/clubs/create', {
+          method: 'POST',
+          headers: headers,
+          body: form,
+        })
+        
+        if (response.ok) {
+          response.json().then((value) => {
+            navigate(`/club/${form.get("name")}/${value.club_id}`);
+          })
+          console.log("Club created successfully");
+        } else {
+          console.log("Club creation failed");
+        }
+      }
 
   return (
     <ThemeProvider theme={defaultTheme}>

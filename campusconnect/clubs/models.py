@@ -25,7 +25,7 @@ class Club(models.Model):
     contact = models.CharField(max_length=10, unique=True)
     website = models.URLField()
     # image = models.ImageField(upload_to='clubs', default="/clubs/CampusConnectLogo.svg")
-    image = models.ImageField(upload_to='clubs', default="/clubs/CampusConnectLogo.svg")
+    image = models.ImageField(upload_to='clubs')
     member_count = models.PositiveSmallIntegerField(default=1)
     organizer = models.ForeignKey(User, on_delete=models.CASCADE)
     

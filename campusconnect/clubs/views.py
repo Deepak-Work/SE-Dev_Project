@@ -30,12 +30,12 @@ class CreateClubView(APIView):
             clubImage = request.data['image']
             clubOrganizer = request.user
 
+            print(clubImage)
             queryset = Club.objects.filter(name=clubName)
             if queryset.exists():
                 return Response(status=status.HTTP_400_BAD_REQUEST)
                         
             # TODO - Should we immediately put the club organizer into Follows model?
-            
             if clubImage:
                 club = Club.objects.create(name=clubName, description=clubDesc, location=clubLoc, 
                                                 email=clubEmail, contact=clubContact, website=clubWebsite, organizer=clubOrganizer, image=clubImage)
@@ -48,7 +48,7 @@ class CreateClubView(APIView):
             follow = Follow.objects.create(user=request.user, club=club)
             follow.save()
             
-            
+            print(club.id)
             return Response({'club_id': str(club.id)}, status=status.HTTP_201_CREATED)
         
         print(serializer.errors)
