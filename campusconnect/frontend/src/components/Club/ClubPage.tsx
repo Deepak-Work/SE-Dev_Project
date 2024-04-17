@@ -263,7 +263,7 @@ const ClubPage = (props: Props) => {
                 // width: "1000px",
                 height: "90vh",
                 maxHeight: "800px",
-                width: "50%",
+                width: "60%",
                 overflow: "auto",
                 display: "flex",
                 flexDirection: "column",
@@ -300,8 +300,8 @@ const ClubPage = (props: Props) => {
                   src={clubInfo.image}
                 />
 
-                <div
-                  style={{
+                <Box
+                  sx={{
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "left",
@@ -315,8 +315,8 @@ const ClubPage = (props: Props) => {
                     {clubInfo.description}
                   </Typography>
 
-                  <div
-                    style={{
+                  <Box
+                    sx={{
                       display: "flex",
                       flexDirection: "row",
                       marginLeft: "10px",
@@ -356,8 +356,8 @@ const ClubPage = (props: Props) => {
                         <PeopleIcon />
                       </IconButton>
                     </Tooltip>
-                  </div>
-                </div>
+                  </Box>
+                </Box>
               </Box>
 
               <CreatePost
@@ -397,7 +397,11 @@ const ClubPage = (props: Props) => {
                     sx={{
                       height: "60vh",
                       display: "flex",
-                      flexFlow: "column wrap",
+                      flexFlow: "column nowrap",
+                      overflow: "scroll",
+                      "&::-webkit-scrollbar": {
+                        display: "none",
+                      },
                       backgroundColor: "back.main",
                       border: "2px solid black",
                       borderRadius: "0 0 20px 20px",
@@ -473,7 +477,11 @@ const ClubPage = (props: Props) => {
                     sx={{
                       height: "60vh",
                       display: "flex",
-                      flexFlow: "column wrap",
+                      flexFlow: "column nowrap",
+                      overflow: "scroll",
+                      "&::-webkit-scrollbar": {
+                        display: "none",
+                      },
                       backgroundColor: "back.main",
                       border: "2px solid black",
                       borderRadius: "0 0 20px 20px",
@@ -492,8 +500,8 @@ const ClubPage = (props: Props) => {
                             description={event.description}
                             event_time={event.event_time}
                             event_date={event.event_date}
-                            // likes={event.likes}
-                            // dislikes={event.dislikes}
+                            likes={event.likes}
+                            dislikes={event.dislikes}
                           />
                         </Box>
                       )) : (                <Box

@@ -7,7 +7,8 @@ import {
   CardActions,
   IconButton,
   Tooltip,
-  Button
+  Button, 
+  Box,
 } from "@mui/material";
 
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
@@ -45,6 +46,8 @@ const EventElement: React.FC<EventProps> = ({
   description,
   event_date,
   event_time,
+  likes,
+  dislikes,
 //   userAvatar
 }) => {
 
@@ -75,7 +78,8 @@ const EventElement: React.FC<EventProps> = ({
           // }
           color="white"
           title={name} // The title is the username of the user
-          subheader={`${username} ~ Event Time: ${event_date} @ ${StandardTime(event_time)}`} // The subheader is the post date
+          titleTypographyProps={{ onClick: () => navigate("/"), sx: { cursor: "pointer", textDecoration: "underline", "&:hover": { color: "primary.main" } } }}
+          subheader={`Event Time: ${event_date} @ ${StandardTime(event_time)}`} // The subheader is the post date
         />
         {/* Post Image */}
         {/* <CardMedia
@@ -93,20 +97,32 @@ const EventElement: React.FC<EventProps> = ({
           </Typography>
 
           {/* Reactions */}
-          <CardActions sx={{ mt: 2, mb: -2, ml: -2 }}>
+          <CardActions sx={{ display:"flex", flexFlow:"row wrap", mt: 2, mb: -2, ml: -2 }}>
+
+          <Box sx={{display:"flex", flexFlow: "row nowrap", alignContent: "center", justifyContent: "center"}}>
+          <Typography component="h6" variant="h6" sx={{ userSelect: "none", py: 1}}>{likes}</Typography>
             <Tooltip title="Like">
               <IconButton aria-label="like post">
                 <ThumbUpAltIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Dislike">
-              <IconButton aria-label="dislike post">
-                <ThumbDownIcon />
-              </IconButton>
-            </Tooltip>
+          </Box>
+
+          <Box sx={{display:"flex", flexFlow: "row nowrap", alignContent: "center", justifyContent: "center"}}>
+          <Typography  component="h6" variant="h6" sx={{ userSelect:"none", py: 1}}>{dislikes}</Typography>
+          <Tooltip title="Dislike">
+            <IconButton aria-label="dislike post">
+              <ThumbDownIcon />
+            </IconButton>
+          </Tooltip>
+          </Box>
+
+            <Box sx={{display:"flex", flexFlow: "row nowrap", alignContent: "center", justifyContent: "center"}}>
+
             <Tooltip title="Attending">
-                <Button>{isUserAttending() ? "Un-RSVP" : "RSVP"}</Button>
+                <Button sx={{border: "2px solid", borderColor:"back.dark", borderRadius: "20px"}}>{isUserAttending() ? "Un-RSVP" : "RSVP"}</Button>
             </Tooltip>
+            </Box>
           </CardActions>
 
           {/* Comments */}
