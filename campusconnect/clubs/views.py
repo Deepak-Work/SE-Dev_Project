@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
 
 from rest_framework.views import APIView
+
+from authentication.models import CustomUser
 from .models import Club, Follow
 from rest_framework import status
 
@@ -20,6 +22,8 @@ class CreateClubView(APIView):
     
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
+        print(request.data)
+        print("hello")
         if serializer.is_valid():
             clubName = serializer.data.get('name')
             clubDesc = serializer.data.get('description')
@@ -52,7 +56,6 @@ class CreateClubView(APIView):
             return Response({'club_id': str(club.id)}, status=status.HTTP_201_CREATED)
         
         print(serializer.errors)
-
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
 class GetClubView(APIView):
@@ -65,12 +68,12 @@ class GetClubView(APIView):
 
         posts = Post.objects.filter(club=id).order_by('-time_posted').values()
         for post in posts:
-            post['author'] = User.objects.get(id=post['author_id']).username
+            post['author'] = CustomUser.objects.get(id=post['author_id']).username
             del post['author_id']
         
         events = Event.objects.filter(club=id).order_by('-time_posted').values()
         for event in events:
-            event['author'] = User.objects.get(id=event['author_id']).username
+            event['author'] = CustomUser.objects.get(id=event['author_id']).username
             del event['author_id']
 
         if c:

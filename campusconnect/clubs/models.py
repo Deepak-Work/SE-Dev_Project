@@ -2,6 +2,10 @@ from django.db import models
 
 from django.contrib.auth.models import User
 
+from authentication.models import CustomUser
+
+# from campusconnect.users.models import CustomUser
+
 # Create your models here.
 class Club(models.Model):
     """
@@ -27,7 +31,7 @@ class Club(models.Model):
     # image = models.ImageField(upload_to='clubs', default="/clubs/CampusConnectLogo.svg")
     image = models.ImageField(upload_to='clubs', default="/clubs/CampusConnectLogo.svg")
     member_count = models.PositiveSmallIntegerField(default=1)
-    organizer = models.ForeignKey(User, on_delete=models.CASCADE)
+    organizer = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     
     def clean(self):
         # TODO: Add validation here 
@@ -44,5 +48,5 @@ class Follow(models.Model):
         # Build a composite primary key for the model
         unique_together = (('user', 'club'),)
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     club = models.ForeignKey(Club, on_delete=models.CASCADE)

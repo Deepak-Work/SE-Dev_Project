@@ -208,12 +208,13 @@ const CreateClub = (props: Props) => {
       "X-CSRFToken": Cookies.get("csrftoken") || "",
     };
 
-    const response: Response = await fetch("/api/clubs/create", {
+    const response: Response = await fetch("http://127.0.0.1:8000/api/clubs/create", {
       method: "POST",
       headers: headers,
       body: form,
     });
 
+    console.log(response);
     if (response.ok) {
       response.json().then((value) => {
         navigate(`/club/${form.get("name")}/${value.club_id}`);

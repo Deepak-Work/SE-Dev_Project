@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 
+from .models import CustomUser
 from prof.models import Profile
 
 from .serializers import CreateUserSerializer,LoginUserSerializer
@@ -21,7 +22,7 @@ class LoginView(APIView):
 
 
             # If username is not present in the database at all
-            user_exist_query = User.objects.filter(username=username)
+            user_exist_query = CustomUser.objects.filter(username=username)
 
             if not user_exist_query.exists():
                 return JsonResponse({"error": "Username does not exist"}, status = 401)
@@ -49,12 +50,12 @@ class RegisterView(APIView):
             password = serializer.data.get('password')
                         
             # If username is not unique, return 400
-            queryset = User.objects.filter(username=username)
+            queryset = CustomUser.objects.filter(username=username)
             if queryset.exists():
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             
             # Create user and commit changes
-            user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, 
+            user = CustomUser.objects.create_user(username=username, first_name=first_name, last_name=last_name, 
                                             email=email, password=password)
             user.save()
 

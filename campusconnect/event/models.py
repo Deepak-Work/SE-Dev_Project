@@ -1,6 +1,7 @@
 import datetime
 from django.db import models
 
+from authentication.models import CustomUser
 from clubs.models import Club
 # Create your models here.
 
@@ -13,7 +14,7 @@ class Event(models.Model):
     description = models.TextField()
     event_date = models.DateField()
     event_time = models.TimeField()
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
