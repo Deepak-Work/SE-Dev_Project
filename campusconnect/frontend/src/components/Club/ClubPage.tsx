@@ -261,8 +261,9 @@ const ClubPage = (props: Props) => {
                 borderRadius: "20px",
                 textAlign: "left",
                 // width: "1000px",
-                height: "800px",
+                height: "90vh",
                 maxHeight: "800px",
+                width: "50%",
                 overflow: "auto",
                 display: "flex",
                 flexDirection: "column",
@@ -369,7 +370,7 @@ const ClubPage = (props: Props) => {
               />
 
               <Box sx={{ display: "flex", flexFlow: "row nowrap" }}>
-                <Box> 
+                <Box sx={{width: "50%",}}> 
                 <Box sx={{
                     border: "3px solid #000000",
                     borderRadius: "10px 10px 0 0",
@@ -394,6 +395,7 @@ const ClubPage = (props: Props) => {
                   </Box>
                   <Box
                     sx={{
+                      height: "60vh",
                       display: "flex",
                       flexFlow: "column wrap",
                       backgroundColor: "back.main",
@@ -404,7 +406,7 @@ const ClubPage = (props: Props) => {
                       mx: 2,
                     }}
                   >
-                    {posts &&
+                    {posts && posts.length > 0?
                       posts.map((post: Post) => (
                         <Box key={post.id} sx={{ my: 1 }}>
                           <PostElement
@@ -418,12 +420,32 @@ const ClubPage = (props: Props) => {
                             dislikes={post.dislikes}
                           />
                         </Box>
-                      ))}
+                      )): (                <Box
+                        sx={{
+                          height: "100%",
+                          display: "flex",
+                          flexFlow: "column nowrap",
+                          alignItems: "center",
+                          justifyContent:"center",
+                        }}
+                      >
+                        <Typography
+                          component="h2"
+                          variant="h2"
+                          sx={{
+                            color: "primary.main",
+                            fontFamily: "RampartOne",
+                            fontSize: "2rem",
+                          }}
+                        >
+                          No Posts To Show...
+                        </Typography>
+                      </Box>)}
                   </Box>
 
                 </Box>
 
-                <Box> 
+                <Box sx={{width: "50%",}}> 
                 <Box sx={{
                     border: "3px solid #000000",
                     borderRadius: "10px 10px 0 0",
@@ -449,6 +471,7 @@ const ClubPage = (props: Props) => {
 
                   <Box
                     sx={{
+                      height: "60vh",
                       display: "flex",
                       flexFlow: "column wrap",
                       backgroundColor: "back.main",
@@ -459,7 +482,7 @@ const ClubPage = (props: Props) => {
                       mx: 2,
                     }}
                   >
-                    {events &&
+                    {events && events.length > 0 ?
                       events.map((event: Event) => (
                         <Box key={event.id} sx={{ my: 1 }}>
                           <EventElement
@@ -473,7 +496,27 @@ const ClubPage = (props: Props) => {
                             // dislikes={event.dislikes}
                           />
                         </Box>
-                      ))}
+                      )) : (                <Box
+                        sx={{
+                          height: "100%",
+                          display: "flex",
+                          flexFlow: "column nowrap",
+                          alignItems: "center",
+                          justifyContent:"center",
+                        }}
+                      >
+                        <Typography
+                          component="h2"
+                          variant="h2"
+                          sx={{
+                            color: "primary.main",
+                            fontFamily: "RampartOne",
+                            fontSize: "2rem",
+                          }}
+                        >
+                          No Events To Show...
+                        </Typography>
+                      </Box>)}
                   </Box>
                 </Box>
               </Box>

@@ -98,6 +98,8 @@ class FollowClubView(APIView):
         if club is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
+            club.member_count = club.member_count + 1
+            club.save()
             follows = Follow.objects.create(user=request.user, club=club)
             follows.save()
             return Response(status=status.HTTP_200_OK)
@@ -109,6 +111,8 @@ class UnfollowClubView(APIView):
         if club is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
+            club.member_count = club.member_count - 1
+            club.save()
             Follow.objects.filter(user=request.user, club=club).delete()
             return Response(status=status.HTTP_200_OK)
           

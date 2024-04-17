@@ -65,6 +65,7 @@ const MyClubs = (props: MyClubsProps) => {
   });
 
   const navigate = useNavigate();
+  const[memberUpdated, setMemberUpdated] = useState<Object>({});
 
   const {
     myClubsOpen,
@@ -123,6 +124,7 @@ const MyClubs = (props: MyClubsProps) => {
           if (followResponse.ok) {
             followedClubs.delete(clubID);
             setFollowedClubs(new Map(followedClubs));
+            setMemberUpdated({})
           } else {
             console.log("Follow Status: true - " + response.status);
           }
@@ -136,6 +138,7 @@ const MyClubs = (props: MyClubsProps) => {
 
           if (followResponse.ok) {
             setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
+            setMemberUpdated({})
           } else {
             console.log("Follow Status: false - " + response.status);
           }
@@ -146,7 +149,7 @@ const MyClubs = (props: MyClubsProps) => {
 
   useEffect(() => {
     fetchFollowedClubs();
-  }, []);
+  }, [memberUpdated]);
 
   return (
     <ThemeProvider theme={theme}>

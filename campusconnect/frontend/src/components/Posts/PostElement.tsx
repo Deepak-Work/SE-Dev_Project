@@ -41,8 +41,8 @@ const PostElement: React.FC<PostProps> = ({
         sx={{
           border: "3px solid black",
           borderRadius: "15px",
-          width: "450px",
-          maxWidth: "450px",
+          // width: "450px",
+          // maxWidth: "450px",
           textWrap: "balance"
         }}
       >

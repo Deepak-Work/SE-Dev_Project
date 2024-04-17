@@ -82,6 +82,8 @@ const Explore = (props: ExploreProps) => {
     setFollowedClubs,
   } = props;
 
+  const[memberUpdated, setMemberUpdated] = useState<Object>({});
+
   const fetchFollowedClubsID: () => Promise<void> = async () => {
     let response = await fetch(`http://127.0.0.1:8000/api/clubs/followed-clubs`, {
       method: "GET",
@@ -142,6 +144,7 @@ const Explore = (props: ExploreProps) => {
           if (followResponse.ok) {
             followedClubs.delete(clubID);
             setFollowedClubs(new Map(followedClubs));
+            setMemberUpdated({});
           } else {
             console.log("Follow Status: true - " + response.status);
           }
@@ -155,6 +158,7 @@ const Explore = (props: ExploreProps) => {
 
           if (followResponse.ok) {
             setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
+            setMemberUpdated({});
           } else {
             console.log("Follow Status: false - " + response.status);
           }
@@ -163,10 +167,12 @@ const Explore = (props: ExploreProps) => {
     }
   };
 
+
+
   useEffect(() => {
     fetchClubs();
     fetchFollowedClubsID();
-  }, []);
+  }, [memberUpdated]);
 
   return (
     <ThemeProvider theme={theme}>
