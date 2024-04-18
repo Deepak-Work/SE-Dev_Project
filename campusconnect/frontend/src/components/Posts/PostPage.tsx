@@ -137,7 +137,7 @@ const PostComponent = (props: Props) => {
       "X-CSRFToken": Cookies.get("csrftoken") || "",
     };
 
-    const response: Response = await fetch(`/api/posts/fetch/post/edit`, {
+    const response: Response = await fetch(`/api/posts/post/edit`, {
       method: "PUT",
       headers: headers,
       body: JSON.stringify(form),
@@ -171,10 +171,11 @@ const PostComponent = (props: Props) => {
     if (action === 'delete') {
       // Perform deletion logic here
       console.log('Deleting post start')
-      let response = await fetch(`/api/posts/fetch/post/${id}/delete`, {
+      let response = await fetch(`/api/posts/post/${id}/delete`, {
         method: "DELETE",
         headers: headers,
       });
+
       if (response.ok) {
         console.log(response)
         
