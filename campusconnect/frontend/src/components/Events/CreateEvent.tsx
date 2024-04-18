@@ -20,7 +20,7 @@ interface CreateEvent {
 
 interface CreateEventProps {
     createEventOpen : boolean;
-    handleCreateEventClose : () => void;
+    handleCreateEventClose : (event?:object, reason?:string) => void;
 }
 
 const CreateEvent = (props: CreateEventProps) => {
@@ -79,13 +79,14 @@ const CreateEvent = (props: CreateEventProps) => {
 
 
     return (
-        <Dialog open={createEventOpen} onClose={handleCreateEventClose} fullWidth maxWidth={'md'}>
+        <Dialog open={createEventOpen} onClose={handleCreateEventClose} fullWidth maxWidth={'md'} PaperProps={{ sx:{border: "4px solid", borderColor: 
+        "back.dark", borderRadius: "20px",} }}>
         <DialogTitle
           sx={{
             background:
               "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
             color: "back.light",
-            border: "2px #000 solid",
+            // border: "2px #000 solid",
             borderRadius: "0 0 0px 0px",
           }}
         >
@@ -97,7 +98,7 @@ const CreateEvent = (props: CreateEventProps) => {
               justifyContent: "space-between",
             }}
           >
-            <Typography component="h2" variant="h2">
+            <Typography component="h2" variant="h2" fontFamily={"Lobster"}>
               New Event
             </Typography>
             <Button
@@ -121,7 +122,7 @@ const CreateEvent = (props: CreateEventProps) => {
           sx={{
             py: 2,
             backgroundColor: "back.main",
-            border: "2px #000 solid",
+            // border: "2px #000 solid",
             borderRadius: "0px",
           }}
         >

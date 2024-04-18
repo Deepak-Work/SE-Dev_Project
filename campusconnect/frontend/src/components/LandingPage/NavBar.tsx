@@ -44,7 +44,7 @@ const NavBar = ( { username }: Props) => {
   );
 
   const fetchFollowedClubs: () => Promise<void> = async () => {
-    let response = await fetch(`http://127.0.0.1:8000/api/clubs/followed-clubs`, {
+    let response = await fetch(`/api/clubs/followed-clubs`, {
       method: "GET",
     });
 
@@ -64,7 +64,7 @@ const NavBar = ( { username }: Props) => {
   };
 
   const fetchFollowedClubsID: () => Promise<void> = async () => {
-    let response = await fetch(`http://127.0.0.1:8000/api/clubs/followed-clubs`, {
+    let response = await fetch(`/api/clubs/followed-clubs`, {
       method: "GET",
     });
 
@@ -82,7 +82,7 @@ const NavBar = ( { username }: Props) => {
   };
 
   const fetchClubs: () => Promise<void> = async () => {
-    let response = await fetch(`http://127.0.0.1:8000/api/clubs/explore-clubs`, {
+    let response = await fetch(`/api/clubs/explore-clubs`, {
       method: "GET",
     });
     if (response.ok) {

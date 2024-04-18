@@ -126,13 +126,21 @@ const ClubPage = (props: Props) => {
   const [createPostOpen, setCreatePostOpen] = useState(false);
 
   const handleCreatePostOpen = () => setCreatePostOpen(true);
-  const handleCreatePostClose = () => setCreatePostOpen(false);
+  const handleCreatePostClose = (event?: object, reason?: string) => {
+    if(reason == "backdropClick")
+      return;
+    setCreatePostOpen(false);
+  }
 
   // Create an Event Modal
   const [createEventOpen, setCreateEventOpen] = useState(false);
 
   const handleCreateEventOpen = () => setCreateEventOpen(true);
-  const handleCreateEventClose = () => setCreateEventOpen(false);
+  const handleCreateEventClose = (event?: object, reason?: string) => {
+    if(reason == "backdropClick")
+      return;
+    setCreateEventOpen(false);
+  }
 
   // // Explore Modal
   // const [exploreOpen, setExploreOpen] = useState<boolean>(false);
@@ -181,7 +189,7 @@ const ClubPage = (props: Props) => {
   const getFollowStatus = async () => {
     console.log("Checking Follow Status");
     const response: Response = await fetch(
-      `http://127.0.0.1:8000//api/clubs/follow-status/${name}/${id}`,
+      `/api/clubs/follow-status/${name}/${id}`,
       {
         method: "GET",
         headers: {
@@ -198,7 +206,7 @@ const ClubPage = (props: Props) => {
 
   useEffect(() => {
     let fetchClub = async () => {
-      let response = await fetch(`http://127.0.0.1:8000/api/clubs/${name}/${id}`, {
+      let response = await fetch(`/api/clubs/${name}/${id}`, {
         method: "GET",
       });
       if (response.ok) {
@@ -265,6 +273,7 @@ const ClubPage = (props: Props) => {
                 // width: "1000px",
                 height: "90vh",
                 maxHeight: "800px",
+                minWidth: "600px",
                 width: "60%",
                 overflow: "auto",
                 display: "flex",
@@ -286,14 +295,15 @@ const ClubPage = (props: Props) => {
                   display: "flex",
                   flexFlow: "row nowrap",
                   alignItems: "left",
-                  paddingRight: "10px",
+                  // pb: 10,
+                  // paddingRight: "10px",
                 }}
               >
                 <Box
                   component="img"
                   sx={{
-                    width: 300,
-                    height: 100,
+                    width: "30%",
+                    height: "80%",
                     borderRadius: "5px",
                     mx: 2,
                     my: 1,
@@ -305,21 +315,29 @@ const ClubPage = (props: Props) => {
                 <Box
                   sx={{
                     display: "flex",
-                    flexDirection: "column",
+                    flexFlow: "column nowrap",
                     alignItems: "left",
                     justifyContent: "left",
+                    width:"100%",
+                    // columnGap:2,
+
                   }}
                 >
-                  <Typography ml={2} variant="h5" color="white" fontFamily={"Lobster"}>
+                  <Box sx={{width : "100%" , overflow:"auto", scrollbarColor:"#8B139C #7108d8", scrollbarWidth:"thin"}}>
+                  <Typography ml={2} variant="h5" color="white" fontFamily={"Lobster"} sx={{wordBreak:"break-word"}}>
                     {clubInfo.name}
                   </Typography>
-                  <Typography ml={2} variant="h6" color="white" fontFamily={"Lobster"}>
+                  </Box>
+                  <Box sx={{width : "100%" , overflow:"auto", scrollbarColor:"#8B139C #7108d8", scrollbarWidth:"thin"}}>
+                  <Typography ml={2} variant="subtitle1" color="white" fontFamily={"Lobster"} sx={{wordBreak:"break-word"}}>
                     {clubInfo.description}
                   </Typography>
+                  </Box>
+                  <Box>
                   <Typography ml={2} variant="subtitle1" color="white" fontFamily={"Lobster"}>
                     Members: {clubInfo.memberCount}
                   </Typography>
-
+                  </Box>
                   <Box
                     sx={{
                       display: "flex",
@@ -327,6 +345,14 @@ const ClubPage = (props: Props) => {
                       marginLeft: "10px",
                     }}
                   >
+                    <Tooltip title="Follow Club">
+                      <IconButton
+                        // onClick={followed ? handleUnfollowClub : handleFollowClub}
+                        sx={{ color: "white" }}
+                      >
+                        <AddBoxIcon />
+                      </IconButton>
+                    </Tooltip>
                     <Tooltip title="Create Post">
                       <IconButton
                         onClick={handleCreatePostOpen}
@@ -343,22 +369,15 @@ const ClubPage = (props: Props) => {
                         <CalendarMonthIcon />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Club Settings">
-                      <IconButton sx={{ color: "white" }}>
-                        <SettingsIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Follow Club">
-                      <IconButton
-                        // onClick={followed ? handleUnfollowClub : handleFollowClub}
-                        sx={{ color: "white" }}
-                      >
-                        <AddBoxIcon />
-                      </IconButton>
-                    </Tooltip>
+       
                     <Tooltip title="Members List">
                       <IconButton sx={{ color: "white" }}>
                         <PeopleIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Club Settings">
+                      <IconButton sx={{ color: "white" }}>
+                        <SettingsIcon />
                       </IconButton>
                     </Tooltip>
                   </Box>
@@ -374,7 +393,7 @@ const ClubPage = (props: Props) => {
                 handleCreateEventClose={handleCreateEventClose}
               />
 
-              <Box sx={{ display: "flex", flexFlow: "row nowrap" }}>
+              <Box sx={{ display: "flex", flexFlow: "row nowrap", backgroundColor:"" }}>
                 <Box sx={{width: "50%",}}> 
                 <Box sx={{
                     border: "3px solid #000000",
@@ -446,7 +465,7 @@ const ClubPage = (props: Props) => {
                           variant="h2"
                           fontFamily={"RampartOne"}
                           sx={{
-                            color: "primary.main",
+                            color: "secondary.dark",
                             fontSize: "2rem",
                           }}
                         >
@@ -526,7 +545,7 @@ const ClubPage = (props: Props) => {
                           component="h2"
                           variant="h2"
                           sx={{
-                            color: "primary.main",
+                            color: "secondary.dark",
                             fontFamily: "RampartOne",
                             fontSize: "2rem",
                           }}

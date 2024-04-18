@@ -78,7 +78,7 @@ const MyClubs = (props: MyClubsProps) => {
   } = props;
 
   const fetchFollowedClubs: () => Promise<void> = async () => {
-    let response = await fetch(`http://127.0.0.1:8000/api/clubs/followed-clubs`, {
+    let response = await fetch(`/api/clubs/followed-clubs`, {
       method: "GET",
     });
 
@@ -105,7 +105,7 @@ const MyClubs = (props: MyClubsProps) => {
     clubID: number
   ) => Promise<void> = async (clubName, clubID) => {
     const response = await fetch(
-      `http://127.0.0.1:8000/api/clubs/follow-status/${clubName}/${clubID}`,
+      `/api/clubs/follow-status/${clubName}/${clubID}`,
       {
         method: "GET",
       }
@@ -115,7 +115,7 @@ const MyClubs = (props: MyClubsProps) => {
       response.json().then(async (value) => {
         if (value.follow_status && followedClubs.has(clubID)) {
           const followResponse = await fetch(
-            `http://127.0.0.1:8000/api/clubs/unfollow/${clubName}/${clubID}`,
+            `/api/clubs/unfollow/${clubName}/${clubID}`,
             {
               method: "GET",
             }
@@ -130,7 +130,7 @@ const MyClubs = (props: MyClubsProps) => {
           }
         } else {
           const followResponse = await fetch(
-            `http://127.0.0.1:8000/api/clubs/follow/${clubName}/${clubID}`,
+            `/api/clubs/follow/${clubName}/${clubID}`,
             {
               method: "GET",
             }
