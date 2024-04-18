@@ -44,55 +44,49 @@ const NavBar = ( { username }: Props) => {
   );
 
   const fetchFollowedClubs: () => Promise<void> = async () => {
-    let response = await fetch(`http://127.0.0.1:8000/api/clubs/followed-clubs`, {
+    let response = await fetch(`/api/clubs/followed-clubs`, {
       method: "GET",
     });
 
     if (response.ok) {
       response.json().then((value) => {
-        console.log("FollowedClubs: " + value.clubs_id);
         for (let clubID of value.clubs_id) {
           setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
         }
         setClubs(value.clubs_data);
       });
     } else {
-      console.log("fetchFollowedClubs: No Clubs Found");
       setFollowedClubs(new Map());
       setClubs([]);
     }
   };
 
   const fetchFollowedClubsID: () => Promise<void> = async () => {
-    let response = await fetch(`http://127.0.0.1:8000/api/clubs/followed-clubs`, {
+    let response = await fetch(`/api/clubs/followed-clubs`, {
       method: "GET",
     });
 
     if (response.ok) {
       response.json().then((value) => {
-        console.log("FollowedClubs: " + value.clubs_id);
         for (let clubID of value.clubs_id) {
           setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
         }
       });
     } else {
-      console.log("FetchFolowedClubsID: No Clubs Found");
       setFollowedClubs(new Map());
     }
   };
 
   const fetchClubs: () => Promise<void> = async () => {
-    let response = await fetch(`http://127.0.0.1:8000/api/clubs/explore-clubs`, {
+    let response = await fetch(`/api/clubs/explore-clubs`, {
       method: "GET",
     });
     if (response.ok) {
       response.json().then((value) => {
         const club_data = value.clubs_data;
-        console.log("ExploreClubs2: " + club_data[0].image);
         setClubs(club_data);
       });
     } else {
-      console.log("fetchClubs: No Clubs Found");
       setClubs([]);
     }
   };
@@ -102,12 +96,9 @@ const NavBar = ( { username }: Props) => {
   const [exploreOpen, setExploreOpen] = useState<boolean>(false);
 
   const handleExploreOpen: () => void = async () => {
-    // console.log("Followed Clubs: ", followedClubs)
     fetchClubs();
     fetchFollowedClubsID();
-    // console.log("Followed Clubs2: ", followedClubs);
     setExploreOpen(true);
-    // console.log("Clubs: ", clubs)
   };
   const handleExploreClose: () => void = () => setExploreOpen(false);
 

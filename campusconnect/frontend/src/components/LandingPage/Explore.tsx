@@ -85,37 +85,31 @@ const Explore = (props: ExploreProps) => {
   const[memberUpdated, setMemberUpdated] = useState<Object>({});
 
   const fetchFollowedClubsID: () => Promise<void> = async () => {
-    let response = await fetch(`http://127.0.0.1:8000/api/clubs/followed-clubs`, {
+    let response = await fetch(`/api/clubs/followed-clubs`, {
       method: "GET",
     });
 
     if (response.ok) {
-      console.log(response);
       response.json().then((value) => {
-        console.log("FollowedClubs: " + value.clubs_id);
         for (let clubID of value.clubs_id) {
           setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
         }
       });
     } else {
-      console.log("No Clubs Found");
       setFollowedClubs(new Map());
     }
   };
 
   const fetchClubs: () => Promise<void> = async () => {
-    let response = await fetch(`http://127.0.0.1:8000/api/clubs/explore-clubs`, {
+    let response = await fetch(`/api/clubs/explore-clubs`, {
       method: "GET",
     });
     if (response.ok) {
-      console.log(response);
       response.json().then((value) => {
         const club_data = value.clubs_data;
-        console.log("ExploreClubs1: " + club_data.id);
         setClubs(club_data);
       });
     } else {
-      console.log("No Clubs Found");
       setClubs([]);
     }
   };
@@ -125,7 +119,7 @@ const Explore = (props: ExploreProps) => {
     clubID: number
   ) => Promise<void> = async (clubName, clubID) => {
     const response = await fetch(
-      `http://127.0.0.1:8000/api/clubs/follow-status/${clubName}/${clubID}`,
+      `/api/clubs/follow-status/${clubName}/${clubID}`,
       {
         method: "GET",
       }
@@ -135,7 +129,7 @@ const Explore = (props: ExploreProps) => {
       response.json().then(async (value) => {
         if (value.follow_status && followedClubs.has(clubID)) {
           const followResponse = await fetch(
-            `http://127.0.0.1:8000/api/clubs/unfollow/${clubName}/${clubID}`,
+            `/api/clubs/unfollow/${clubName}/${clubID}`,
             {
               method: "GET",
             }
@@ -145,12 +139,10 @@ const Explore = (props: ExploreProps) => {
             followedClubs.delete(clubID);
             setFollowedClubs(new Map(followedClubs));
             setMemberUpdated({});
-          } else {
-            console.log("Follow Status: true - " + response.status);
           }
         } else {
           const followResponse = await fetch(
-            `http://127.0.0.1:8000/api/clubs/follow/${clubName}/${clubID}`,
+            `/api/clubs/follow/${clubName}/${clubID}`,
             {
               method: "GET",
             }
@@ -159,8 +151,6 @@ const Explore = (props: ExploreProps) => {
           if (followResponse.ok) {
             setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
             setMemberUpdated({});
-          } else {
-            console.log("Follow Status: false - " + response.status);
           }
         }
       });
