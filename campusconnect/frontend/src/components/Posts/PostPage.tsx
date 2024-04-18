@@ -34,6 +34,7 @@ import CommentIcon from '@mui/icons-material/Comment';
 
 interface Props{
     isAuth: boolean;
+    username: string;
 }
 
 interface PostProps {
@@ -67,7 +68,7 @@ interface CustomPaletteOptions extends PaletteOptions {
     
 
 const PostComponent = (props: Props) => {
-
+  
     const theme = createTheme({
         palette: {
           primary: {
@@ -84,6 +85,9 @@ const PostComponent = (props: Props) => {
           },
         } as CustomPaletteOptions,
       });
+
+      const {id} = useParams();
+      const {username} = props;
 
   type ImageFile = File | null;
       
@@ -117,7 +121,7 @@ const PostComponent = (props: Props) => {
     id: string;
   }
 
-  const {id} = useParams();
+
 
   const handleEditSubmit = async (event: React.FormEvent<HTMLFormElement>) => {    
 
@@ -218,7 +222,7 @@ const PostComponent = (props: Props) => {
 
   useEffect(() => {
     const fetchPost = async () => {
-      let response = await fetch(`/api/posts/fetch/post/${id}`, {
+      let response = await fetch(`/api/posts/post/${id}`, {
         method: "GET",
       });
       if (response.ok) {
@@ -261,7 +265,7 @@ const PostComponent = (props: Props) => {
               ml: 2,
               mt: 1
             }}>
-        <NavBar />
+        <NavBar username={username} />
         <Box
           sx={{
             borderRadius: "10px",
