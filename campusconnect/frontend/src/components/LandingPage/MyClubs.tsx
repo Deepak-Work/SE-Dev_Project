@@ -65,7 +65,7 @@ const MyClubs = (props: MyClubsProps) => {
   });
 
   const navigate = useNavigate();
-  const[memberUpdated, setMemberUpdated] = useState<Object>({});
+  const [memberUpdated, setMemberUpdated] = useState<Object>({});
 
   const {
     myClubsOpen,
@@ -83,18 +83,13 @@ const MyClubs = (props: MyClubsProps) => {
     });
 
     if (response.ok) {
-      console.log(response);
       response.json().then((value) => {
-        console.log(value);
-        console.log("FollowedClubs: " + value.clubs_id);
         for (let clubID of value.clubs_id) {
           setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
         }
         setClubs(value.clubs_data);
-        console.log(value.clubs_data);
       });
     } else {
-      console.log("No Clubs Found");
       setClubs([]);
       setFollowedClubs(new Map());
     }
@@ -124,7 +119,7 @@ const MyClubs = (props: MyClubsProps) => {
           if (followResponse.ok) {
             followedClubs.delete(clubID);
             setFollowedClubs(new Map(followedClubs));
-            setMemberUpdated({})
+            setMemberUpdated({});
           } else {
             console.log("Follow Status: true - " + response.status);
           }
@@ -138,9 +133,7 @@ const MyClubs = (props: MyClubsProps) => {
 
           if (followResponse.ok) {
             setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
-            setMemberUpdated({})
-          } else {
-            console.log("Follow Status: false - " + response.status);
+            setMemberUpdated({});
           }
         }
       });

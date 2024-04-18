@@ -187,7 +187,6 @@ const ClubPage = (props: Props) => {
   // };
 
   const getFollowStatus = async () => {
-    console.log("Checking Follow Status");
     const response: Response = await fetch(
       `/api/clubs/follow-status/${name}/${id}`,
       {
@@ -201,7 +200,6 @@ const ClubPage = (props: Props) => {
     if (response.ok) {
       setFollowed(true);
     }
-    console.log(followed);
   };
 
   useEffect(() => {
@@ -234,13 +232,10 @@ const ClubPage = (props: Props) => {
         });
       } else {
         setClubExists(false);
-        console.log("ce: " + clubExists + " " + response.status);
       }
     };
     fetchClub();
     getFollowStatus();
-    console.log("club exists:" + clubExists);
-    console.log("auth: " + props.isAuth);
   }, []);
 
   return (
@@ -308,7 +303,7 @@ const ClubPage = (props: Props) => {
                     mx: 2,
                     my: 1,
                   }}
-                  // alt="Club image"
+                  alt="Club image"
                   src={clubInfo.image}
                 />
 

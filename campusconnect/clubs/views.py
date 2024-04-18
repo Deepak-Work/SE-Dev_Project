@@ -30,12 +30,10 @@ class CreateClubView(APIView):
             clubImage = request.data['image']
             clubOrganizer = request.user
 
-            print(clubImage)
             queryset = Club.objects.filter(name=clubName)
             if queryset.exists():
                 return Response(status=status.HTTP_400_BAD_REQUEST)
                         
-            # TODO - Should we immediately put the club organizer into Follows model?
             if clubImage:
                 club = Club.objects.create(name=clubName, description=clubDesc, location=clubLoc, 
                                                 email=clubEmail, contact=clubContact, website=clubWebsite, organizer=clubOrganizer, image=clubImage)
@@ -48,11 +46,8 @@ class CreateClubView(APIView):
             follow = Follow.objects.create(user=request.user, club=club)
             follow.save()
             
-            print(club.id)
             return Response({'club_id': str(club.id)}, status=status.HTTP_201_CREATED)
         
-        print(serializer.errors)
-
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
 class GetClubView(APIView):
@@ -93,9 +88,7 @@ class GetFollowStatus(APIView):
             
 class FollowClubView(APIView):
     def get(self, request, name, id):
-        print("Here")
         club = Club.objects.get(id=id)
-        print(request.user)
         if club is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -108,7 +101,6 @@ class FollowClubView(APIView):
 class UnfollowClubView(APIView):
     def get(self, request, name, id):
         club = Club.objects.get(id=id)
-        print(request.user)
         if club is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -131,8 +123,6 @@ class GetFollowedClubsView(APIView):
         clubs = [Club.objects.filter(id=f['club_id']).values()[0] for f in follows]
         clubs_id = [f['club_id'] for f in follows.values()]
         if clubs and len(clubs) > 0:
-            print(clubs)
-            print(clubs_id)
             return Response({'clubs_data' : clubs, "clubs_id": clubs_id}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -141,14 +131,8 @@ class GetExploreClubsView(APIView):
         clubs = Club.objects.all().values("id", "name", "member_count", "image")
         clubs_res = []
         for c in clubs:
-            print(json.dumps(c))
             clubs_json = json.loads(json.dumps(c))
-            # clubs_json['image'] = clubs_json['image']
             clubs_res.append(clubs_json)
-        # clubsI = [(model_to_dict(c)['image']) for c in clubs]
-        # clubs_json = model_to_dict(clubs)
-        # clubs_json['image'] = clubs.image.url
-        print(clubs_res)
         if clubs_res:
             return Response({'clubs_data' : clubs}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -159,12 +143,25 @@ class GetMyClubsView(APIView):
         if clubs:
             return Response({'clubs_data' : clubs}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
+    
+class GetMyEventsView(APIView):
+    def get(self, request):
+        followed_clubs = Follow.objects.filter(user=request.user).values_list('club', flat=True)
+        events = Event.objects.filter(club__in=followed_clubs)
+
+        events_res = []
+
+        for e in events:
+            events_res.append({'club': e.club.name, 'name': e.name, 'description': e.description, 'event_date': e.event_date, \
+                               'event_time': e.event_time, 'author': e.author.username, 'club': e.club.name, 'likes': e.likes, 'dislikes': e.dislikes, 'time_posted': e.time_posted})
+
+
+        return Response({'event_data': events_res}, status=status.HTTP_200_OK)
 
 
 class ToggleFollowClubView(APIView):
     def get(self, request, id):
         club = Club.objects.get(id=id)
-        print(request.user)
         if club is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
