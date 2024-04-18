@@ -39,6 +39,7 @@ interface ClubInfo {
   email: string;
   pnum: string;
   website: string;
+  memberCount: string;
   image?: string;
 
   // members: any[];
@@ -214,6 +215,7 @@ const ClubPage = (props: Props) => {
             email: club_data.email,
             pnum: club_data.contact,
             website: club_data.website,
+            memberCount: club_data.member_count,
             posts: posts,
             events: events,
             image: club_data.image,
@@ -266,7 +268,7 @@ const ClubPage = (props: Props) => {
                 width: "60%",
                 overflow: "auto",
                 display: "flex",
-                flexDirection: "column",
+                flexFlow: "column nowrap",
                 border: "5px solid #000000",
                 "&::-webkit-scrollbar": {
                   display: "none",
@@ -278,11 +280,11 @@ const ClubPage = (props: Props) => {
                   borderRadius: "10px 10px 0 0",
                   border: "2px solid #000000",
                   borderBottom: "5px solid #000",
-                  height: "125px",
+                  minHeight: "150px",
                   background:
                     "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
                   display: "flex",
-
+                  flexFlow: "row nowrap",
                   alignItems: "left",
                   paddingRight: "10px",
                 }}
@@ -308,11 +310,14 @@ const ClubPage = (props: Props) => {
                     justifyContent: "left",
                   }}
                 >
-                  <Typography ml={2} variant="h5" color="white">
+                  <Typography ml={2} variant="h5" color="white" fontFamily={"Lobster"}>
                     {clubInfo.name}
                   </Typography>
-                  <Typography ml={2} variant="subtitle2" color="white">
+                  <Typography ml={2} variant="h6" color="white" fontFamily={"Lobster"}>
                     {clubInfo.description}
+                  </Typography>
+                  <Typography ml={2} variant="subtitle1" color="white" fontFamily={"Lobster"}>
+                    Members: {clubInfo.memberCount}
                   </Typography>
 
                   <Box
@@ -380,15 +385,17 @@ const ClubPage = (props: Props) => {
                     flexFlow: "column nowrap",
                     alignItems: "left",
                     textAlign: "center",
+                    justifyContent:"center",
                     mt: 2,
                     mx: 2,
                   }}>
                   <Typography
-                    ml={4}
-                    my={1}
+                    ml={0}
+                    my={0}
                     variant="h3"
                     color="white"
-                    sx={{ width: "30%" }}
+                    fontFamily={"RampartOne"}
+                    sx={{}}
                   >
                     Posts
                   </Typography>
@@ -422,6 +429,7 @@ const ClubPage = (props: Props) => {
                             )}
                             likes={post.likes}
                             dislikes={post.dislikes}
+                            totalComments={1}
                           />
                         </Box>
                       )): (                <Box
@@ -436,9 +444,9 @@ const ClubPage = (props: Props) => {
                         <Typography
                           component="h2"
                           variant="h2"
+                          fontFamily={"RampartOne"}
                           sx={{
                             color: "primary.main",
-                            fontFamily: "RampartOne",
                             fontSize: "2rem",
                           }}
                         >
@@ -463,11 +471,12 @@ const ClubPage = (props: Props) => {
                     mx: 2,
                   }}>
                   <Typography
-                    ml={4}
-                    my={1}
+                    ml={0}
+                    my={0}
                     variant="h3"
                     color="white"
-                    sx={{ width: "30%" }}
+                    fontFamily={"RampartOne"}
+                    sx={{ }}
                   >
                     Events
                   </Typography>
