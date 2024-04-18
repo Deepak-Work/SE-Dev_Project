@@ -2,6 +2,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 
+from prof.models import Profile
+
 from .serializers import CreateUserSerializer,LoginUserSerializer
 
 from rest_framework import status
@@ -55,6 +57,11 @@ class RegisterView(APIView):
             user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, 
                                             email=email, password=password)
             user.save()
+
+            # For profile pictures
+            profile = Profile.objects.create(user=user)
+            profile.save()
+
             
             return Response(status=status.HTTP_201_CREATED)
 
@@ -65,10 +72,12 @@ class LogoutView(APIView):
         logout(request)
         return Response(status=status.HTTP_200_OK)
     
+
+    
 class CheckAuthView(APIView):
     def get(self, request):
         if request.user.is_authenticated:
-            return Response({"authenticated": True}, status=status.HTTP_200_OK)
+            return Response({"username": request.user.username, "authenticated": True}, status=status.HTTP_200_OK)
         else:
-            return Response({'authenticated': False}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
     

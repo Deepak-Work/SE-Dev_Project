@@ -1,25 +1,18 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-import Cookies from "js-cookie";
-
 import {
   Box,
   Paper,
   Typography,
   IconButton,
   Tooltip,
-  Button,
-  Container,
-  Dialog,
-  DialogTitle,
-  Fab,
-  Grid,
-  TextField,
   List,
   ListItem,
-  PaletteOptions
+  PaletteOptions,
 } from "@mui/material";
+
+import Cookies from "js-cookie";
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -27,12 +20,16 @@ import CreateIcon from "@mui/icons-material/Create";
 import SettingsIcon from "@mui/icons-material/Settings";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import PeopleIcon from "@mui/icons-material/People";
-
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
 import NavBar from "../LandingPage/NavBar";
 import PostElement from "../Posts/PostElement";
+import CreatePost from "../Posts/CreatePost";
+import CreateEvent from "../Events/CreateEvent";
+import EventElement from "../Events/EventElement";
 
 interface Props {
+  username: string;
   isAuth: boolean;
 }
 interface ClubInfo {
@@ -42,17 +39,36 @@ interface ClubInfo {
   email: string;
   pnum: string;
   website: string;
+  memberCount: string;
+  image?: string;
 
   // members: any[];
   posts: any[];
-  // events: any[];
+  events: any[];
   // auditLog: any[];
 }
 
-interface CreatePost {
+interface Post {
+  id: number;
+  username: string;
   title: string;
   body: string;
-  id: string;
+  time_posted: string;
+  author: string;
+  likes: number;
+  dislikes: number;
+}
+
+interface Event {
+  id: number;
+  name: string;
+  description: string;
+  event_date: string;
+  event_time: string;
+  time_posted: string;
+  author: string;
+  likes: number;
+  dislikes: number;
 }
 
 interface CustomPaletteOptions extends PaletteOptions {
@@ -65,7 +81,6 @@ interface CustomPaletteOptions extends PaletteOptions {
 }
 
 const convertDate = (date: Date) => {
-
   // TODO: Fix this
 
   return date.toLocaleDateString("en-US", {
@@ -77,9 +92,7 @@ const convertDate = (date: Date) => {
     minute: "numeric",
     second: "numeric",
   });
-}
-
-type ImageFile = File | null;
+};
 
 const ClubPage = (props: Props) => {
   const theme = createTheme({
@@ -99,83 +112,110 @@ const ClubPage = (props: Props) => {
     } as CustomPaletteOptions,
   });
 
-  const [clubExists, setClubExists] = useState(false);
-  const [clubInfo, setClubInfo] = useState<ClubInfo>({} as ClubInfo);
-  const [createPostOpen, setCreatePostOpen] = useState(false);
-  const [createPostImage, setCreatePostImage] = useState<ImageFile>(null);
-  const [posts, setPosts] = useState<JSX.Element>();
-
   const { name, id } = useParams();
 
-  const handleImageSelect = (event: any) => {
-    let imageFiles = event.target.files;
+  const [clubExists, setClubExists] = useState(false);
+  const [clubInfo, setClubInfo] = useState<ClubInfo>({} as ClubInfo);
 
-    if (!imageFiles || imageFiles.length == 0) {
-      return;
-    }
+  const [posts, setPosts] = useState<Post[] | null>(null);
+  const [events, setEvents] = useState<Event[] | null>(null);
+  const [followed, setFollowed] = useState(false);
 
-    setCreatePostImage(imageFiles[0]);
-  };
 
-  const handleImageRemove = () => {
-    setCreatePostImage(null);
-  };
+  // Create a Post Modal
+  const [createPostOpen, setCreatePostOpen] = useState(false);
 
   const handleCreatePostOpen = () => setCreatePostOpen(true);
-  const handleCreatePostClose = () => setCreatePostOpen(false);
+  const handleCreatePostClose = (event?: object, reason?: string) => {
+    if(reason == "backdropClick")
+      return;
+    setCreatePostOpen(false);
+  }
 
+  // Create an Event Modal
+  const [createEventOpen, setCreateEventOpen] = useState(false);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleCreateEventOpen = () => setCreateEventOpen(true);
+  const handleCreateEventClose = (event?: object, reason?: string) => {
+    if(reason == "backdropClick")
+      return;
+    setCreateEventOpen(false);
+  }
 
-    const data = new FormData(event.currentTarget);
-    const form: CreatePost = {
-      title: data.get("create-post-title") as string,
-      body: data.get("create-post-body") as string,
-      id: id as string,
-    };
+  // // Explore Modal
+  // const [exploreOpen, setExploreOpen] = useState<boolean>(false);
 
-    const headers = {
-      "Content-Type": "application/json",
-      "X-CSRFToken": Cookies.get("csrftoken") || "",
-    };
+  // const handleExploreOpen: () => void = () => setExploreOpen(true);
+  // const handleExploreClose: () => void = () => setExploreOpen(false);
 
-    const response: Response = await fetch("/api/posts/create", {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(form),
-    });
+  // CreatePostsDisplay
+  // const createPostsDisplay = (posts_data: any) => {
+  //   const PostsComponent = posts_data.map((post: any) => (
+  //     <ListItem key={post.id}>
+  //       <PostElement
+  //         username={post.author}
+  //         title={post.title}
+  //         body={post.body}
+  //         time_posted={convertDate(new Date(post.time_posted))}
+  //         likes={post.likes}
+  //         dislikes={post.dislikes}
+  //       />
+  //     </ListItem>
+  //   ));
+  //   const final = <List sx={{ ml: 0 }}>{PostsComponent}</List>;
+  //   setPosts(final);
+  // };
 
+  // CreatePostsDisplay
+  //  const createEventsDisplay = (events_data: any) => {
+  //   const EventsComponent = events_data.map((event: any) => (
+  //     <ListItem key={event.id}>
+  //       <EventElement
+  //         id={event.id}
+  //         username={event.author}
+  //         name={event.name}
+  //         description={event.description}
+  //         event_time={event.event_time}
+  //         event_date={event.event_date}
+  //         // likes={event.likes}
+  //         // dislikes={event.dislikes}
+  //       />
+  //     </ListItem>
+  //   ));
+  //   const final = <List sx={{ ml: 0 }}>{EventsComponent}</List>;
+  //   setEvents(final);
+  // };
+
+  const getFollowStatus = async () => {
+    console.log("Checking Follow Status");
+    const response: Response = await fetch(
+      `/api/clubs/follow-status/${name}/${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      }
+    );
     if (response.ok) {
-      handleCreatePostClose();
-      window.location.reload();
-      console.log("New Post Created Successfully");
-    } else {
-      console.log("New Post failed");
+      setFollowed(true);
     }
-  };
-
-  const createPostsDisplay = (posts_data: any) => {
-    console.log(posts_data);
-    const postComponents = posts_data.map((post: any) => (
-      <ListItem key={post.id}>
-        <PostElement username={post.author} title={post.title} body={post.body} time_posted={convertDate(new Date(post.time_posted))} likes={post.likes} dislikes={post.dislikes}/>
-      </ListItem>
-    ))
-    const final = <List sx={{ml: -21}}>{postComponents}</List>
-    setPosts(final);
+    console.log(followed);
   };
 
   useEffect(() => {
     let fetchClub = async () => {
-      let response = await fetch(`/api/clubs/fetch/${name}/${id}`, {
+      let response = await fetch(`/api/clubs/${name}/${id}`, {
         method: "GET",
       });
       if (response.ok) {
         setClubExists(true);
         response.json().then((value) => {
+          // console.log(value)
           const club_data = value.club_data;
           const posts = value.posts;
+          const events = value.events;
           const clubInfo: ClubInfo = {
             name: club_data.name,
             description: club_data.description,
@@ -183,16 +223,24 @@ const ClubPage = (props: Props) => {
             email: club_data.email,
             pnum: club_data.contact,
             website: club_data.website,
+            memberCount: club_data.member_count,
             posts: posts,
+            events: events,
+            image: club_data.image,
           };
-          createPostsDisplay(posts);
+          setPosts(posts);
+          setEvents(events);
           setClubInfo(clubInfo);
         });
       } else {
         setClubExists(false);
+        console.log("ce: " + clubExists + " " + response.status);
       }
     };
     fetchClub();
+    getFollowStatus();
+    console.log("club exists:" + clubExists);
+    console.log("auth: " + props.isAuth);
   }, []);
 
   return (
@@ -215,68 +263,96 @@ const ClubPage = (props: Props) => {
                 "linear-gradient(to right, #a68bf0, #8e63d5, #7d3ebd);",
             }}
           >
-            <NavBar />
+            <NavBar username={props.username} />
             <Paper
               elevation={3}
               sx={{
                 mt: 15,
-                borderRadius: "15px",
+                borderRadius: "20px",
                 textAlign: "left",
-                width: "1000px",
-                height: "800px",
+                // width: "1000px",
+                height: "90vh",
                 maxHeight: "800px",
-                overflow: 'auto',
+                minWidth: "600px",
+                width: "60%",
+                overflow: "auto",
                 display: "flex",
-                flexDirection: "column",
+                flexFlow: "column nowrap",
                 border: "5px solid #000000",
+                "&::-webkit-scrollbar": {
+                  display: "none",
+                },
               }}
             >
               <Box
                 sx={{
-                  borderRadius: "10px",
-                  border: "3px solid #000000",
-                  height: "125px",
+                  borderRadius: "10px 10px 0 0",
+                  border: "2px solid #000000",
+                  borderBottom: "5px solid #000",
+                  minHeight: "150px",
                   background:
                     "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
                   display: "flex",
-
+                  flexFlow: "row nowrap",
                   alignItems: "left",
-                  paddingRight: "10px",
+                  // pb: 10,
+                  // paddingRight: "10px",
                 }}
               >
                 <Box
+                  component="img"
                   sx={{
-                    width: 300,
-                    height: 100,
-                    backgroundColor: "white",
+                    width: "30%",
+                    height: "80%",
                     borderRadius: "5px",
-                    ml: 2,
-                    mt: 1,
+                    mx: 2,
+                    my: 1,
                   }}
-                ></Box>
+                  // alt="Club image"
+                  src={clubInfo.image}
+                />
 
-                <div
-                  style={{
+                <Box
+                  sx={{
                     display: "flex",
-                    flexDirection: "column",
+                    flexFlow: "column nowrap",
                     alignItems: "left",
                     justifyContent: "left",
+                    width:"100%",
+                    // columnGap:2,
+
                   }}
                 >
-                  <Typography ml={2} variant="h5" color="white">
+                  <Box sx={{width : "100%" , overflow:"auto", scrollbarColor:"#8B139C #7108d8", scrollbarWidth:"thin"}}>
+                  <Typography ml={2} variant="h5" color="white" fontFamily={"Lobster"} sx={{wordBreak:"break-word"}}>
                     {clubInfo.name}
                   </Typography>
-                  <Typography ml={2} variant="subtitle2" color="white">
+                  </Box>
+                  <Box sx={{width : "100%" , overflow:"auto", scrollbarColor:"#8B139C #7108d8", scrollbarWidth:"thin"}}>
+                  <Typography ml={2} variant="subtitle1" color="white" fontFamily={"Lobster"} sx={{wordBreak:"break-word"}}>
                     {clubInfo.description}
                   </Typography>
-
-                  <div
-                    style={{
+                  </Box>
+                  <Box>
+                  <Typography ml={2} variant="subtitle1" color="white" fontFamily={"Lobster"}>
+                    Members: {clubInfo.memberCount}
+                  </Typography>
+                  </Box>
+                  <Box
+                    sx={{
                       display: "flex",
                       flexDirection: "row",
                       marginLeft: "10px",
                     }}
                   >
+                    <Tooltip title="Follow Club">
+                      <IconButton
+                        // onClick={followed ? handleUnfollowClub : handleFollowClub}
+                        sx={{ color: "white" }}
+                      >
+                        <AddBoxIcon />
+                      </IconButton>
+                    </Tooltip>
                     <Tooltip title="Create Post">
                       <IconButton
                         onClick={handleCreatePostOpen}
@@ -285,260 +361,201 @@ const ClubPage = (props: Props) => {
                         <CreateIcon />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Club Settings">
-                      <IconButton sx={{ color: "white" }}>
-                        <SettingsIcon />
+                    <Tooltip title="Create Event">
+                      <IconButton
+                        onClick={handleCreateEventOpen}
+                        sx={{ color: "white" }}
+                      >
+                        <CalendarMonthIcon />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Follow Club">
-                      <IconButton sx={{ color: "white" }}>
-                        <AddBoxIcon />
-                      </IconButton>
-                    </Tooltip>
+       
                     <Tooltip title="Members List">
                       <IconButton sx={{ color: "white" }}>
                         <PeopleIcon />
                       </IconButton>
                     </Tooltip>
-                  </div>
-                </div>
+                    <Tooltip title="Club Settings">
+                      <IconButton sx={{ color: "white" }}>
+                        <SettingsIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </Box>
               </Box>
 
-              <Dialog open={createPostOpen} onClose={handleCreatePostClose}>
-                <DialogTitle
-                  sx={{
-                    background:
-                      "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
-                    color: "back.light",
-                    border: "2px #000 solid",
-                    borderRadius: "0 0 0px 0px",
-                  }}
-                >
-                  <Container
-                    component="div"
-                    sx={{
-                      display: "flex",
-                      columnGap: 5,
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Typography component="h2" variant="h2">
-                      Create a Post
-                    </Typography>
-                    <Button
-                      onClick={handleCreatePostClose}
-                      sx={{
-                        color: "back.dark",
-                        fontSize: "2rem",
-                        "&:hover": {
-                          color: "#F00",
-                        },
-                      }}
-                    >
-                      X
-                    </Button>
-                  </Container>
-                </DialogTitle>
+              <CreatePost
+                createPostOpen={createPostOpen}
+                handleCreatePostClose={handleCreatePostClose}
+              />
+              <CreateEvent
+                createEventOpen={createEventOpen}
+                handleCreateEventClose={handleCreateEventClose}
+              />
 
-                {/* <DialogContent> */}
-                <Container
-                  component="div"
-                  sx={{
-                    py: 3,
-                    backgroundColor: "back.main",
-                    border: "2px #000 solid",
-                    borderRadius: "0px",
-                  }}
-                >
-                  <Box component="form" onSubmit={handleSubmit}>
-                    <Grid
-                      container
-                      spacing={3}
-                      sx={{ display: "flex", justifyContent: "space-evenly" }}
-                    >
-                      <Grid item xs={12}>
-                        <Typography
-                          component="label"
-                          variant="h5"
-                          sx={{ color: "back.dark" }}
-                        >
-                          Title
-                        </Typography>
-                        <TextField
-                          component="div"
-                          name="create-post-title"
-                          id="create-post-title"
-                          required
-                          fullWidth
-                          sx={{
-                            backgroundColor: "back.light",
-                            "&:focus": {
-                              border: "2px solid black",
-                            },
-                          }}
-                        ></TextField>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Typography component="label" variant="h5">
-                          Body
-                        </Typography>
-                        <TextField
-                          component="div"
-                          name="create-post-body"
-                          id="create-post-body"
-                          required
-                          fullWidth
-                          multiline
-                          rows={12}
-                          sx={{ backgroundColor: "back.light" }}
-                        ></TextField>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Container
-                          component="div"
-                          sx={{
-                            display: "flex",
-                            flexDirection: "row nowrap",
-                            columnGap: 2,
-                          }}
-                        >
-                          <Fab
-                            component="label"
-                            onChange={handleImageSelect}
-                            sx={{
-                              color: "primary.contrastText",
-                              backgroundColor: "primary.main",
-                              "&:hover": {
-                                backgroundColor: "secondary.main",
-                                color: "secondary.contrastText",
-                              },
-                            }}
-                          >
-                            +
-                            <input
-                              type="file"
-                              id="create-post-image"
-                              name="create-post-image"
-                              accept="image/*" 
-                              hidden
-                            ></input>
-                          </Fab>
-
-                          <Typography
-                            component="span"
-                            sx={{
-                              display: { xs: "none", sm: "block", md: "block" },
-                              fontWeight: 700,
-                              textAlign: "center",
-                            }}
-                          >
-                            Image <br></br> Attachments
-                          </Typography>
-
-                          <Box
-                            sx={{
-                              width: "60%",
-                              backgroundColor: "back.light",
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                              border: "2px #000 solid",
-                              borderRadius: "10px",
-                            }}
-                          >
-                            {createPostImage && (
-                              <>
-                                <Typography
-                                  component="span"
-                                  color="primary"
-                                  sx={{ pl: 5, fontSize: "0.75rem" }}
-                                >
-                                  {createPostImage.name}
-                                </Typography>
-                                <Button
-                                  onClick={handleImageRemove}
-                                  color="error"
-                                >
-                                  X
-                                </Button>
-                              </>
-                            )}
-                          </Box>
-                        </Container>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Button
-                          type="submit"
-                          fullWidth
-                          variant="contained"
-                          sx={{
-                            mt: 3,
-                            mb: 2,
-                            color: "primary.contrastText",
-                            backgroundColor: "primary.main",
-                            "&:hover": {
-                              backgroundColor: "secondary.main",
-                              color: "secondary.contrastText",
-                            },
-                          }}
-                        >
-                          Submit
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  </Box>
-                </Container>
-                {/* </DialogContent> */}
-              </Dialog>
-
-              <div style={{ display: "flex", flexDirection: "row" }}>
-                <Box
-                  sx={{
-                    borderRadius: "10px",
+              <Box sx={{ display: "flex", flexFlow: "row nowrap", backgroundColor:"" }}>
+                <Box sx={{width: "50%",}}> 
+                <Box sx={{
                     border: "3px solid #000000",
-                    height: "75px",
-                    width: "200px",
+                    borderRadius: "10px 10px 0 0",
                     background:
                       "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
                     display: "flex",
-
+                    flexFlow: "column nowrap",
                     alignItems: "left",
-                    paddingRight: "10px",
-                    mt: 2,
-                    ml: 2,
                     textAlign: "center",
-                  }}
-                >
-                  <Typography ml={4} mt={1} variant="h3" color="white">
+                    justifyContent:"center",
+                    mt: 2,
+                    mx: 2,
+                  }}>
+                  <Typography
+                    ml={0}
+                    my={0}
+                    variant="h3"
+                    color="white"
+                    fontFamily={"RampartOne"}
+                    sx={{}}
+                  >
                     Posts
                   </Typography>
-                  <div style={{ display: "flex", marginTop: '100px'}}>
-                    {posts}
-                  </div>
+                  </Box>
+                  <Box
+                    sx={{
+                      height: "60vh",
+                      display: "flex",
+                      flexFlow: "column nowrap",
+                      overflow: "scroll",
+                      "&::-webkit-scrollbar": {
+                        display: "none",
+                      },
+                      backgroundColor: "back.main",
+                      border: "2px solid black",
+                      borderRadius: "0 0 20px 20px",
+                      px: 2,
+                      mb: 1,
+                      mx: 2,
+                    }}
+                  >
+                    {posts && posts.length > 0?
+                      posts.map((post: Post) => (
+                        <Box key={post.id} sx={{ my: 1 }}>
+                          <PostElement
+                            username={post.author}
+                            title={post.title}
+                            body={post.body}
+                            time_posted={convertDate(
+                              new Date(post.time_posted)
+                            )}
+                            likes={post.likes}
+                            dislikes={post.dislikes}
+                            totalComments={1}
+                          />
+                        </Box>
+                      )): (                <Box
+                        sx={{
+                          height: "100%",
+                          display: "flex",
+                          flexFlow: "column nowrap",
+                          alignItems: "center",
+                          justifyContent:"center",
+                        }}
+                      >
+                        <Typography
+                          component="h2"
+                          variant="h2"
+                          fontFamily={"RampartOne"}
+                          sx={{
+                            color: "secondary.dark",
+                            fontSize: "2rem",
+                          }}
+                        >
+                          No Posts To Show...
+                        </Typography>
+                      </Box>)}
+                  </Box>
+
                 </Box>
 
-                <Box
-                  sx={{
-                    borderRadius: "10px",
+                <Box sx={{width: "50%",}}> 
+                <Box sx={{
                     border: "3px solid #000000",
-                    height: "75px",
-                    width: "200px",
+                    borderRadius: "10px 10px 0 0",
                     background:
-                      "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
+                      "linear-gradient(90deg, rgba(126,2,237,1) 0%, rgba(78,26,157,1) 99%)",
                     display: "flex",
-
+                    flexFlow: "column nowrap",
                     alignItems: "left",
-                    paddingRight: "10px",
-                    mt: 2,
-                    ml: 50,
                     textAlign: "center",
-                  }}
-                >
-                  <Typography ml={3} mt={1} variant="h3" color="white">
+                    mt: 2,
+                    mx: 2,
+                  }}>
+                  <Typography
+                    ml={0}
+                    my={0}
+                    variant="h3"
+                    color="white"
+                    fontFamily={"RampartOne"}
+                    sx={{ }}
+                  >
                     Events
                   </Typography>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      height: "60vh",
+                      display: "flex",
+                      flexFlow: "column nowrap",
+                      overflow: "scroll",
+                      "&::-webkit-scrollbar": {
+                        display: "none",
+                      },
+                      backgroundColor: "back.main",
+                      border: "2px solid black",
+                      borderRadius: "0 0 20px 20px",
+                      px: 2,
+                      mb: 1,
+                      mx: 2,
+                    }}
+                  >
+                    {events && events.length > 0 ?
+                      events.map((event: Event) => (
+                        <Box key={event.id} sx={{ my: 1 }}>
+                          <EventElement
+                            id={event.id}
+                            username={event.author}
+                            name={event.name}
+                            description={event.description}
+                            event_time={event.event_time}
+                            event_date={event.event_date}
+                            likes={event.likes}
+                            dislikes={event.dislikes}
+                          />
+                        </Box>
+                      )) : (                <Box
+                        sx={{
+                          height: "100%",
+                          display: "flex",
+                          flexFlow: "column nowrap",
+                          alignItems: "center",
+                          justifyContent:"center",
+                        }}
+                      >
+                        <Typography
+                          component="h2"
+                          variant="h2"
+                          sx={{
+                            color: "secondary.dark",
+                            fontFamily: "RampartOne",
+                            fontSize: "2rem",
+                          }}
+                        >
+                          No Events To Show...
+                        </Typography>
+                      </Box>)}
+                  </Box>
                 </Box>
-              </div>
+              </Box>
             </Paper>
           </Box>
         </ThemeProvider>
