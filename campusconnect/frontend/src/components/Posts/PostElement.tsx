@@ -1,4 +1,6 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+
 import {
   Card,
   CardHeader,
@@ -9,8 +11,10 @@ import {
   Tooltip,
   Box,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 
+
+// import Menu from '@mui/material/Menu';
+// import MenuItem from '@mui/material/MenuItem';
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
@@ -24,49 +28,70 @@ interface PostProps {
   likes: number;
   dislikes: number;
   totalComments: number;
+  post_id: number;
   // userAvatar: string;
   // postImage: string;
   // caption: string;
 }
+
+
 
 /**
  * Post Component
  *
  * This component renders a single post on the posts page
  */
+
+
+
 const PostElement: React.FC<PostProps> = ({
   username,
   title,
   body,
   time_posted,
+  post_id,
   likes,
   dislikes,
   totalComments
 }) => {
-  const navigate = useNavigate();
+
+  const navigate = useNavigate()
+
+  const handlePostClick = async(event: React.MouseEvent<HTMLDivElement>) =>{
+    event.preventDefault();
+
+    console.log("Direct to post page")
+
+    console.log(post_id)
+
+    navigate(`/post/${post_id}`)
+    
+  }
+
   // Render the post
   return (
     <Card
       sx={{
-        border: "3px solid black",
+          border: "3px solid black",
         borderRadius: "35px",
         // width: "450px",
         // maxWidth: "450px",
         textWrap: "balance",
       }}
     >
-      {/* Post Header */}
-      <CardHeader
-        // The avatar of the user who posted the post
-        // avatar={
-        //   <Avatar
-        //     src={userAvatar}
-        //     alt={username} // The alt text is the username of the user
-        //   />
-        // }
-        title={title} // The title is the username of the user
+        {/* Post Header */}
+        <CardHeader
+          // The avatar of the user who posted the post
+          // avatar={
+          //   <Avatar
+          //     src={userAvatar}
+          //     alt={username} // The alt text is the username of the user
+          //   />
+          // }
+          color="white"
+          title={title} // The title is the username of the user
         titleTypographyProps={{
-          onClick: () => navigate("/"),
+          onClick: () => navigate(`/post/${post_id}`),
           sx: {
             fontFamily: "Lobster",
             color: "secondary.contrast",
@@ -80,9 +105,9 @@ const PostElement: React.FC<PostProps> = ({
         subheader={`${username} - ${time_posted}`} // The subheader is the post date
         subheaderTypographyProps={{ sx: { fontFamily: "Lobster" } }}
         sx={{ backgroundColor: "secondary.main" }}
-      />
-      {/* Post Image */}
-      {/* <CardMedia
+        />
+        {/* Post Image */}
+        {/* <CardMedia
         // The image of the post
         component="img"
         height="300" // The height of the post image
@@ -90,7 +115,7 @@ const PostElement: React.FC<PostProps> = ({
         alt="Post Image" // The alt text of the post image
       /> */}
 
-      {/* Post Caption */}
+        {/* Post Caption */}
       <CardContent sx={{ backgroundColor: "back.dark", color: "back.light" }}>
         <Typography
           variant="body2"
@@ -104,10 +129,10 @@ const PostElement: React.FC<PostProps> = ({
             overflowWrap: "break-word",
           }}
         >
-          {body}
-        </Typography>
+            {body}
+          </Typography>
 
-        {/* Reactions */}
+          {/* Reactions */}
         <CardActions
           sx={{
             display: "flex",
@@ -135,11 +160,11 @@ const PostElement: React.FC<PostProps> = ({
               >
                 {likes}
               </Typography>
-              <Tooltip title="Like">
-                <IconButton aria-label="like post">
+            <Tooltip title="Like">
+              <IconButton aria-label="like post">
                   <ThumbUpAltIcon sx={{ color: "back.light" }} />
-                </IconButton>
-              </Tooltip>
+              </IconButton>
+            </Tooltip>
             </Box>
 
             <Box
@@ -158,8 +183,8 @@ const PostElement: React.FC<PostProps> = ({
               >
                 {dislikes}
               </Typography>
-              <Tooltip title="Dislike">
-                <IconButton aria-label="dislike post">
+            <Tooltip title="Dislike">
+              <IconButton aria-label="dislike post">
                   <ThumbDownIcon sx={{ color: "back.light" }} />
                 </IconButton>
               </Tooltip>
@@ -189,13 +214,16 @@ const PostElement: React.FC<PostProps> = ({
           <Tooltip title="More">
                 <IconButton aria-label="more">
                   <MoreIcon sx={{ color: "back.light" }} />
-                </IconButton>
-              </Tooltip>
+              </IconButton>
+            </Tooltip>            
           </Box>
-        </CardActions>
+          </CardActions>
 
-        {/* Comments */}
-        {/* <CardContent sx={{ mt: 2 }}>
+          {/* Additional Options */}
+            
+
+          {/* Comments */}
+          {/* <CardContent sx={{ mt: 2 }}>
           <Typography variant="h6">Comments</Typography>
           <TextField
             fullWidth
@@ -204,8 +232,8 @@ const PostElement: React.FC<PostProps> = ({
             placeholder="Add a comment"
           /> */}
 
-        {/* Comments List */}
-        {/* <List>
+          {/* Comments List */}
+          {/* <List>
             <ListItem>
               <ListItemAvatar>
                 <Avatar src={userAvatar} alt={username} />
@@ -213,8 +241,8 @@ const PostElement: React.FC<PostProps> = ({
               <ListItemText primary={username} secondary="This is a test comment" />
             </ListItem>
           </List> */}
-        {/* </CardContent> */}
-      </CardContent>
+          {/* </CardContent> */}
+        </CardContent>
     </Card>
   );
 };

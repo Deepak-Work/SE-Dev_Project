@@ -440,6 +440,7 @@ const ClubPage = (props: Props) => {
                       posts.map((post: Post) => (
                         <Box key={post.id} sx={{ my: 1 }}>
                           <PostElement
+                            post_id={post.id}
                             username={post.author}
                             title={post.title}
                             body={post.body}

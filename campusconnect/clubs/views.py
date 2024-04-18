@@ -66,6 +66,7 @@ class GetClubView(APIView):
         posts = Post.objects.filter(club=id).order_by('-time_posted').values()
         for post in posts:
             post['author'] = User.objects.get(id=post['author_id']).username
+            post['clubname'] = name
             del post['author_id']
         
         events = Event.objects.filter(club=id).order_by('-time_posted').values()
