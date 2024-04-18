@@ -22,7 +22,7 @@ const CreatePost = (props: CreatePostProps) => {
 
   const {createPostOpen, handleCreatePostClose } = props;
   const [createPostImage, setCreatePostImage] = useState<ImageFile>(null);
-  const { name, id } = useParams();
+  const { id } = useParams();
 
   const handlePostImageSelect = (event: any) => {
     let imageFiles = event.target.files;
@@ -55,7 +55,7 @@ const CreatePost = (props: CreatePostProps) => {
       "X-CSRFToken": Cookies.get("csrftoken") || "",
     };
 
-    const response: Response = await fetch("/api/posts/create", {
+    const response: Response = await fetch("/api/posts/new-post", {
       method: "POST",
       headers: headers,
       body: JSON.stringify(form),

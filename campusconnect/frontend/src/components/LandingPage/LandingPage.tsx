@@ -9,6 +9,7 @@ import Calendar from "./Calendar";
 import Newsletter from "./Newsletter";
 
 interface Props {
+  username: string;
   isAuth: boolean;
 }
 
@@ -17,7 +18,6 @@ const LandingPage = ( props: Props ) => {
 
 
   const theme = createTheme();
-
   return (
     <>
       {!props.isAuth ? (
@@ -37,7 +37,7 @@ const LandingPage = ( props: Props ) => {
                 "linear-gradient(to right, #a68bf0, #8e63d5, #7d3ebd);",
             }}
           >
-            <NavBar />
+            <NavBar username={props.username}/>
 
             <Grid
               mt={15}

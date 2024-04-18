@@ -5,13 +5,14 @@ import React, { useState } from "react";
 
 import Cookies from "js-cookie";
 import dayjs, { Dayjs } from "dayjs";
+import { useParams } from "react-router-dom";
 
 
 type ImageFile = File | null;
 
 interface CreateEvent {
-    title: string;
-    body: string;
+    name: string;
+    description: string;
     event_date: string;
     event_time: string;
     image? : string;
@@ -28,7 +29,7 @@ const CreateEvent = (props: CreateEventProps) => {
     const [createEventImage, setCreateEventImage] = useState<ImageFile>(null);
     const [date, setDate] = useState<Dayjs | null>(dayjs(Date().toString()));
     const [time, setTime] = useState<Dayjs | null>(dayjs(Date.now() - Date.now() % FIVE_MINUTES + FIVE_MINUTES));
-    // const { name, id } = useParams();
+    const { name, id } = useParams();
     
     const handleEventImageSelect = (event: any) => {
         let imageFiles = event.target.files;
@@ -48,8 +49,8 @@ const CreateEvent = (props: CreateEventProps) => {
     
         const data = new FormData(event.currentTarget);
         const eventForm: CreateEvent = {
-          title: data.get("create-event-title") as string,
-          body: data.get("create-event-body") as string,
+          name: data.get("create-event-title") as string,
+          description: data.get("create-event-body") as string,
           event_date: data.get("create-event-date") as string,
           event_time: data.get("create-event-time") as string,
         //   image: data.get('create-event-image') as string,
@@ -60,7 +61,7 @@ const CreateEvent = (props: CreateEventProps) => {
           "X-CSRFToken": Cookies.get("csrftoken") || "",
         };
     
-        const response: Response = await fetch("/api/events/create", {
+        const response: Response = await fetch(`/api/events/new-event/${name}/${id}`, {
           method: "POST",
           headers: headers,
           body: JSON.stringify(eventForm),
@@ -177,7 +178,7 @@ const CreateEvent = (props: CreateEventProps) => {
   }}sx= {{ width: "45%", backgroundColor:"back.light"}} />
                 </LocalizationProvider>
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <Container
                   component="div"
                   sx={{
@@ -249,7 +250,7 @@ const CreateEvent = (props: CreateEventProps) => {
                     )}
                   </Box>
                 </Container>
-              </Grid>
+              </Grid> */}
               <Grid item xs={12}>
                 <Button
                   type="submit"

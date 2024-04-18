@@ -12,6 +12,8 @@ import {
   PaletteOptions,
 } from "@mui/material";
 
+import Cookies from "js-cookie";
+
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 import CreateIcon from "@mui/icons-material/Create";
@@ -24,8 +26,10 @@ import NavBar from "../LandingPage/NavBar";
 import PostElement from "../Posts/PostElement";
 import CreatePost from "../Posts/CreatePost";
 import CreateEvent from "../Events/CreateEvent";
+import EventElement from "../Events/EventElement";
 
 interface Props {
+  username: string;
   isAuth: boolean;
 }
 interface ClubInfo {
@@ -35,12 +39,36 @@ interface ClubInfo {
   email: string;
   pnum: string;
   website: string;
+  memberCount: string;
   image?: string;
 
   // members: any[];
   posts: any[];
-  // events: any[];
+  events: any[];
   // auditLog: any[];
+}
+
+interface Post {
+  id: number;
+  username: string;
+  title: string;
+  body: string;
+  time_posted: string;
+  author: string;
+  likes: number;
+  dislikes: number;
+}
+
+interface Event {
+  id: number;
+  name: string;
+  description: string;
+  event_date: string;
+  event_time: string;
+  time_posted: string;
+  author: string;
+  likes: number;
+  dislikes: number;
 }
 
 interface CustomPaletteOptions extends PaletteOptions {
@@ -84,47 +112,102 @@ const ClubPage = (props: Props) => {
     } as CustomPaletteOptions,
   });
 
+  const { name, id } = useParams();
+
   const [clubExists, setClubExists] = useState(false);
   const [clubInfo, setClubInfo] = useState<ClubInfo>({} as ClubInfo);
 
+  const [posts, setPosts] = useState<Post[] | null>(null);
+  const [events, setEvents] = useState<Event[] | null>(null);
+  const [followed, setFollowed] = useState(false);
+
+
+  // Create a Post Modal
   const [createPostOpen, setCreatePostOpen] = useState(false);
-  const [createEventOpen, setCreateEventOpen] = useState(false);
-  const [posts, setPosts] = useState<JSX.Element>();
-  const { name, id } = useParams();
 
   const handleCreatePostOpen = () => setCreatePostOpen(true);
   const handleCreatePostClose = () => setCreatePostOpen(false);
 
+  // Create an Event Modal
+  const [createEventOpen, setCreateEventOpen] = useState(false);
+
   const handleCreateEventOpen = () => setCreateEventOpen(true);
   const handleCreateEventClose = () => setCreateEventOpen(false);
 
-  const createPostsDisplay = (posts_data: any) => {
-    const postComponents = posts_data.map((post: any) => (
-      <ListItem key={post.id}>
-        <PostElement
-          username={post.author}
-          title={post.title}
-          body={post.body}
-          time_posted={convertDate(new Date(post.time_posted))}
-          likes={post.likes}
-          dislikes={post.dislikes}
-        />
-      </ListItem>
-    ));
-    const final = <List sx={{ ml: -21 }}>{postComponents}</List>;
-    setPosts(final);
+  // // Explore Modal
+  // const [exploreOpen, setExploreOpen] = useState<boolean>(false);
+
+  // const handleExploreOpen: () => void = () => setExploreOpen(true);
+  // const handleExploreClose: () => void = () => setExploreOpen(false);
+
+  // CreatePostsDisplay
+  // const createPostsDisplay = (posts_data: any) => {
+  //   const PostsComponent = posts_data.map((post: any) => (
+  //     <ListItem key={post.id}>
+  //       <PostElement
+  //         username={post.author}
+  //         title={post.title}
+  //         body={post.body}
+  //         time_posted={convertDate(new Date(post.time_posted))}
+  //         likes={post.likes}
+  //         dislikes={post.dislikes}
+  //       />
+  //     </ListItem>
+  //   ));
+  //   const final = <List sx={{ ml: 0 }}>{PostsComponent}</List>;
+  //   setPosts(final);
+  // };
+
+  // CreatePostsDisplay
+  //  const createEventsDisplay = (events_data: any) => {
+  //   const EventsComponent = events_data.map((event: any) => (
+  //     <ListItem key={event.id}>
+  //       <EventElement
+  //         id={event.id}
+  //         username={event.author}
+  //         name={event.name}
+  //         description={event.description}
+  //         event_time={event.event_time}
+  //         event_date={event.event_date}
+  //         // likes={event.likes}
+  //         // dislikes={event.dislikes}
+  //       />
+  //     </ListItem>
+  //   ));
+  //   const final = <List sx={{ ml: 0 }}>{EventsComponent}</List>;
+  //   setEvents(final);
+  // };
+
+  const getFollowStatus = async () => {
+    console.log("Checking Follow Status");
+    const response: Response = await fetch(
+      `http://127.0.0.1:8000//api/clubs/follow-status/${name}/${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      }
+    );
+    if (response.ok) {
+      setFollowed(true);
+    }
+    console.log(followed);
   };
 
   useEffect(() => {
     let fetchClub = async () => {
-      let response = await fetch(`/api/clubs/fetch/${name}/${id}`, {
+      let response = await fetch(`http://127.0.0.1:8000/api/clubs/${name}/${id}`, {
         method: "GET",
       });
       if (response.ok) {
         setClubExists(true);
         response.json().then((value) => {
+          // console.log(value)
           const club_data = value.club_data;
           const posts = value.posts;
+          const events = value.events;
           const clubInfo: ClubInfo = {
             name: club_data.name,
             description: club_data.description,
@@ -132,17 +215,24 @@ const ClubPage = (props: Props) => {
             email: club_data.email,
             pnum: club_data.contact,
             website: club_data.website,
+            memberCount: club_data.member_count,
             posts: posts,
+            events: events,
             image: club_data.image,
           };
-          createPostsDisplay(posts);
+          setPosts(posts);
+          setEvents(events);
           setClubInfo(clubInfo);
         });
       } else {
         setClubExists(false);
+        console.log("ce: " + clubExists + " " + response.status);
       }
     };
     fetchClub();
+    getFollowStatus();
+    console.log("club exists:" + clubExists);
+    console.log("auth: " + props.isAuth);
   }, []);
 
   return (
@@ -165,31 +255,36 @@ const ClubPage = (props: Props) => {
                 "linear-gradient(to right, #a68bf0, #8e63d5, #7d3ebd);",
             }}
           >
-            <NavBar />
+            <NavBar username={props.username} />
             <Paper
               elevation={3}
               sx={{
                 mt: 15,
-                borderRadius: "15px",
+                borderRadius: "20px",
                 textAlign: "left",
-                width: "1000px",
-                height: "800px",
+                // width: "1000px",
+                height: "90vh",
                 maxHeight: "800px",
+                width: "60%",
                 overflow: "auto",
                 display: "flex",
-                flexDirection: "column",
+                flexFlow: "column nowrap",
                 border: "5px solid #000000",
+                "&::-webkit-scrollbar": {
+                  display: "none",
+                },
               }}
             >
               <Box
                 sx={{
-                  borderRadius: "10px",
-                  border: "3px solid #000000",
-                  height: "125px",
+                  borderRadius: "10px 10px 0 0",
+                  border: "2px solid #000000",
+                  borderBottom: "5px solid #000",
+                  minHeight: "150px",
                   background:
                     "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
                   display: "flex",
-
+                  flexFlow: "row nowrap",
                   alignItems: "left",
                   paddingRight: "10px",
                 }}
@@ -200,31 +295,33 @@ const ClubPage = (props: Props) => {
                     width: 300,
                     height: 100,
                     borderRadius: "5px",
-                    ml: 2,
-                    mt: 1,
+                    mx: 2,
+                    my: 1,
                   }}
                   // alt="Club image"
                   src={clubInfo.image}
-
                 />
 
-                <div
-                  style={{
+                <Box
+                  sx={{
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "left",
                     justifyContent: "left",
                   }}
                 >
-                  <Typography ml={2} variant="h5" color="white">
+                  <Typography ml={2} variant="h5" color="white" fontFamily={"Lobster"}>
                     {clubInfo.name}
                   </Typography>
-                  <Typography ml={2} variant="subtitle2" color="white">
+                  <Typography ml={2} variant="h6" color="white" fontFamily={"Lobster"}>
                     {clubInfo.description}
                   </Typography>
+                  <Typography ml={2} variant="subtitle1" color="white" fontFamily={"Lobster"}>
+                    Members: {clubInfo.memberCount}
+                  </Typography>
 
-                  <div
-                    style={{
+                  <Box
+                    sx={{
                       display: "flex",
                       flexDirection: "row",
                       marginLeft: "10px",
@@ -252,7 +349,10 @@ const ClubPage = (props: Props) => {
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Follow Club">
-                      <IconButton sx={{ color: "white" }}>
+                      <IconButton
+                        // onClick={followed ? handleUnfollowClub : handleFollowClub}
+                        sx={{ color: "white" }}
+                      >
                         <AddBoxIcon />
                       </IconButton>
                     </Tooltip>
@@ -261,8 +361,8 @@ const ClubPage = (props: Props) => {
                         <PeopleIcon />
                       </IconButton>
                     </Tooltip>
-                  </div>
-                </div>
+                  </Box>
+                </Box>
               </Box>
 
               <CreatePost
@@ -274,53 +374,169 @@ const ClubPage = (props: Props) => {
                 handleCreateEventClose={handleCreateEventClose}
               />
 
-              <div style={{ display: "flex", flexDirection: "row" }}>
-                <Box
-                  sx={{
-                    borderRadius: "10px",
+              <Box sx={{ display: "flex", flexFlow: "row nowrap" }}>
+                <Box sx={{width: "50%",}}> 
+                <Box sx={{
                     border: "3px solid #000000",
-                    height: "75px",
-                    width: "200px",
+                    borderRadius: "10px 10px 0 0",
                     background:
                       "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
                     display: "flex",
+                    flexFlow: "column nowrap",
                     alignItems: "left",
-                    paddingRight: "10px",
-                    mt: 2,
-                    ml: 2,
                     textAlign: "center",
-                  }}
-                >
-                  <Typography ml={4} mt={1} variant="h3" color="white">
+                    justifyContent:"center",
+                    mt: 2,
+                    mx: 2,
+                  }}>
+                  <Typography
+                    ml={0}
+                    my={0}
+                    variant="h3"
+                    color="white"
+                    fontFamily={"RampartOne"}
+                    sx={{}}
+                  >
                     Posts
                   </Typography>
-                  <div style={{ display: "flex", marginTop: "100px" }}>
-                    {posts}
-                  </div>
+                  </Box>
+                  <Box
+                    sx={{
+                      height: "60vh",
+                      display: "flex",
+                      flexFlow: "column nowrap",
+                      overflow: "scroll",
+                      "&::-webkit-scrollbar": {
+                        display: "none",
+                      },
+                      backgroundColor: "back.main",
+                      border: "2px solid black",
+                      borderRadius: "0 0 20px 20px",
+                      px: 2,
+                      mb: 1,
+                      mx: 2,
+                    }}
+                  >
+                    {posts && posts.length > 0?
+                      posts.map((post: Post) => (
+                        <Box key={post.id} sx={{ my: 1 }}>
+                          <PostElement
+                            username={post.author}
+                            title={post.title}
+                            body={post.body}
+                            time_posted={convertDate(
+                              new Date(post.time_posted)
+                            )}
+                            likes={post.likes}
+                            dislikes={post.dislikes}
+                            totalComments={1}
+                          />
+                        </Box>
+                      )): (                <Box
+                        sx={{
+                          height: "100%",
+                          display: "flex",
+                          flexFlow: "column nowrap",
+                          alignItems: "center",
+                          justifyContent:"center",
+                        }}
+                      >
+                        <Typography
+                          component="h2"
+                          variant="h2"
+                          fontFamily={"RampartOne"}
+                          sx={{
+                            color: "primary.main",
+                            fontSize: "2rem",
+                          }}
+                        >
+                          No Posts To Show...
+                        </Typography>
+                      </Box>)}
+                  </Box>
+
                 </Box>
 
-                <Box
-                  sx={{
-                    borderRadius: "10px",
+                <Box sx={{width: "50%",}}> 
+                <Box sx={{
                     border: "3px solid #000000",
-                    height: "75px",
-                    width: "200px",
+                    borderRadius: "10px 10px 0 0",
                     background:
-                      "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
+                      "linear-gradient(90deg, rgba(126,2,237,1) 0%, rgba(78,26,157,1) 99%)",
                     display: "flex",
-
+                    flexFlow: "column nowrap",
                     alignItems: "left",
-                    paddingRight: "10px",
-                    mt: 2,
-                    ml: 50,
                     textAlign: "center",
-                  }}
-                >
-                  <Typography ml={3} mt={1} variant="h3" color="white">
+                    mt: 2,
+                    mx: 2,
+                  }}>
+                  <Typography
+                    ml={0}
+                    my={0}
+                    variant="h3"
+                    color="white"
+                    fontFamily={"RampartOne"}
+                    sx={{ }}
+                  >
                     Events
                   </Typography>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      height: "60vh",
+                      display: "flex",
+                      flexFlow: "column nowrap",
+                      overflow: "scroll",
+                      "&::-webkit-scrollbar": {
+                        display: "none",
+                      },
+                      backgroundColor: "back.main",
+                      border: "2px solid black",
+                      borderRadius: "0 0 20px 20px",
+                      px: 2,
+                      mb: 1,
+                      mx: 2,
+                    }}
+                  >
+                    {events && events.length > 0 ?
+                      events.map((event: Event) => (
+                        <Box key={event.id} sx={{ my: 1 }}>
+                          <EventElement
+                            id={event.id}
+                            username={event.author}
+                            name={event.name}
+                            description={event.description}
+                            event_time={event.event_time}
+                            event_date={event.event_date}
+                            likes={event.likes}
+                            dislikes={event.dislikes}
+                          />
+                        </Box>
+                      )) : (                <Box
+                        sx={{
+                          height: "100%",
+                          display: "flex",
+                          flexFlow: "column nowrap",
+                          alignItems: "center",
+                          justifyContent:"center",
+                        }}
+                      >
+                        <Typography
+                          component="h2"
+                          variant="h2"
+                          sx={{
+                            color: "primary.main",
+                            fontFamily: "RampartOne",
+                            fontSize: "2rem",
+                          }}
+                        >
+                          No Events To Show...
+                        </Typography>
+                      </Box>)}
+                  </Box>
                 </Box>
-              </div>
+              </Box>
             </Paper>
           </Box>
         </ThemeProvider>

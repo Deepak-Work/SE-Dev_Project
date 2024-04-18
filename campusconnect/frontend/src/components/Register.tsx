@@ -26,9 +26,11 @@ interface Form {
 interface Errors {
   email: boolean;
   password: boolean;
+  verifyPassword: boolean;
   username: boolean;
   emailErrorMessage: string;
   passwordErrorMessage: string;
+  verifyPasswordErrorMessage: string;
   usernameErrorMessage: string;
 }
 
@@ -44,12 +46,16 @@ const Register = () => {
 
   const navigate = useNavigate();
 
+  const [password, setPassword] = useState<string>("");
+
   const [errors, setErrors] = useState<Errors>({
     email: false,
     password: false,
+    verifyPassword: false,
     username: false,
     emailErrorMessage: "",
     passwordErrorMessage: "",
+    verifyPasswordErrorMessage:"",
     usernameErrorMessage: "",
   });
 
@@ -72,7 +78,7 @@ const Register = () => {
       setErrors({
         ...errors,
         email: true,
-        emailErrorMessage: "Enter a valid NYU email address (ends in @nyu.edu)",
+        emailErrorMessage: "Enter a valid email address",
       });
     }
   };
@@ -80,6 +86,7 @@ const Register = () => {
   const handlePasswordChange = (event: any) => {
     //const validPassword = event.target.search(/[A-Z]/) != -1 && event.target.search(/[a-z]/) != -1 && event.target.search(/[0-9]/) ;
     if (event.target.validity.valid) {
+      setPassword(event.target.value);
       setErrors({ ...errors, password: false });
     } else {
       setErrors({
@@ -90,10 +97,40 @@ const Register = () => {
       });
     }
   };
+  
+  const handleVerifyPasswordChange = (event: any) => {
+    if (event.target.validity.valid) {
+      // const passwordField = document.getElementById("password");
+      // console.log(passwordField.value);
+      // console.log(passwordField?.firstChild);
+      // console.log(event.target.value);
+      if(password == event.target.value) {
+        setErrors({ ...errors, verifyPassword: false });
+      } 
+      else {
+        setErrors({
+          ...errors,
+          verifyPassword: true,
+          verifyPasswordErrorMessage:
+            "Passwords do not match",
+        });
+      }
+
+    } else {
+      setErrors({
+        ...errors,
+        verifyPassword: true,
+        verifyPasswordErrorMessage:
+        "Passwords do not match",
+      });
+    }
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     // Prevent default behavior for forms. We need this other some browsers (like Firefox) blocks the request.
     event.preventDefault();
+
+    setPassword("");
 
     const data = new FormData(event.currentTarget);
     const form: Form = {
@@ -104,16 +141,16 @@ const Register = () => {
       last_name: data.get("last_name") as string,
     };
 
-        const headers = {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': Cookies.get('csrftoken') || '',
-        }
+    const headers = {
+      "Content-Type": "application/json",
+      "X-CSRFToken": Cookies.get("csrftoken") || "",
+    };
 
-        const response: Response = await fetch('/api/authentication/register', {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(form)
-        })
+    const response: Response = await fetch("/api/authentication/register", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(form),
+    });
 
     if (response.ok) {
       navigate("/login");
@@ -171,19 +208,25 @@ const Register = () => {
                 borderRadius: "20px",
               }}
             >
-              <Box sx={{ px : 2, backgroundColor:"text.primary", border: "#000 solid 0px", borderRadius:"20px"}}>
-
-              <Typography
-                component="h1"
-                variant="h5"
+              <Box
                 sx={{
-                  fontSize: "2.5rem",
-                  color: "text.secondary",
-                  fontFamily: "RampartOne",
+                  px: 2,
+                  backgroundColor: "text.primary",
+                  border: "#000 solid 0px",
+                  borderRadius: "20px",
                 }}
               >
-                Create an Account
-              </Typography>
+                <Typography
+                  component="h1"
+                  variant="h5"
+                  sx={{
+                    fontSize: "2.5rem",
+                    color: "text.secondary",
+                    fontFamily: "RampartOne",
+                  }}
+                >
+                  Create an Account
+                </Typography>
               </Box>
             </Box>
 
@@ -250,7 +293,8 @@ const Register = () => {
                     onChange={handleEmailChange}
                     error={errors.email}
                     helperText={errors.email ? errors.emailErrorMessage : ""}
-                    inputProps={{ pattern: ".*[@]nyu[.]edu$" }}
+                    // inputProps={{ pattern: ".*[@]nyu[.]edu$" }}
+                    inputProps={{ pattern: "[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" }}
                     autoComplete="email"
                     required
                     fullWidth
@@ -289,6 +333,30 @@ const Register = () => {
                       backgroundColor: "text.primary",
                     }}
                   />
+                  <TextField
+                    variant="filled"
+                    onChange={handleVerifyPasswordChange}
+                    error={errors.verifyPassword}
+                    helperText={
+                      errors.verifyPassword ? errors.verifyPasswordErrorMessage : ""
+                    }
+                    inputProps={{
+                      pattern:
+                        "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*\\-]).{8,}$",
+                    }}
+                    autoComplete="verify-new-password"
+                    required
+                    fullWidth
+                    name="verify-password"
+                    label="Re-Enter Password"
+                    type="password"
+                    id="verify-password"
+                    color="secondary"
+                    sx={{
+                      input: { color: "#000" },
+                      backgroundColor: "text.primary",
+                    }}
+                  />
                 </Grid>
               </Grid>
               <Button
@@ -301,7 +369,10 @@ const Register = () => {
               </Button>
               <Typography variant="body2" color="text.primary" align="center">
                 Already have an account?{" "}
-                <a href="/login" style={{ color: "#1976d2", textDecoration: "underline" }}>
+                <a
+                  href="/login"
+                  style={{ color: "#1976d2", textDecoration: "underline" }}
+                >
                   Login
                 </a>
               </Typography>
