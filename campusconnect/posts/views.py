@@ -17,7 +17,6 @@ class CreatePostView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             title = serializer.data.get('title')
-            print(request.user)
             author = request.user
             body = serializer.data.get('body')
             club = Club.objects.get(id=request.data['id'])
@@ -37,7 +36,6 @@ class CreatePostView(APIView):
 class GetPostView(APIView):
 
     def get(self, request, name, id):
-        print("Here")
         if id is None:
             posts = Post.objects.order_by('-time_posted').values()
             for post in posts:
@@ -50,21 +48,27 @@ class GetPostView(APIView):
             posts['clubname'] = Club.objects.get(id=posts['club_id']).name
             del posts['author_id']
         if posts:
-            print(posts)
             return Response({'post_data': posts}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
     
 
 
 
-class EditPostView(APIView):
-    
-    def update(self, instance, validated_data):
-        instance.title = validated_data.get('title', instance.title)
-        instance.body = validated_data.get('body', instance.body)
-        instance.image = validated_data.get('image', instance.image)
-        instance.save()
-        return instance
+class EditPostView(APIView):        
+    serializer_class = PostSerializer
+
+    def put(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            post = Post.objects.get(id=request.data['id'])
+            post.title = serializer.data.get('title')
+            post.body = serializer.data.get('body')
+            post.image = serializer.data.get('image')
+            post.save()
+        else:
+            print("Serializer invalid - Edit")
+
+        return Response(status=status.HTTP_201_CREATED)
 
     
 
@@ -78,7 +82,6 @@ class DeletePostView(APIView):
             clubname = Club.objects.get(id=clubid).name
             post = Post.objects.get(id=id)
             post.delete()
-            print(clubname)
             return Response({'clubname':clubname,'clubid':clubid},status=status.HTTP_200_OK)
     pass
 

@@ -12,7 +12,13 @@ import {
     Tooltip,
     IconButton,
     Menu,
-    MenuItem
+    MenuItem,
+    Dialog,
+    DialogTitle,
+    Fab,
+    TextField,
+    Button,
+    Container
   } from "@mui/material";
 
 // import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -79,16 +85,75 @@ const PostComponent = (props: Props) => {
         } as CustomPaletteOptions,
       });
 
+  type ImageFile = File | null;
+      
   const [showComments, setShowComments] = useState<boolean>(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [postInfo, setPostInfo] = useState<PostProps>({} as PostProps);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [editPostOpen, setEditPostOpen] = useState(false);
+  const [editPostImage, setEditPostImage] = useState<ImageFile>(null);
+
+  const handleImageSelect = (event: any) => {
+    let imageFiles = event.target.files;
+
+    if (!imageFiles || imageFiles.length == 0) {
+      return;
+    }
+
+    setEditPostImage(imageFiles[0]);
+  };
+
+  const handleImageRemove = () => {
+    setEditPostImage(null);
+  };
+
+  const handleEditPostOpen = () => setEditPostOpen(true);
+  const handleEditPostClose = () => setEditPostOpen(false);
+
+  interface EditPost {
+    title: string;
+    body: string;
+    id: string;
+  }
+
+  const {id} = useParams();
+
+  const handleEditSubmit = async (event: React.FormEvent<HTMLFormElement>) => {    
+
+    const data = new FormData(event.currentTarget);
+    const form: EditPost = {
+      title: data.get("edit-post-title") as string,
+      body: data.get("edit-post-body") as string,
+      id: id as string
+    };
+
+    const headers = {
+      "Content-Type": "application/json",
+      "X-CSRFToken": Cookies.get("csrftoken") || "",
+    };
+
+    const response: Response = await fetch(`/api/posts/fetch/post/edit`, {
+      method: "PUT",
+      headers: headers,
+      body: JSON.stringify(form),
+    });
+
+
+
+    if (response.ok) {
+      handleEditPostClose();
+      // window.location.reload();
+      console.log("New Post Edited Successfully");
+    } else {
+      console.log("Edit Post failed");
+    }
+  };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const {id} = useParams();
 
   const navigate = useNavigate()
 
@@ -107,7 +172,6 @@ const PostComponent = (props: Props) => {
         headers: headers,
       });
       if (response.ok) {
-        console.log('Deleting post');
         console.log(response)
         
         const data = await response.json();
@@ -118,10 +182,6 @@ const PostComponent = (props: Props) => {
       else {
         console.log('Could not delete post');
       }}
-    if (action === 'edit') {
-      // Perform deletion logic here
-      console.log('Editing post');
-    }
     setAnchorEl(null);
   };
 
@@ -176,7 +236,6 @@ const PostComponent = (props: Props) => {
             time_posted: posts.time_posted,
           };
           setPostInfo(postInfo);
-          console.log(postInfo)
         });
       } else {
         console.log("Post cannot be laoded")
@@ -307,9 +366,199 @@ const PostComponent = (props: Props) => {
           onClose={() => handleClose('')}
         >
           <MenuItem onClick={() => handleClose('delete')}>Delete Post</MenuItem>
-          <MenuItem onClick={() => handleClose('edit')}>Edit Post</MenuItem>
+          <MenuItem onClick={() =>handleEditPostOpen()}>Edit Post</MenuItem>
         </Menu>
       </Grid>
+      <Dialog open={editPostOpen} onClose={handleEditPostClose}>
+        <DialogTitle
+          sx={{
+            background:
+              "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
+            color: "back.light",
+            border: "2px #000 solid",
+            borderRadius: "0 0 0px 0px",
+          }}
+        >
+          <Container
+            component="div"
+            sx={{
+              display: "flex",
+              columnGap: 5,
+              justifyContent: "space-between",
+            }}
+          >
+            <Typography component="h2" variant="h2">
+              Edit a Post
+            </Typography>
+            <Button
+              onClick={handleEditPostClose}
+              sx={{
+                color: "back.dark",
+                fontSize: "2rem",
+                "&:hover": {
+                  color: "#F00",
+                },
+              }}
+            >
+              X
+            </Button>
+          </Container>
+        </DialogTitle>
+
+        {/* <DialogContent> */}
+        <Container
+          component="div"
+          sx={{
+            py: 3,
+            backgroundColor: "back.main",
+            border: "2px #000 solid",
+            borderRadius: "0px",
+          }}
+        >
+          <Box component="form" onSubmit={handleEditSubmit}>
+            <Grid
+              container
+              spacing={3}
+              sx={{ display: "flex", justifyContent: "space-evenly" }}
+            >
+              <Grid item xs={12}>
+                <Typography
+                  component="label"
+                  variant="h5"
+                  sx={{ color: "back.dark" }}
+                >
+                  Title
+                </Typography>
+                <TextField
+                  component="div"
+                  name="edit-post-title"
+                  id="edit-post-title"
+                  defaultValue = {postInfo.title}
+                  required
+                  fullWidth
+                  sx={{
+                    backgroundColor: "back.light",
+                    "&:focus": {
+                      border: "2px solid black"},
+                  }}
+                ></TextField>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography component="label" variant="h5">
+                  Body
+                </Typography>
+                <TextField
+                  component="div"
+                  name="edit-post-body"
+                  id="edit-post-body"
+                  defaultValue = {postInfo.body}
+                  required
+                  fullWidth
+                  multiline
+                  rows={12}
+                  sx={{ backgroundColor: "back.light"
+                  }}
+                ></TextField>
+              </Grid>
+              <Grid item xs={12}>
+                <Container
+                  component="div"
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row nowrap",
+                    columnGap: 2,
+                  }}
+                >
+                  <Fab
+                    component="label"
+                    onChange={handleImageSelect}
+                    sx={{
+                      color: "primary.contrastText",
+                      backgroundColor: "primary.main",
+                      "&:hover": {
+                        backgroundColor: "secondary.main",
+                        color: "secondary.contrastText",
+                      },
+                    }}
+                  >
+                    +
+                    <input
+                      type="file"
+                      id="edit-post-image"
+                      name="edit-post-image"
+                      accept="image/*" 
+                      // value = {postInfo.image}
+                      hidden
+                    ></input>
+                  </Fab>
+
+                  <Typography
+                    component="span"
+                    sx={{
+                      display: { xs: "none", sm: "block", md: "block" },
+                      fontWeight: 700,
+                      textAlign: "center",
+                    }}
+                  >
+                    Image <br></br> Attachments
+                  </Typography>
+
+                  <Box
+                    sx={{
+                      width: "60%",
+                      backgroundColor: "back.light",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      border: "2px #000 solid",
+                      borderRadius: "10px"
+                    }}
+                  >
+                    {editPostImage && (
+                      <>
+                        <Typography
+                          component="span"
+                          color="primary"
+                          sx={{ pl: 5, fontSize: "0.75rem" }}
+                          // value = {postInfo.image.name}
+                        >
+                          {editPostImage.name}
+                        </Typography>
+                        <Button
+                          onClick={handleImageRemove}
+                          color="error"
+                        >
+                          X
+                        </Button>
+                      </>
+                    )}
+                  </Box>
+                </Container>
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{
+                    mt: 3,
+                    mb: 2,
+                    color: "primary.contrastText",
+                    backgroundColor: "primary.main",
+                    "&:hover": {
+                      backgroundColor: "secondary.main",
+                      color: "secondary.contrastText",
+                    },
+                  }}
+                >
+                  Submit
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+        </Container>
+        {/* </DialogContent> */}
+      </Dialog>
       <Grid item>
       {showComments && (
           <Paper
