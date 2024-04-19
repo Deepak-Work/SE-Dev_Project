@@ -10,6 +10,7 @@ import {
   List,
   ListItem,
   PaletteOptions,
+  Button,
 } from "@mui/material";
 
 import Cookies from "js-cookie";
@@ -19,6 +20,8 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CreateIcon from "@mui/icons-material/Create";
 import SettingsIcon from "@mui/icons-material/Settings";
 import AddBoxIcon from "@mui/icons-material/AddBox";
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import PeopleIcon from "@mui/icons-material/People";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
@@ -199,9 +202,56 @@ const ClubPage = (props: Props) => {
       }
     );
     if (response.ok) {
-      setFollowed(true);
+      response.json().then((value) => {
+        setFollowed(value.follow_status);
+      })
     }
     console.log(followed);
+  };
+
+  const ToggleFollow: (
+    clubName: string,
+    clubID: number
+  ) => Promise<void> = async (clubName, clubID) => {
+    const response = await fetch(
+      `/api/clubs/follow-status/${clubName}/${clubID}`,
+      {
+        method: "GET",
+      }
+    );
+
+    if (response.ok) {
+      response.json().then(async (value) => {
+        if (followed) {
+          const followResponse = await fetch(
+            `/api/clubs/unfollow/${clubName}/${clubID}`,
+            {
+              method: "GET",
+            }
+          );
+
+          if (followResponse.ok) {
+            setFollowed(false);
+            // setMemberUpdated({})
+          } else {
+            console.log("Follow Status: true - " + response.status);
+          }
+        } else {
+          const followResponse = await fetch(
+            `/api/clubs/follow/${clubName}/${clubID}`,
+            {
+              method: "GET",
+            }
+          );
+
+          if (followResponse.ok) {
+            setFollowed(true);
+          } else {
+            console.log("Follow Status: false - " + response.status);
+          }
+        }
+      });
+    }
   };
 
   useEffect(() => {
@@ -241,7 +291,7 @@ const ClubPage = (props: Props) => {
     getFollowStatus();
     console.log("club exists:" + clubExists);
     console.log("auth: " + props.isAuth);
-  }, []);
+  }, [followed]);
 
   return (
     <>
@@ -345,14 +395,27 @@ const ClubPage = (props: Props) => {
                       marginLeft: "10px",
                     }}
                   >
-                    <Tooltip title="Follow Club">
+                    <Tooltip title={followed? "Unfollow Club" : "Follow Club"}>
                       <IconButton
-                        // onClick={followed ? handleUnfollowClub : handleFollowClub}
+                        onClick={() => ToggleFollow(name, id)}
                         sx={{ color: "white" }}
                       >
-                        <AddBoxIcon />
+                        {followed? <RemoveCircleIcon/>: <AddCircleIcon />}
                       </IconButton>
                     </Tooltip>
+                                            {/* <Button
+                          key={id}
+                          sx={{
+                            backgroundColor: "primary.main",
+                            color: "back.light",
+                            border: "2px solid #000",
+                            borderRadius: "20px",
+                            "&:hover": { backgroundColor: "secondary.main" },
+                          }}
+                          onClick={() => ToggleFollow(name,id)}
+                        >
+                          {followed ? "Unfollow" : "Follow"}
+                        </Button> */}
                     <Tooltip title="Create Post">
                       <IconButton
                         onClick={handleCreatePostOpen}
