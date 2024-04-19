@@ -10,6 +10,7 @@ import {
   List,
   ListItem,
   PaletteOptions,
+  Button,
 } from "@mui/material";
 
 import Cookies from "js-cookie";
@@ -19,6 +20,8 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CreateIcon from "@mui/icons-material/Create";
 import SettingsIcon from "@mui/icons-material/Settings";
 import AddBoxIcon from "@mui/icons-material/AddBox";
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import PeopleIcon from "@mui/icons-material/People";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
@@ -340,14 +343,27 @@ const ClubPage = (props: Props) => {
                       marginLeft: "10px",
                     }}
                   >
-                    <Tooltip title="Follow Club">
+                    <Tooltip title={followed? "Unfollow Club" : "Follow Club"}>
                       <IconButton
-                        // onClick={followed ? handleUnfollowClub : handleFollowClub}
+                        onClick={() => ToggleFollow(name, id)}
                         sx={{ color: "white" }}
                       >
-                        <AddBoxIcon />
+                        {followed? <RemoveCircleIcon/>: <AddCircleIcon />}
                       </IconButton>
                     </Tooltip>
+                                            {/* <Button
+                          key={id}
+                          sx={{
+                            backgroundColor: "primary.main",
+                            color: "back.light",
+                            border: "2px solid #000",
+                            borderRadius: "20px",
+                            "&:hover": { backgroundColor: "secondary.main" },
+                          }}
+                          onClick={() => ToggleFollow(name,id)}
+                        >
+                          {followed ? "Unfollow" : "Follow"}
+                        </Button> */}
                     <Tooltip title="Create Post">
                       <IconButton
                         onClick={handleCreatePostOpen}

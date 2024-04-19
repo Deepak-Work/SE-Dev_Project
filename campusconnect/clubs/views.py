@@ -21,6 +21,8 @@ class CreateClubView(APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
+            print(serializer)
+            print("Here")
             clubName = serializer.data.get('name')
             clubDesc = serializer.data.get('description')
             clubLoc = serializer.data.get('location')
