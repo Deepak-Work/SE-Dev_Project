@@ -26,6 +26,7 @@ const Calendar = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [highlightedDays, setHighlightedDays] = useState<number[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<dayjs.Dayjs>(dayjs());
+  const [selectedYear, setSelectedYear] = useState<dayjs.Dayjs>(dayjs());
 
   function ServerDay(
     props: PickersDayProps<Dayjs> & { highlightedDays?: number[] }
@@ -37,14 +38,12 @@ const Calendar = () => {
     let tooltip: Event | null = null;
     let isSelected = false;
 
-    // BUG: Events repeat across same dates but diff. years
-
     const e = events.find(
       (event) =>
         event.event_date.split("-").map(Number)[2] === pickedDay &&
         event.event_date.split("-").map(Number)[1] ===
           selectedMonth.month() + 1 &&
-        event.event_date.split("-").map(Number)[0] === new Date().getFullYear()
+        event.event_date.split("-").map(Number)[0] === selectedYear.year()
     );
     if (e) {
       tooltip = {
@@ -91,6 +90,9 @@ const Calendar = () => {
     );
   }
 
+  const handleYearChange = (newYear: dayjs.Dayjs) => {
+    setSelectedYear(newYear);
+  };
   const handleMonthChange = (newMonth: dayjs.Dayjs) => {
     setSelectedMonth(newMonth);
   };
@@ -161,6 +163,7 @@ const Calendar = () => {
 
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DateCalendar
+          onYearChange={handleYearChange}
           onMonthChange={handleMonthChange}
           renderLoading={() => <DayCalendarSkeleton />}
           sx={{
