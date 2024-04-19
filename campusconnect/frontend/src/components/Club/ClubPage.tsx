@@ -145,51 +145,8 @@ const ClubPage = (props: Props) => {
     setCreateEventOpen(false);
   }
 
-  // // Explore Modal
-  // const [exploreOpen, setExploreOpen] = useState<boolean>(false);
-
-  // const handleExploreOpen: () => void = () => setExploreOpen(true);
-  // const handleExploreClose: () => void = () => setExploreOpen(false);
-
-  // CreatePostsDisplay
-  // const createPostsDisplay = (posts_data: any) => {
-  //   const PostsComponent = posts_data.map((post: any) => (
-  //     <ListItem key={post.id}>
-  //       <PostElement
-  //         username={post.author}
-  //         title={post.title}
-  //         body={post.body}
-  //         time_posted={convertDate(new Date(post.time_posted))}
-  //         likes={post.likes}
-  //         dislikes={post.dislikes}
-  //       />
-  //     </ListItem>
-  //   ));
-  //   const final = <List sx={{ ml: 0 }}>{PostsComponent}</List>;
-  //   setPosts(final);
-  // };
-
-  // CreatePostsDisplay
-  //  const createEventsDisplay = (events_data: any) => {
-  //   const EventsComponent = events_data.map((event: any) => (
-  //     <ListItem key={event.id}>
-  //       <EventElement
-  //         id={event.id}
-  //         username={event.author}
-  //         name={event.name}
-  //         description={event.description}
-  //         event_time={event.event_time}
-  //         event_date={event.event_date}
-  //         // likes={event.likes}
-  //         // dislikes={event.dislikes}
-  //       />
-  //     </ListItem>
-  //   ));
-  //   const final = <List sx={{ ml: 0 }}>{EventsComponent}</List>;
-  //   setEvents(final);
-  // };
-
   const getFollowStatus = async () => {
+    console.log("Checking Follow Status");
     const response: Response = await fetch(
       `/api/clubs/follow-status/${name}/${id}`,
       {
@@ -201,7 +158,55 @@ const ClubPage = (props: Props) => {
       }
     );
     if (response.ok) {
-      setFollowed(true);
+      response.json().then((value) => {
+        setFollowed(value.follow_status);
+      })
+    }
+    console.log(followed);
+  };
+
+  const ToggleFollow: (
+    clubName: string | undefined,
+    clubID: string | undefined
+  ) => Promise<void> = async (clubName, clubID) => {
+    const response = await fetch(
+      `/api/clubs/follow-status/${clubName}/${clubID}`,
+      {
+        method: "GET",
+      }
+    );
+
+    if (response.ok) {
+      response.json().then(async (value) => {
+        if (followed) {
+          const followResponse = await fetch(
+            `/api/clubs/unfollow/${clubName}/${clubID}`,
+            {
+              method: "GET",
+            }
+          );
+
+          if (followResponse.ok) {
+            setFollowed(false);
+            // setMemberUpdated({})
+          } else {
+            console.log("Follow Status: true - " + response.status);
+          }
+        } else {
+          const followResponse = await fetch(
+            `/api/clubs/follow/${clubName}/${clubID}`,
+            {
+              method: "GET",
+            }
+          );
+
+          if (followResponse.ok) {
+            setFollowed(true);
+          } else {
+            console.log("Follow Status: false - " + response.status);
+          }
+        }
+      });
     }
   };
 
@@ -235,11 +240,14 @@ const ClubPage = (props: Props) => {
         });
       } else {
         setClubExists(false);
+        console.log("ce: " + clubExists + " " + response.status);
       }
     };
     fetchClub();
     getFollowStatus();
-  }, []);
+    console.log("club exists:" + clubExists);
+    console.log("auth: " + props.isAuth);
+  }, [followed]);
 
   return (
     <>
@@ -306,7 +314,7 @@ const ClubPage = (props: Props) => {
                     mx: 2,
                     my: 1,
                   }}
-                  alt="Club image"
+                  // alt="Club image"
                   src={clubInfo.image}
                 />
 
