@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from .models import Post, Comment
 from rest_framework import status
 
-from clubs.models import Club
+from clubs.models import Club, AuditLog
 
 from .serializers import PostSerializer, CommentSerializer
 
@@ -24,6 +24,8 @@ class CreatePostView(APIView):
             # TODO: Add post image and summary of post
             
             post.save()
+            log = AuditLog.objects.create(club=club, action="Created", item="Post: " + title, user=request.user)
+            log.save()
             return Response(status=status.HTTP_201_CREATED)
         
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -51,19 +53,25 @@ class EditPostView(APIView):
         instance.body = validated_data.get('body', instance.body)
         instance.image = validated_data.get('image', instance.image)
         instance.save()
+        log = AuditLog.objects.create(club=instance.club, action="Edited", item="Post: " + instance.title, user=self.context['request'].user)
+        log.save()
         return instance
 
     
 
 class DeletePostView(APIView):
     def delete(self, request, id):
-        id = self.context['request'].parser_context['kwargs'].get('id', None)
+        # id = self.context['request'].parser_context['kwargs'].get('id', None)
         if id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            Post.objects.filter(id=id).delete()
-            return Response(status=status.HTTP_200_OK)
-    pass
+            clubid = Post.objects.get(id=id).club.id
+            clubname = Club.objects.get(id=clubid).name
+            post = Post.objects.get(id=id)
+            post.delete()
+            log = AuditLog.objects.create(club=clubid, action="Deleted", item="Post: " + post.title, user=request.user)
+            log.save()
+            return Response({'clubname':clubname,'clubid':clubid},status=status.HTTP_200_OK)
 
 
 

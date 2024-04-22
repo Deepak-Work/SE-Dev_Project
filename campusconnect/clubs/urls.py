@@ -11,4 +11,5 @@ urlpatterns = [
     path("follow-status/<str:name>/<int:id>", GetFollowStatus.as_view()),
     path("explore-clubs", GetExploreClubsView.as_view()),
     path("followed-clubs", GetFollowedClubsView.as_view()),
+    
 ]

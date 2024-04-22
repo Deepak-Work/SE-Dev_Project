@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
 
 from rest_framework.views import APIView
-from .models import Club, Follow, Role, Membership
+from .models import Club, Follow, Role, Membership, AuditLog
 from rest_framework import status
 
 from posts.models import Post
@@ -47,8 +47,9 @@ class CreateClubView(APIView):
             role = Role.objects.create(user=request.user, club=club, role="member")
             role.save()
             
+            log = AuditLog.objects.create(club=club, action="Created", item="Club: " + clubName ,user=request.user)
             # TODO - Should we immediately put the club organizer into Follows model?
-            
+            log.save()
             return Response({'club_id': str(club.id)}, status=status.HTTP_201_CREATED)
         
         # 
