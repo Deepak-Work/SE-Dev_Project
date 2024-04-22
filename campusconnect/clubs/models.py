@@ -54,6 +54,7 @@ class Role(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) # this is the user who created the role
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
     role = models.CharField(max_length=100)
+    icon = models.ImageField(upload_to='roles', blank=True, null=True, default="roles/default.png")
     
 class Membership(models.Model):
     class Meta:

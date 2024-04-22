@@ -193,7 +193,7 @@ class RemoveRoleView(APIView):
             
 class GetRoleView(APIView):
     def get(self, request, id):
-        roles = Role.objects.filter( club=id).values()
+        roles = Role.objects.filter(club=id).values()
         if roles:
             return Response({'roles_data' : roles}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
