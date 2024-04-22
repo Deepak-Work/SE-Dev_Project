@@ -85,7 +85,45 @@ class DeletePostView(APIView):
             return Response({'clubname':clubname,'clubid':clubid},status=status.HTTP_200_OK)
     pass
 
+class LikePostView(APIView):
+    def post(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            post = Post.objects.get(id=id)
+            post.likes += 1
+            post.save()
+            return Response(status=status.HTTP_200_OK)
 
+class UnlikePostView(APIView):
+    def post(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            post = Post.objects.get(id=id)
+            post.likes -= 1
+            post.save()
+            return Response(status=status.HTTP_200_OK)
+
+class DislikePostView(APIView):
+    def post(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            post = Post.objects.get(id=id)
+            post.dislikes += 1
+            post.save()
+            return Response(status=status.HTTP_200_OK)
+        
+class UndislikePostView(APIView):
+    def post(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            post = Post.objects.get(id=id)
+            post.dislikes -= 1
+            post.save()
+            return Response(status=status.HTTP_200_OK)
 
 # Comments view functions here
 class CreateCommentView(APIView):
@@ -105,8 +143,7 @@ class CreateCommentView(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class GetCommentView(APIView):
-    def get(self, request):
-        id = self.context['request'].parser_context['kwargs'].get('id', None)
+    def get(self, request, id):
         if id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -131,3 +168,35 @@ class DeleteCommentView(APIView):
         else:
             Comment.objects.filter(id=id).delete()
             return Response(status=status.HTTP_200_OK)
+        
+class ReplyCommentView(APIView):
+    def post(self, request, id):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            parent_comment = Comment.objects.get(pk=id)
+            body = serializer.data.get('body')
+            author = request.user
+            post = parent_comment.post
+            comment = Comment.objects.create(body=body, author=author, post=post, parent=parent_comment)
+            
+            comment.save()
+            return Response(status=status.HTTP_201_CREATED)
+        
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+           
+        
+# this is a potential way to get comment threads
+class GetCommentThreadsView(APIView):
+    def get(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        root_comments = Comment.objects.filter(post_id=id,parent=None).order_by('-timestamp').values()
+        def get_replies(comment):
+            replies = Comment.objects.filter(parent=comment).order_by('-timestamp').values()
+            return replies
+        comment_threads = []
+        for comment in root_comments:
+            comment['replies'] = get_replies(comment)
+            comment_threads.append(comment)
+        return Response({'comment_data': comment_threads}, status=status.HTTP_200_OK)
+    

@@ -26,4 +26,8 @@ class Comment(models.Model):
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
     time_posted = models.DateTimeField(default=datetime.datetime.now)
+    parent = models.ForeignKey('self', default=None, on_delete=models.CASCADE, null=True, related_name='replies')
+    
+    def __str__(self):
+        return self.body
 
