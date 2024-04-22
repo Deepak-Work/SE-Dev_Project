@@ -170,12 +170,10 @@ const PostPage = (props: Props) => {
       });
 
       if (response.ok) {
-        console.log(response);
-
         const data = await response.json();
-        const { clubname, clubid } = data;
+        const { club_name, club_id } = data;
 
-        navigate(`/club/${clubname}/${clubid}`);
+        navigate(`/club/${club_name}/${club_id}`);
       } else {
         console.log("Could not delete post");
       }
