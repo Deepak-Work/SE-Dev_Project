@@ -329,13 +329,13 @@ const ClubPage = (props: Props) => {
 
                   }}
                 >
-                  <Box sx={{width : "100%" , overflow:"auto", scrollbarColor:"#8B139C #7108d8", scrollbarWidth:"thin"}}>
-                  <Typography ml={2} variant="h5" color="white" fontFamily={"Lobster"} sx={{wordBreak:"break-word"}}>
+                  <Box sx={{width : "100%" , minHeight: "25%", overflow:"auto", scrollbarColor:"#8B139C #7108d8", scrollbarWidth:"thin"}}>
+                  <Typography ml={2} variant="h5" color="white" fontFamily={"RampartOne"} sx={{ whiteSpace:"pre-line", wordBreak:"break-word" }}>
                     {clubInfo.name}
                   </Typography>
                   </Box>
                   <Box sx={{width : "100%" , overflow:"auto", scrollbarColor:"#8B139C #7108d8", scrollbarWidth:"thin"}}>
-                  <Typography ml={2} variant="subtitle1" color="white" fontFamily={"Lobster"} sx={{wordBreak:"break-word"}}>
+                  <Typography ml={2} variant="subtitle1" color="white" fontFamily={"Lobster"} sx={{ whiteSpace:"pre-line", wordBreak:"break-word" }}>
                     {clubInfo.description}
                   </Typography>
                   </Box>

@@ -33,6 +33,7 @@ import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import CommentIcon from "@mui/icons-material/Comment";
 import EditPost from "./EditPost";
 import DeletePost from "./DeletePost";
+import CommentElement from "../Comments/CommentElement";
 
 interface Props {
   isAuth: boolean;
@@ -56,9 +57,16 @@ interface PostProps {
 }
 
 interface Comment {
-  id: number;
-  postId: any;
-  text: string;
+  replyStatus: boolean;
+  commentId: number;
+  replyId? : number
+  author: string;
+  replyAuthor?: string;
+  body: string;
+  replyBody?: string;
+  likes: number;
+  dislikes: number;
+  timePosted : string;
 }
 
 interface CustomPaletteOptions extends PaletteOptions {
@@ -99,18 +107,23 @@ const PostPage = (props: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const [editPostOpen, setEditPostOpen] = useState(false);
-  const handleEditPostOpen = () => setEditPostOpen(true);
-  const handleEditPostClose = () => setEditPostOpen(false);
-
+  const handleEditPostOpen = () => {
+    setAnchorEl(null);
+    setEditPostOpen(true);
+  };
+  const handleEditPostClose = (event?: object, reason?: string) => {
+    if (reason == "backdropClick") return;
+    setEditPostOpen(false);
+  };
 
   const [deletePostOpen, setDeletePostOpen] = useState(false);
   const handleDeletePostOpen = () => {
     setDeletePostOpen(true);
     setAnchorEl(null);
-  }
+  };
   const handleDeletePostClose = () => {
     setDeletePostOpen(false);
-  }
+  };
 
   // const handleEditSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
   //   const data = new FormData(event.currentTarget);
@@ -121,7 +134,6 @@ const PostPage = (props: Props) => {
   //   form.append("body", data.get("edit-post-body") as string);
   //   form.append("id", id as string)
   //   if (data.get("edit-post-image")) form.append("image", data.get("edit-post-image"));
-
 
   //   const headers = {
   //     "Content-Type": "application/json",
@@ -187,8 +199,11 @@ const PostPage = (props: Props) => {
     // Simulating fetching comments from server
     // Replace this with your actual API call
     const mockComments: Comment[] = [
-      { id: 1, postId: postId, text: "First comment" },
-      { id: 2, postId: postId, text: "Second comment" },
+      { replyStatus: true, commentId: 1, replyId:2, author:"dsfd", replyAuthor:"ssdf", body:"Nice Day", replyBody:"sdfdsaa", likes: 0, dislikes: 0, timePosted: "2024-10-23T00:02:13"},
+      { replyStatus: true, commentId: 1, replyId:2, author:"dsfd", replyAuthor:"ssdf", 
+      body:"Nice Day Nice Day Nice DayNice DayNice DayNice DayNice DayNice DayNice DayNice Day Nice Day Nice DayNice DayNice DayNice DayNice DayNice DayNice Day", replyBody:"sdfdsaa", likes: 0, dislikes: 0, timePosted: "2024-10-23T00:02:13"},
+      { replyStatus: false, commentId: 2, author:"dsfd", body:"Nice Day", likes: 0, dislikes: 0, timePosted: "2024-10-23T00:02:13"},
+
       // Add more comments as needed
     ];
     setComments(mockComments);
@@ -199,6 +214,14 @@ const PostPage = (props: Props) => {
   };
 
   const handleDislike = () => {
+    // Implement dislike functionality
+  };
+
+  const handleCommentLike = () => {
+    // Implement like functionality
+  };
+
+  const handleCommentDislike = () => {
     // Implement dislike functionality
   };
 
@@ -254,13 +277,22 @@ const PostPage = (props: Props) => {
           >
             <NavBar username={username} />
 
-            <Box sx={{ width: "100%", height: "80vh", border:"0px white solid", padding:2,                     "&::-webkit-scrollbar": {
-                      display: "none",
-                    }}}>
+            <Box
+              sx={{
+                width: "100%",
+                height: "80vh",
+                minWidth:"650px",
+                border: "0px white solid",
+                padding: 2,
+                "&::-webkit-scrollbar": {
+                  display: "none",
+                },
+              }}
+            >
               <Paper
                 elevation={3}
                 sx={{
-                  ml:10,
+                  ml: 10,
                   borderRadius: "20px",
                   textAlign: "left",
                   // minWidth: "45%",
@@ -317,15 +349,17 @@ const PostPage = (props: Props) => {
                     mt={0}
                     variant="h5"
                     color="white"
-                    fontFamily={"Lobster"}
-                    onClick={() => navigate(`/club/${postInfo.clubName}/${postInfo.clubId}`)}
+                    fontFamily={"RampartOne"}
+                    onClick={() =>
+                      navigate(`/club/${postInfo.clubName}/${postInfo.clubId}`)
+                    }
                     sx={{
                       color: "back.light",
                       textDecoration: "underline dashed",
                       textDecorationColor: "back.dark",
                       wordBreak: "break-word",
                       cursor: "pointer",
-                      "&:hover": { color: "secondary.main" },
+                      "&:hover": { color: "back.main" },
                     }}
                   >
                     {postInfo.clubName}
@@ -333,41 +367,348 @@ const PostPage = (props: Props) => {
                 </Box>
               </Paper>
 
-              <Paper
-                    elevation={4}
+              <Box
+                sx={{
+                  width: "80%",
+                  height: "80%",
+                  minWidth: "700px",
+                  display: "flex",
+                  flexFlow: "row nowrap",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  border: "0px solid",
+                }}
+              >
+                <Paper
+                  elevation={4}
+                  sx={{
+                    ml: 10,
+                    mt: 2,
+                    borderRadius: "20px",
+                    textAlign: "left",
+                    width: "100%",
+                    height: "100%",
+                    overflow: "auto",
+                    display: "flex",
+                    flexFlow: "column nowrap",
+                    justifyContent: "space-between",
+                    border: "5px solid #000000",
+                    "&::-webkit-scrollbar": {
+                      display: "none",
+                    },
+                    // float: "top",
+                  }}
+                >
+                  <Box
                     sx={{
-                      ml:10,
-                      mt: 2,
+                      borderRadius: "10px 10px 0 0",
+                      borderTop: "0px solid #000000",
+                      borderBottom: "5px solid #000000",
+                      borderLeft: "0px solid #000000",
+                      borderRight: "0px solid #000000",
+                      height: "fit-content",
+                      background:
+                        "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
+                      display: "flex",
+                      flexFlow: "column nowrap",
+                      justifyContent: "center",
+                      alignItems: "left",
+                      paddingRight: "10px",
+                    }}
+                  >
+                    <Typography
+                      variant="h3"
+                      color="white"
+                      fontWeight="bold"
+                      fontFamily={"Lobster"}
+                      sx={{ pt: 1, pl: 3 }}
+                    >
+                      {postInfo.title}
+                    </Typography>
+
+                    <Typography
+                      variant="h5"
+                      color="white"
+                      fontWeight="bold"
+                      fontFamily={"Lobster"}
+                      sx={{ pt: 1, pl: 3 }}
+                    >
+                      {postInfo.author} -{" "}
+                      {convertDate(new Date(postInfo.timePosted))}
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexFlow: "column wrap",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      border: "0px solid",
+                      borderColor: "back.dark",
                       borderRadius: "20px",
+                      m: 2,
+                    }}
+                  >
+                    <Typography
+                      ml={0}
+                      mt={0}
+                      variant="h6"
+                      color="back.dark"
+                      fontFamily={"Lobster"}
+                      sx={{
+                        pt: 1,
+                        pl: 3,
+                        wordBreak: "break-word",
+                        whiteSpace: "pre-line",
+                      }}
+                    >
+                      {postInfo.body}
+                    </Typography>
+                    {postInfo.postImage && (
+                      <Box
+                        component="img"
+                        width={300}
+                        height={300}
+                        src={postInfo.postImage}
+                      ></Box>
+                    )}
+                  </Box>
+                  <Box
+                    sx={{
+                      borderRadius: "0 0 10px 10px",
+                      borderTop: "5px solid #000000",
+                      borderBottom: "0px solid #000000",
+                      borderLeft: "0px solid #000000",
+                      borderRight: "0px solid #000000",
+                      height: "fit-content",
+                      background:
+                        "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
+                      display: "flex",
+                      flexFlow: "row nowrap",
+                      justifyContent: "space-between",
+                      alignItems: "left",
+                      padding: "10px",
+                    }}
+                  >
+                    <Box sx={{ display: "flex", flexFlow: "row wrap" }}>
+                      <Button
+                        sx={{
+                          display: "flex",
+                          margin: 2,
+                          border: "2px solid",
+                          borderColor: "back.dark",
+                          borderRadius: "10px",
+                          backgroundColor: "back.light",
+                          "&:hover": { backgroundColor: "secondary.light" },
+                        }}
+                      >
+                        <IconButton onClick={handleLike} aria-label="Like post">
+                          <ThumbUpAltIcon />
+                        </IconButton>
+                        <Typography
+                          color="primary.main"
+                          fontWeight="bold"
+                          fontFamily={"Lobster"}
+                          sx={{}}
+                        >
+                          Like{" "}
+                        </Typography>
+
+                        <Box
+                          sx={{
+                            color: "back.light",
+                            border: "2px solid black",
+                            mx: 1,
+                            p: 1,
+                            borderRadius: "10px",
+                            backgroundColor: "primary.main",
+                          }}
+                        >
+                          <Typography
+                            color="back.dark"
+                            fontWeight="bold"
+                            fontFamily={"Lobster"}
+                            sx={{ color: "back.light" }}
+                          >
+                            {postInfo.likes}
+                          </Typography>
+                        </Box>
+                      </Button>
+
+                      <Button
+                        sx={{
+                          display: "flex",
+                          margin: 2,
+                          border: "2px solid",
+                          borderColor: "back.dark",
+                          borderRadius: "10px",
+                          backgroundColor: "back.light",
+                          "&:hover": { backgroundColor: "secondary.light" },
+                        }}
+                      >
+                        <IconButton
+                          onClick={handleDislike}
+                          aria-label="dislike post"
+                        >
+                          <ThumbDownIcon />
+                        </IconButton>
+                        <Typography
+                          color="primary.main"
+                          fontWeight="bold"
+                          fontFamily={"Lobster"}
+                          sx={{}}
+                        >
+                          Dislike{" "}
+                        </Typography>
+
+                        <Box
+                          sx={{
+                            color: "back.light",
+                            border: "2px solid black",
+                            mx: 1,
+                            p: 1,
+                            borderRadius: "10px",
+                            backgroundColor: "primary.main",
+                          }}
+                        >
+                          <Typography
+                            color="back.dark"
+                            fontWeight="bold"
+                            fontFamily={"Lobster"}
+                            sx={{ color: "back.light" }}
+                          >
+                            {postInfo.dislikes}
+                          </Typography>
+                        </Box>
+                      </Button>
+                      <Button
+                        onClick={() => toggleComments()}
+                        sx={{
+                          display: "flex",
+                          margin: 2,
+                          border: "2px solid",
+                          borderColor: "back.dark",
+                          borderRadius: "10px",
+                          backgroundColor: "back.light",
+                          "&:hover": { backgroundColor: "secondary.light" },
+                        }}
+                      >
+                        <IconButton aria-label="dislike post">
+                          <CommentIcon />
+                        </IconButton>
+                        <Typography
+                          color="primary.main"
+                          fontWeight="bold"
+                          fontFamily={"Lobster"}
+                          sx={{}}
+                        >
+                          Comments{" "}
+                        </Typography>
+
+                        <Box
+                          sx={{
+                            color: "back.light",
+                            border: "2px solid black",
+                            mx: 1,
+                            p: 1,
+                            borderRadius: "10px",
+                            backgroundColor: "primary.main",
+                          }}
+                        >
+                          <Typography
+                            color="back.dark"
+                            fontWeight="bold"
+                            fontFamily={"Lobster"}
+                            sx={{ color: "back.light" }}
+                          >
+                            {1}
+                          </Typography>
+                        </Box>
+                      </Button>
+                    </Box>
+
+                    <Tooltip title="Options">
+                      <Button
+                        onClick={handleClick}
+                        sx={{
+                          display: "flex",
+                          margin: 2,
+                          border: "2px solid",
+                          borderColor: "back.light",
+                          borderRadius: "10px",
+                          "&:hover": { backgroundColor: "secondary.light" },
+                        }}
+                      >
+                        <IconButton
+                          aria-label="more"
+                          aria-controls="three-dotted-menu"
+                          aria-haspopup="true"
+                          size="large"
+                        >
+                          <MoreHorizIcon sx={{ color: "white" }} />
+                        </IconButton>
+                      </Button>
+                    </Tooltip>
+
+                    <Menu
+                      id="three-dotted-menu"
+                      anchorEl={anchorEl}
+                      open={Boolean(anchorEl)}
+                      onClose={() => handleClose("")}
+                    >
+                      <MenuItem onClick={() => handleEditPostOpen()}>
+                        <Typography fontFamily={"Lobster"}>
+                          Edit Post
+                        </Typography>
+                      </MenuItem>
+                      {/* <MenuItem onClick={() => handleClose("delete")}> */}
+                      <MenuItem
+                        onClick={() => {
+                          handleDeletePostOpen();
+                        }}
+                      >
+                        <Typography fontFamily={"Lobster"}>
+                          Delete Post
+                        </Typography>
+                      </MenuItem>
+                    </Menu>
+                  </Box>
+                </Paper>
+                {showComments && (
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      mt: 2,
+                      borderRadius: "15px",
                       textAlign: "left",
-                      width: "80%",
-                      height: "80%",
+                      height: "100%",
+                      width: "40%",
+                      minWidth: "300px",
+                      minHeight: "400px",
+                      maxHeight: "800px",
                       overflow: "auto",
                       display: "flex",
-                      flexFlow:"column nowrap",
-                      justifyContent:"space-between",
+                      flexDirection: "column",
                       border: "5px solid #000000",
-                      "&::-webkit-scrollbar": {
-                        display: "none",
+                      float: "right",
+                      "&::-webkit-scrollbar":{
+                        display:"none"
                       },
-                      // float: "top",
+                      // position:"absolute",
                     }}
                   >
                     <Box
                       sx={{
                         borderRadius: "10px 10px 0 0",
-                        borderTop: "0px solid #000000",
-                        borderBottom:"5px solid #000000",
-                        borderLeft:"0px solid #000000",
-                        borderRight:"0px solid #000000",
-                        height: "fit-content",
-                        background:
-                          "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
+                        border: "0px solid #000",
+                        borderBottom: "5px solid #000",
+                        height: "fit",
+                        // background:
+                        //   "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
+                        backgroundColor: "secondary.main",
                         display: "flex",
-                        flexFlow: "column nowrap",
-                        justifyContent: "center",
-                        alignItems: "left",
-                        paddingRight: "10px",
+                        justifyContent: "space-between",
+                        alignItems: "center",
                       }}
                     >
                       <Typography
@@ -375,157 +716,21 @@ const PostPage = (props: Props) => {
                         color="white"
                         fontWeight="bold"
                         fontFamily={"Lobster"}
-                        sx={{ pt: 1, pl: 3 }}
+                        sx={{ pt: 1, pl: 3, pr: 3 }}
                       >
-                        {postInfo.title}
-                      </Typography>
-
-                      <Typography
-                        variant="h5"
-                        color="white"
-                        fontWeight="bold"
-                        fontFamily={"Lobster"}
-                        sx={{ pt: 1, pl: 3 }}
-                      >
-                        {postInfo.author} - {convertDate(new Date(postInfo.timePosted))}
+                        Comments
                       </Typography>
                     </Box>
-                    <Box sx={{ display: "flex", flexFlow:"column wrap", justifyContent:"center", alignItems:"center", border:"0px solid", borderColor:"back.dark", borderRadius:"20px", m:2,}}>
-                      <Typography                     
-                      ml={0}
-                    mt={0}
-                    variant="h6"
-                    color="back.dark"
-                    fontFamily={"Lobster"}
-                    sx={{ pt: 1, pl: 3, wordBreak:"break-word", whiteSpace: "pre-line" }}>
-                      {postInfo.body}
-                    </Typography>
-                    {postInfo.postImage && <Box component="img" width={300} height={300} src={postInfo.postImage}></Box>}
-                    
-                      </Box>
-                      <Box
-                      sx={{
-                        borderRadius: "0 0 10px 10px",
-                        borderTop: "5px solid #000000",
-                        borderBottom:"0px solid #000000",
-                        borderLeft:"0px solid #000000",
-                        borderRight:"0px solid #000000",
-                        height: "fit-content",
-                        background:
-                          "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
-                        display: "flex",
-                        flexFlow: "row nowrap",
-                        justifyContent: "space-between",
-                        alignItems: "left",
-                        padding: "10px",
-                      }}
-                    >
-                      <Box sx={{display:"flex", flexFlow:"row wrap"}}>
-                    <Button sx={{display:"flex", margin: 2, border:"2px solid", borderColor:"back.dark", borderRadius:"10px", backgroundColor:"back.light", "&:hover": {backgroundColor:"secondary.light"}}}>
-                      <IconButton onClick={handleLike} aria-label="Like post">
-                    <ThumbUpAltIcon />
-                    </IconButton>
-                    <Typography 
-                        color="primary.main"
-                        fontWeight="bold"
-                        fontFamily={"Lobster"}
-                        sx={{}}>Like </Typography>
-                    
-                    <Box sx={{color: "back.light", border:"2px solid black", mx:1,p:1, borderRadius:"10px", backgroundColor:"primary.main"}}>
-                      <Typography                         color="back.dark"
-                        fontWeight="bold"
-                        fontFamily={"Lobster"}
-                        sx={{color:"back.light"}}>
-                      {postInfo.likes} 
-                      </Typography>
-
-                      </Box>
-                  
-                      </Button>
-                    
-                  <Button sx={{display:"flex", margin: 2, border:"2px solid", borderColor:"back.dark", borderRadius:"10px", backgroundColor:"back.light", "&:hover": {backgroundColor:"secondary.light"}}}>
-                  <IconButton onClick={handleDislike} aria-label="dislike post">
-                    <ThumbDownIcon />
-                    </IconButton>
-                    <Typography 
-                        color="primary.main"
-                        fontWeight="bold"
-                        fontFamily={"Lobster"}
-                        sx={{}}>Dislike </Typography>
-                    
-                    <Box sx={{color: "back.light", border:"2px solid black", mx:1,p:1, borderRadius:"10px", backgroundColor:"primary.main"}}>
-                      <Typography                         color="back.dark"
-                        fontWeight="bold"
-                        fontFamily={"Lobster"}
-                        sx={{color:"back.light"}}>
-                      {postInfo.dislikes} 
-                      </Typography>
-
-                      </Box>
-                  
-                      </Button>
-                  <Button sx={{display:"flex", margin: 2, border:"2px solid", borderColor:"back.dark", borderRadius:"10px", backgroundColor:"back.light", "&:hover": {backgroundColor:"secondary.light"}}}>
-                  <IconButton
-                    onClick={toggleComments}
-                    aria-label="dislike post"
-                  >
-                    <CommentIcon />
-                    </IconButton>
-                    <Typography 
-                        color="primary.main"
-                        fontWeight="bold"
-                        fontFamily={"Lobster"}
-                        sx={{}}>Comments </Typography>
-                    
-                    <Box sx={{color: "back.light", border:"2px solid black", mx:1,p:1, borderRadius:"10px", backgroundColor:"primary.main"}}>
-                      <Typography                         color="back.dark"
-                        fontWeight="bold"
-                        fontFamily={"Lobster"}
-                        sx={{color:"back.light"}}>
-                      {1} 
-                      </Typography>
-
-                      </Box>
-                  
-                      </Button>
-                      </Box>
-
-                  <Tooltip title="Options">
-                  <Button onClick={handleClick} sx={{display:"flex", margin: 2, border:"2px solid", borderColor:"back.light", borderRadius:"10px",  "&:hover": {backgroundColor:"secondary.light"}}}>
-                    <IconButton
-                      aria-label="more"
-                      aria-controls="three-dotted-menu"
-                      aria-haspopup="true"
-                      size="large"
-                    >
-                      <MoreHorizIcon sx={{color:"white"}} />
-                    </IconButton>
-                    </Button>
-                  </Tooltip>
-                  <Menu
-                    id="three-dotted-menu"
-                    anchorEl={anchorEl}
-                    open={Boolean(anchorEl)}
-                    onClose={() => handleClose("")}
-                  >
-                    <MenuItem onClick={() => handleEditPostOpen()}>
-                      <Typography fontFamily={"Lobster"}>
-                      Edit Post
-                      </Typography>
-                    </MenuItem>
-                    {/* <MenuItem onClick={() => handleClose("delete")}> */}
-                    <MenuItem onClick={() => {handleDeletePostOpen()}}>
-                      <Typography fontFamily={"Lobster"}>
-                      Delete Post
-                      </Typography>
-                    </MenuItem>
-
-                  </Menu>
-                
+                    <Box sx={{display:"flex", flexFlow:"column nowrap", alignItems:"center"}}>
+                      {comments.map((comment) => (
+                          <CommentElement replyStatus={comment.replyStatus} commentId={comment.commentId} replyId={comment.replyId} author={comment.author} replyAuthor={comment.replyAuthor} body={comment.body} replyBody={comment.replyBody} likes={comment.likes} dislikes={comment.dislikes} timePosted={comment.timePosted}/>
+                      ))}
                     </Box>
+                  </Paper>
+                )}
+              </Box>
 
-                </Paper>
-                {/* <Grid
+              {/* <Grid
                 mt={0}
                 container
                 direction={"row"}
@@ -550,55 +755,16 @@ const PostPage = (props: Props) => {
                   
                     </Grid>
                 </Grid> */}
-              <EditPost editPostOpen={editPostOpen} handleEditPostClose={handleEditPostClose}/> 
-              <DeletePost deletePostOpen={deletePostOpen} handleDeletePostClose={handleDeletePostClose} handleClose={handleClose}/>
-                <Grid item>
-                  {showComments && (
-                    <Paper
-                      elevation={3}
-                      sx={{
-                        mt: 2,
-                        borderRadius: "15px",
-                        textAlign: "left",
-                        minHeight: "400px",
-                        maxHeight: "800px",
-                        overflow: "auto",
-                        display: "flex",
-                        flexDirection: "column",
-                        border: "5px solid #000000",
-                        float: "right",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          borderRadius: "10px",
-                          border: "3px solid #000000",
-                          height: "fit",
-                          background:
-                            "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Typography
-                          variant="h5"
-                          color="white"
-                          fontWeight="bold"
-                          sx={{ pt: 1, pl: 3, pr: 3 }}
-                        >
-                          Comments
-                        </Typography>
-                      </Box>
-                      <ul>
-                        {comments.map((comment) => (
-                          <li key={comment.id}>{comment.text}</li>
-                        ))}
-                      </ul>
-                    </Paper>
-                  )}
-                </Grid>
-
+              <EditPost
+                editPostOpen={editPostOpen}
+                handleEditPostClose={handleEditPostClose}
+              />
+              <DeletePost
+                deletePostOpen={deletePostOpen}
+                handleDeletePostClose={handleDeletePostClose}
+                handleClose={handleClose}
+              />
+              <Grid item></Grid>
             </Box>
           </Box>
         </ThemeProvider>
