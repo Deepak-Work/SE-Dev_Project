@@ -104,10 +104,12 @@ const PostPage = (props: Props) => {
 
 
   const [deletePostOpen, setDeletePostOpen] = useState(false);
-  const handleDeletePostOpen = () => setDeletePostOpen(true);
+  const handleDeletePostOpen = () => {
+    setDeletePostOpen(true);
+    setAnchorEl(null);
+  }
   const handleDeletePostClose = () => {
     setDeletePostOpen(false);
-    setAnchorEl(null);
   }
 
   // const handleEditSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -252,17 +254,18 @@ const PostPage = (props: Props) => {
           >
             <NavBar username={username} />
 
-            <Box sx={{ml:10, width: "100%", height: "80vh", border:"0px white solid", padding:2,                     "&::-webkit-scrollbar": {
+            <Box sx={{ width: "100%", height: "80vh", border:"0px white solid", padding:2,                     "&::-webkit-scrollbar": {
                       display: "none",
                     }}}>
               <Paper
                 elevation={3}
                 sx={{
+                  ml:10,
                   borderRadius: "20px",
                   textAlign: "left",
                   // minWidth: "45%",
                   // maxWidth: "80%",
-                  minWidth: "400px",
+                  minWidth: "350px",
                   width: "20%",
                   overflow: "auto",
                   display: "flex",
@@ -333,6 +336,7 @@ const PostPage = (props: Props) => {
               <Paper
                     elevation={4}
                     sx={{
+                      ml:10,
                       mt: 2,
                       borderRadius: "20px",
                       textAlign: "left",
@@ -351,8 +355,11 @@ const PostPage = (props: Props) => {
                   >
                     <Box
                       sx={{
-                        borderRadius: "10px",
-                        border: "3px solid #000000",
+                        borderRadius: "10px 10px 0 0",
+                        borderTop: "0px solid #000000",
+                        borderBottom:"5px solid #000000",
+                        borderLeft:"0px solid #000000",
+                        borderRight:"0px solid #000000",
                         height: "fit-content",
                         background:
                           "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
@@ -398,8 +405,11 @@ const PostPage = (props: Props) => {
                       </Box>
                       <Box
                       sx={{
-                        borderRadius: "10px",
-                        border: "3px solid #000000",
+                        borderRadius: "0 0 10px 10px",
+                        borderTop: "5px solid #000000",
+                        borderBottom:"0px solid #000000",
+                        borderLeft:"0px solid #000000",
+                        borderRight:"0px solid #000000",
                         height: "fit-content",
                         background:
                           "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
@@ -499,11 +509,15 @@ const PostPage = (props: Props) => {
                     onClose={() => handleClose("")}
                   >
                     <MenuItem onClick={() => handleEditPostOpen()}>
+                      <Typography fontFamily={"Lobster"}>
                       Edit Post
+                      </Typography>
                     </MenuItem>
                     {/* <MenuItem onClick={() => handleClose("delete")}> */}
                     <MenuItem onClick={() => {handleDeletePostOpen()}}>
+                      <Typography fontFamily={"Lobster"}>
                       Delete Post
+                      </Typography>
                     </MenuItem>
 
                   </Menu>
