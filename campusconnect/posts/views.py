@@ -19,9 +19,10 @@ class CreatePostView(APIView):
             title = serializer.data.get('title')
             author = request.user
             body = serializer.data.get('body')
+            image = request.data.get("image")
             club = Club.objects.get(id=request.data['id'])
-            post = Post.objects.create(title=title, author=author, body=body, club=club)
-
+            post = Post.objects.create(title=title, author=author, body=body, club=club, image=image)
+            
             # TODO: Add post image and summary of post            
             post.save()
             return Response(status=status.HTTP_201_CREATED)
@@ -40,12 +41,17 @@ class GetPostView(APIView):
             posts = Post.objects.order_by('-time_posted').values()
             for post in posts:
                 post['author'] = User.objects.get(id=post['author_id']).username
-                post['clubname'] = Club.objects.get(id=post['club_id']).name
+                post['club_name'] = Club.objects.get(id=post['club_id']).name
                 del post['author_id']
         else:
             posts = Post.objects.filter(id=id).order_by('-time_posted').values()[0]
             posts['author'] = User.objects.get(id=posts['author_id']).username
-            posts['clubname'] = Club.objects.get(id=posts['club_id']).name
+            club = Club.objects.get(id=posts['club_id'])
+            posts['club_name'] = club.name
+            posts['club_image'] = club.image.url
+            post_image = Post.objects.get(id=id).image
+            if post_image:
+                posts['image'] = post_image.url
             del posts['author_id']
         if posts:
             return Response({'post_data': posts}, status=status.HTTP_200_OK)
@@ -63,7 +69,13 @@ class EditPostView(APIView):
             post = Post.objects.get(id=request.data['id'])
             post.title = serializer.data.get('title')
             post.body = serializer.data.get('body')
-            post.image = serializer.data.get('image')
+            post.image = request.data.get('image')
+            # if serializer.data.get('title'):
+            #     post.title = serializer.data.get('title')
+            # if serializer.data.get('body'):
+            #     post.body = serializer.data.get('body')
+            # if serializer.data.get('image'):
+            #     post.image = serializer.data.get('image')
             post.save()
         else:
             print("Serializer invalid - Edit")
@@ -82,7 +94,7 @@ class DeletePostView(APIView):
             clubname = Club.objects.get(id=clubid).name
             post = Post.objects.get(id=id)
             post.delete()
-            return Response({'clubname':clubname,'clubid':clubid},status=status.HTTP_200_OK)
+            return Response({'club_name':clubname,'club_id':clubid},status=status.HTTP_200_OK)
     pass
 
 class LikePostView(APIView):
