@@ -31,6 +31,8 @@ import NavBar from "../LandingPage/NavBar";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import CommentIcon from "@mui/icons-material/Comment";
+import EditPost from "./EditPost";
+import DeletePost from "./DeletePost";
 
 interface Props {
   isAuth: boolean;
@@ -95,59 +97,49 @@ const PostPage = (props: Props) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [postInfo, setPostInfo] = useState<PostProps>({} as PostProps);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
   const [editPostOpen, setEditPostOpen] = useState(false);
-  const [editPostImage, setEditPostImage] = useState<ImageFile>(null);
-
-  const handleImageSelect = (event: any) => {
-    let imageFiles = event.target.files;
-
-    if (!imageFiles || imageFiles.length == 0) {
-      return;
-    }
-
-    setEditPostImage(imageFiles[0]);
-  };
-
-  const handleImageRemove = () => {
-    setEditPostImage(null);
-  };
-
   const handleEditPostOpen = () => setEditPostOpen(true);
   const handleEditPostClose = () => setEditPostOpen(false);
 
-  interface EditPost {
-    title: string;
-    body: string;
-    id: string;
+
+  const [deletePostOpen, setDeletePostOpen] = useState(false);
+  const handleDeletePostOpen = () => setDeletePostOpen(true);
+  const handleDeletePostClose = () => {
+    setDeletePostOpen(false);
+    setAnchorEl(null);
   }
 
-  const handleEditSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    const data = new FormData(event.currentTarget);
-    const form: EditPost = {
-      title: data.get("edit-post-title") as string,
-      body: data.get("edit-post-body") as string,
-      id: id as string,
-    };
+  // const handleEditSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  //   const data = new FormData(event.currentTarget);
 
-    const headers = {
-      "Content-Type": "application/json",
-      "X-CSRFToken": Cookies.get("csrftoken") || "",
-    };
+  //   const form = new FormData();
 
-    const response: Response = await fetch(`/api/posts/post/edit`, {
-      method: "PUT",
-      headers: headers,
-      body: JSON.stringify(form),
-    });
+  //   form.append("title", data.get("edit-post-title") as string);
+  //   form.append("body", data.get("edit-post-body") as string);
+  //   form.append("id", id as string)
+  //   if (data.get("edit-post-image")) form.append("image", data.get("edit-post-image"));
 
-    if (response.ok) {
-      handleEditPostClose();
-      // window.location.reload();
-      console.log("New Post Edited Successfully");
-    } else {
-      console.log("Edit Post failed");
-    }
-  };
+
+  //   const headers = {
+  //     "Content-Type": "application/json",
+  //     "X-CSRFToken": Cookies.get("csrftoken") || "",
+  //   };
+
+  //   const response: Response = await fetch(`/api/posts/post/edit`, {
+  //     method: "PUT",
+  //     headers: headers,
+  //     body: JSON.stringify(form),
+  //   });
+
+  //   if (response.ok) {
+  //     handleEditPostClose();
+  //     // window.location.reload();
+  //     console.log("New Post Edited Successfully");
+  //   } else {
+  //     console.log("Edit Post failed");
+  //   }
+  // };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -216,7 +208,6 @@ const PostPage = (props: Props) => {
       if (response.ok) {
         response.json().then((value) => {
           const posts = value.post_data;
-
           const postInfo: PostProps = {
             body: posts.body,
             title: posts.title,
@@ -261,7 +252,9 @@ const PostPage = (props: Props) => {
           >
             <NavBar username={username} />
 
-            <Box sx={{width: "100%", height: "80vh", border:"0px white solid", padding:2}}>
+            <Box sx={{ml:10, width: "100%", height: "80vh", border:"0px white solid", padding:2,                     "&::-webkit-scrollbar": {
+                      display: "none",
+                    }}}>
               <Paper
                 elevation={3}
                 sx={{
@@ -275,9 +268,6 @@ const PostPage = (props: Props) => {
                   display: "flex",
                   flexFlow: "row nowrap",
                   border: "5px solid #000000",
-                  "&::-webkit-scrollbar": {
-                    display: "none",
-                  },
                   // ml: 5,
                 }}
               >
@@ -344,17 +334,18 @@ const PostPage = (props: Props) => {
                     elevation={4}
                     sx={{
                       mt: 2,
-                      borderRadius: "15px",
+                      borderRadius: "20px",
                       textAlign: "left",
-                      width: "100%",
+                      width: "80%",
                       height: "80%",
-                      // minHeight: "400px",
-                      // maxHeight: "800px",
                       overflow: "auto",
                       display: "flex",
+                      flexFlow:"column nowrap",
                       justifyContent:"space-between",
-                      flexDirection: "column",
                       border: "5px solid #000000",
+                      "&::-webkit-scrollbar": {
+                        display: "none",
+                      },
                       // float: "top",
                     }}
                   >
@@ -379,7 +370,7 @@ const PostPage = (props: Props) => {
                         fontFamily={"Lobster"}
                         sx={{ pt: 1, pl: 3 }}
                       >
-                        {postInfo.title} <br />
+                        {postInfo.title}
                       </Typography>
 
                       <Typography
@@ -389,20 +380,21 @@ const PostPage = (props: Props) => {
                         fontFamily={"Lobster"}
                         sx={{ pt: 1, pl: 3 }}
                       >
-                        {postInfo.author} -
-                        {convertDate(new Date(postInfo.timePosted))}
+                        {postInfo.author} - {convertDate(new Date(postInfo.timePosted))}
                       </Typography>
                     </Box>
-                    <Box sx={{border:"0px solid", borderColor:"back.dark", borderRadius:"20px", m:2,height:"100%"}}>
+                    <Box sx={{ display: "flex", flexFlow:"column wrap", justifyContent:"center", alignItems:"center", border:"0px solid", borderColor:"back.dark", borderRadius:"20px", m:2,}}>
                       <Typography                     
                       ml={0}
                     mt={0}
                     variant="h6"
                     color="back.dark"
                     fontFamily={"Lobster"}
-                    sx={{ pt: 1, pl: 3 }}>
+                    sx={{ pt: 1, pl: 3, wordBreak:"break-word", whiteSpace: "pre-line" }}>
                       {postInfo.body}
                     </Typography>
+                    {postInfo.postImage && <Box component="img" width={300} height={300} src={postInfo.postImage}></Box>}
+                    
                       </Box>
                       <Box
                       sx={{
@@ -489,12 +481,11 @@ const PostPage = (props: Props) => {
                       </Box>
 
                   <Tooltip title="Options">
-                  <Button sx={{display:"flex", margin: 2, border:"2px solid", borderColor:"back.light", borderRadius:"10px",  "&:hover": {backgroundColor:"secondary.light"}}}>
+                  <Button onClick={handleClick} sx={{display:"flex", margin: 2, border:"2px solid", borderColor:"back.light", borderRadius:"10px",  "&:hover": {backgroundColor:"secondary.light"}}}>
                     <IconButton
                       aria-label="more"
                       aria-controls="three-dotted-menu"
                       aria-haspopup="true"
-                      onClick={handleClick}
                       size="large"
                     >
                       <MoreHorizIcon sx={{color:"white"}} />
@@ -507,12 +498,14 @@ const PostPage = (props: Props) => {
                     open={Boolean(anchorEl)}
                     onClose={() => handleClose("")}
                   >
-                    <MenuItem onClick={() => handleClose("delete")}>
-                      Delete Post
-                    </MenuItem>
                     <MenuItem onClick={() => handleEditPostOpen()}>
                       Edit Post
                     </MenuItem>
+                    {/* <MenuItem onClick={() => handleClose("delete")}> */}
+                    <MenuItem onClick={() => {handleDeletePostOpen()}}>
+                      Delete Post
+                    </MenuItem>
+
                   </Menu>
                 
                     </Box>
@@ -543,201 +536,8 @@ const PostPage = (props: Props) => {
                   
                     </Grid>
                 </Grid> */}
-
-                <Dialog open={editPostOpen} onClose={handleEditPostClose}>
-                  <DialogTitle
-                    sx={{
-                      background:
-                        "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
-                      color: "back.light",
-                      border: "2px #000 solid",
-                      borderRadius: "0 0 0px 0px",
-                    }}
-                  >
-                    <Container
-                      component="div"
-                      sx={{
-                        display: "flex",
-                        columnGap: 5,
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <Typography component="h2" variant="h2">
-                        Edit a Post
-                      </Typography>
-                      <Button
-                        onClick={handleEditPostClose}
-                        sx={{
-                          color: "back.dark",
-                          fontSize: "2rem",
-                          "&:hover": {
-                            color: "#F00",
-                          },
-                        }}
-                      >
-                        X
-                      </Button>
-                    </Container>
-                  </DialogTitle>
-
-                  {/* <DialogContent> */}
-                  <Container
-                    component="div"
-                    sx={{
-                      py: 3,
-                      backgroundColor: "back.main",
-                      border: "2px #000 solid",
-                      borderRadius: "0px",
-                    }}
-                  >
-                    <Box component="form" onSubmit={handleEditSubmit}>
-                      <Grid
-                        container
-                        spacing={3}
-                        sx={{ display: "flex", justifyContent: "space-evenly" }}
-                      >
-                        <Grid item xs={12}>
-                          <Typography
-                            component="label"
-                            variant="h5"
-                            sx={{ color: "back.dark" }}
-                          >
-                            Title
-                          </Typography>
-                          <TextField
-                            component="div"
-                            name="edit-post-title"
-                            id="edit-post-title"
-                            defaultValue={postInfo.title}
-                            required
-                            fullWidth
-                            sx={{
-                              backgroundColor: "back.light",
-                              "&:focus": {
-                                border: "2px solid black",
-                              },
-                            }}
-                          ></TextField>
-                        </Grid>
-                        <Grid item xs={12}>
-                          <Typography component="label" variant="h5">
-                            Body
-                          </Typography>
-                          <TextField
-                            component="div"
-                            name="edit-post-body"
-                            id="edit-post-body"
-                            defaultValue={postInfo.body}
-                            required
-                            fullWidth
-                            multiline
-                            rows={12}
-                            sx={{ backgroundColor: "back.light" }}
-                          ></TextField>
-                        </Grid>
-                        <Grid item xs={12}>
-                          <Container
-                            component="div"
-                            sx={{
-                              display: "flex",
-                              flexDirection: "row nowrap",
-                              columnGap: 2,
-                            }}
-                          >
-                            <Fab
-                              component="label"
-                              onChange={handleImageSelect}
-                              sx={{
-                                color: "primary.contrastText",
-                                backgroundColor: "primary.main",
-                                "&:hover": {
-                                  backgroundColor: "secondary.main",
-                                  color: "secondary.contrastText",
-                                },
-                              }}
-                            >
-                              +
-                              <input
-                                type="file"
-                                id="edit-post-image"
-                                name="edit-post-image"
-                                accept="image/*"
-                                // value = {postInfo.image}
-                                hidden
-                              ></input>
-                            </Fab>
-
-                            <Typography
-                              component="span"
-                              sx={{
-                                display: {
-                                  xs: "none",
-                                  sm: "block",
-                                  md: "block",
-                                },
-                                fontWeight: 700,
-                                textAlign: "center",
-                              }}
-                            >
-                              Image <br></br> Attachments
-                            </Typography>
-
-                            <Box
-                              sx={{
-                                width: "60%",
-                                backgroundColor: "back.light",
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                border: "2px #000 solid",
-                                borderRadius: "10px",
-                              }}
-                            >
-                              {editPostImage && (
-                                <>
-                                  <Typography
-                                    component="span"
-                                    color="primary"
-                                    sx={{ pl: 5, fontSize: "0.75rem" }}
-                                    // value = {postInfo.image.name}
-                                  >
-                                    {editPostImage.name}
-                                  </Typography>
-                                  <Button
-                                    onClick={handleImageRemove}
-                                    color="error"
-                                  >
-                                    X
-                                  </Button>
-                                </>
-                              )}
-                            </Box>
-                          </Container>
-                        </Grid>
-                        <Grid item xs={12}>
-                          <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{
-                              mt: 3,
-                              mb: 2,
-                              color: "primary.contrastText",
-                              backgroundColor: "primary.main",
-                              "&:hover": {
-                                backgroundColor: "secondary.main",
-                                color: "secondary.contrastText",
-                              },
-                            }}
-                          >
-                            Submit
-                          </Button>
-                        </Grid>
-                      </Grid>
-                    </Box>
-                  </Container>
-                  {/* </DialogContent> */}
-                </Dialog>
+              <EditPost editPostOpen={editPostOpen} handleEditPostClose={handleEditPostClose}/> 
+              <DeletePost deletePostOpen={deletePostOpen} handleDeletePostClose={handleDeletePostClose} handleClose={handleClose}/>
                 <Grid item>
                   {showComments && (
                     <Paper

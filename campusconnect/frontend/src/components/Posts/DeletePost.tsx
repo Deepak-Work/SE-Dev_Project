@@ -1,97 +1,66 @@
 import { Box, Button, Container, Dialog, DialogTitle, Fab, Grid, Paper, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import Cookies from "js-cookie";
 
 type ImageFile = File | null;
 
-interface CreatePost {
+interface DeletePost {
   title: string;
   body: string;
   id: string;
   image? : string;
 }
 
-interface CreatePostProps {
-    createPostOpen : boolean;
-    handleCreatePostClose : (event?:object, reason?:string) => void;
+interface DeletePostProps {
+    deletePostOpen : boolean;
+    handleDeletePostClose : (event?:object, reason?:string) => void;
+    handleClose : (reason:string) => void;
+    // handleDeleteSubmit : (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
-const CreatePost = (props: CreatePostProps) => {
-
-  const {createPostOpen, handleCreatePostClose } = props;
-  const [createPostImage, setCreatePostImage] = useState<ImageFile>(null);
+const DeletePost = (props: DeletePostProps) => {
+  const navigate = useNavigate();
   const { id } = useParams();
-
-  const handlePostImageSelect = (event: any) => {
-    const imageFiles = event.target.files;
-
-    if (!imageFiles || imageFiles.length == 0) {
-      setCreatePostImage(null)
-      return;
-    }
-
-    setCreatePostImage(imageFiles[0]);
-  };
-
-  const handlePostImageRemove = () => {
-    const fileList: HTMLInputElement = document.getElementById(
-      "create-post-image"
-    ) as HTMLInputElement;
-    fileList.value = "";
-    setCreatePostImage(null);
-  };
-  
+  const {deletePostOpen, handleDeletePostClose, handleClose } = props;
   
 
-  const handlePostSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const handleDeleteSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     const data = new FormData(event.currentTarget);
-    
-    const image: File | null = data.get("create-post-image") as File;
 
-    // const form: CreatePost = {
-    //   title: data.get("create-post-title") as string,
-    //   body: data.get("create-post-body") as string,
-    //   image?: createPostImage as File,
-    //   id: id as string,
-    // };
-    
+    const image: File | null = data.get("delete-post-image") as File;
+
     const form = new FormData();
 
-    form.append("title", data.get("create-post-title") as string);
-    form.append("body", data.get("create-post-body") as string);
+    form.append("title", data.get("delete-post-title") as string);
+    form.append("body", data.get("delete-post-body") as string);
     form.append("id", id as string)
     if (image) form.append("image", image);
 
 
     const headers = {
-      // "Content-Type": "application/json",
+    //   "Content-Type": "application/json",
       "X-CSRFToken": Cookies.get("csrftoken") || "",
     };
 
-    const response: Response = await fetch("/api/posts/new-post", {
-      method: "POST",
+    const response: Response = await fetch(`/api/posts/post/delete`, {
+      method: "PUT",
       headers: headers,
-      // body: JSON.stringify(form),
       body: form,
     });
 
     if (response.ok) {
-      handleCreatePostClose();
+      handleDeletePostClose();
       window.location.reload();
-      console.log("New Post Created Successfully");
+      console.log("New Post Deleteed Successfully");
     } else {
-      console.log("New Post failed");
+      console.log("Delete Post failed");
     }
   };
 
-
-
     return (
-        <Dialog open={createPostOpen} onClose={handleCreatePostClose} fullWidth maxWidth={"md"} PaperProps={{ sx:{border: "4px solid", borderColor: 
+        <Dialog open={deletePostOpen} onClose={handleDeletePostClose} fullWidth maxWidth={"sm"} PaperProps={{ sx:{border: "4px solid", borderColor: 
         "back.dark", borderRadius: "20px",} }}>
         <DialogTitle
           sx={{
@@ -110,21 +79,9 @@ const CreatePost = (props: CreatePostProps) => {
               justifyContent: "space-between",
             }}
           >
-            <Typography component="h2" variant="h2" fontFamily={"Lobster"}>
-              New Post
+            <Typography component="h2" variant="h2" fontFamily={"RampartOne"}>
+              Delete Post
             </Typography>
-            <Button
-              onClick={handleCreatePostClose}
-              sx={{
-                color: "back.dark",
-                fontSize: "2rem",
-                "&:hover": {
-                  color: "#F00",
-                },
-              }}
-            >
-              X
-            </Button>
           </Container>
         </DialogTitle>
 
@@ -132,13 +89,17 @@ const CreatePost = (props: CreatePostProps) => {
         <Container
           component="div"
           sx={{
+            height: "100%",
             py: 3,
             backgroundColor: "back.main",
-            // border: "2px #000 solid",
-            borderRadius: "0px",
+            display:"flex",
+            flexFlow: "row nowrap",
+            justifyContent:"center",
+            alignContent: "center",
+            border: "2px solid #000",
           }}
         >
-          <Box component="form" onSubmit={handlePostSubmit}>
+          {/* <Box component="form" onSubmit={handleDeleteSubmit}>
             <Grid
               container
               spacing={3}
@@ -154,10 +115,10 @@ const CreatePost = (props: CreatePostProps) => {
                 </Typography>
                 <TextField
                   component="div"
-                  name="create-post-title"
-                  id="create-post-title"
-                  required
+                  name="delete-post-title"
+                  id="delete-post-title"
                   fullWidth
+                  required
                   sx={{
                     backgroundColor: "back.light",
                     "&:focus": {
@@ -172,10 +133,10 @@ const CreatePost = (props: CreatePostProps) => {
                 </Typography>
                 <TextField
                   component="div"
-                  name="create-post-body"
-                  id="create-post-body"
-                  required
+                  name="delete-post-body"
+                  id="delete-post-body"
                   fullWidth
+                  required
                   multiline
                   rows={12}
                   sx={{ backgroundColor: "back.light" }}
@@ -205,8 +166,8 @@ const CreatePost = (props: CreatePostProps) => {
                     +
                     <input
                       type="file"
-                      id="create-post-image"
-                      name="create-post-image"
+                      id="delete-post-image"
+                      name="delete-post-image"
                       accept="image/*" 
                       hidden
                     ></input>
@@ -234,14 +195,14 @@ const CreatePost = (props: CreatePostProps) => {
                       borderRadius: "10px",
                     }}
                   >
-                    {createPostImage && (
+                    {deletePostImage && (
                       <>
                         <Typography
                           component="span"
                           color="primary"
                           sx={{ pl: 5, fontSize: "0.75rem" }}
                         >
-                          {createPostImage.name}
+                          {deletePostImage.name}
                         </Typography>
                         <Button
                           onClick={handlePostImageRemove}
@@ -274,6 +235,23 @@ const CreatePost = (props: CreatePostProps) => {
                 </Button>
               </Grid>
             </Grid>
+          </Box> */}
+          <Box sx={{            
+            display:"flex",
+            flexFlow: "column nowrap",
+            justifyContent:"center",
+            alignContent: "center",}}>
+          <Typography component="h3" variant="h3" fontFamily={"Lobster"}>Are You Sure?</Typography>    
+          <Box sx={{display:"flex", flexFlow:"column nowrap"}}>
+          <Button onClick={() => handleClose("delete")} sx={{display:"flex", margin: 2, border:"2px solid", borderColor:"back.dark", borderRadius:"10px", backgroundColor:"back.light", "&:hover": {backgroundColor:"#0F0"}}}>
+            <Typography fontFamily={"Lobster"}>
+                Yes
+            </Typography>
+          </Button>
+          <Button onClick={() => handleDeletePostClose()} sx={{display:"flex", margin: 2, border:"2px solid", borderColor:"back.dark", borderRadius:"10px", backgroundColor:"back.light", "&:hover": {backgroundColor:"#F00"}}}>            <Typography fontFamily={"Lobster"}>
+                No
+            </Typography></Button>
+          </Box>
           </Box>
         </Container>
         {/* </DialogContent> */}
@@ -281,4 +259,4 @@ const CreatePost = (props: CreatePostProps) => {
     );
 }
 
-export default CreatePost;
+export default DeletePost;

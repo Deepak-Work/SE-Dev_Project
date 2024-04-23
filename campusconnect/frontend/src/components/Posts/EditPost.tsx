@@ -6,92 +6,78 @@ import Cookies from "js-cookie";
 
 type ImageFile = File | null;
 
-interface CreatePost {
+interface EditPost {
   title: string;
   body: string;
   id: string;
   image? : string;
 }
 
-interface CreatePostProps {
-    createPostOpen : boolean;
-    handleCreatePostClose : (event?:object, reason?:string) => void;
+interface EditPostProps {
+    editPostOpen : boolean;
+    handleEditPostClose : (event?:object, reason?:string) => void;
+    // handleEditSubmit : (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
-const CreatePost = (props: CreatePostProps) => {
+const EditPost = (props: EditPostProps) => {
 
-  const {createPostOpen, handleCreatePostClose } = props;
-  const [createPostImage, setCreatePostImage] = useState<ImageFile>(null);
+  const {editPostOpen, handleEditPostClose } = props;
+  const [editPostImage, setEditPostImage] = useState<ImageFile>(null);
   const { id } = useParams();
 
   const handlePostImageSelect = (event: any) => {
-    const imageFiles = event.target.files;
+    let imageFiles = event.target.files;
 
     if (!imageFiles || imageFiles.length == 0) {
-      setCreatePostImage(null)
       return;
     }
 
-    setCreatePostImage(imageFiles[0]);
+    setEditPostImage(imageFiles[0]);
   };
 
   const handlePostImageRemove = () => {
     const fileList: HTMLInputElement = document.getElementById(
-      "create-post-image"
-    ) as HTMLInputElement;
-    fileList.value = "";
-    setCreatePostImage(null);
+        "edit-post-image"
+      ) as HTMLInputElement;
+      fileList.value = "";
+    setEditPostImage(null);
   };
-  
-  
 
-  const handlePostSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const handleEditSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     const data = new FormData(event.currentTarget);
-    
-    const image: File | null = data.get("create-post-image") as File;
 
-    // const form: CreatePost = {
-    //   title: data.get("create-post-title") as string,
-    //   body: data.get("create-post-body") as string,
-    //   image?: createPostImage as File,
-    //   id: id as string,
-    // };
-    
+    const image: File | null = data.get("edit-post-image") as File;
+
     const form = new FormData();
 
-    form.append("title", data.get("create-post-title") as string);
-    form.append("body", data.get("create-post-body") as string);
+    form.append("title", data.get("edit-post-title") as string);
+    form.append("body", data.get("edit-post-body") as string);
     form.append("id", id as string)
     if (image) form.append("image", image);
 
 
     const headers = {
-      // "Content-Type": "application/json",
+    //   "Content-Type": "application/json",
       "X-CSRFToken": Cookies.get("csrftoken") || "",
     };
 
-    const response: Response = await fetch("/api/posts/new-post", {
-      method: "POST",
+    const response: Response = await fetch(`/api/posts/post/edit`, {
+      method: "PUT",
       headers: headers,
-      // body: JSON.stringify(form),
       body: form,
     });
 
     if (response.ok) {
-      handleCreatePostClose();
+      handleEditPostClose();
       window.location.reload();
-      console.log("New Post Created Successfully");
+      console.log("New Post Edited Successfully");
     } else {
-      console.log("New Post failed");
+      console.log("Edit Post failed");
     }
   };
-
-
-
+  
     return (
-        <Dialog open={createPostOpen} onClose={handleCreatePostClose} fullWidth maxWidth={"md"} PaperProps={{ sx:{border: "4px solid", borderColor: 
+        <Dialog open={editPostOpen} onClose={handleEditPostClose} fullWidth maxWidth={"md"} PaperProps={{ sx:{border: "4px solid", borderColor: 
         "back.dark", borderRadius: "20px",} }}>
         <DialogTitle
           sx={{
@@ -111,10 +97,10 @@ const CreatePost = (props: CreatePostProps) => {
             }}
           >
             <Typography component="h2" variant="h2" fontFamily={"Lobster"}>
-              New Post
+              Edit Post
             </Typography>
             <Button
-              onClick={handleCreatePostClose}
+              onClick={handleEditPostClose}
               sx={{
                 color: "back.dark",
                 fontSize: "2rem",
@@ -138,7 +124,7 @@ const CreatePost = (props: CreatePostProps) => {
             borderRadius: "0px",
           }}
         >
-          <Box component="form" onSubmit={handlePostSubmit}>
+          <Box component="form" onSubmit={handleEditSubmit}>
             <Grid
               container
               spacing={3}
@@ -154,10 +140,10 @@ const CreatePost = (props: CreatePostProps) => {
                 </Typography>
                 <TextField
                   component="div"
-                  name="create-post-title"
-                  id="create-post-title"
-                  required
+                  name="edit-post-title"
+                  id="edit-post-title"
                   fullWidth
+                  required
                   sx={{
                     backgroundColor: "back.light",
                     "&:focus": {
@@ -172,10 +158,10 @@ const CreatePost = (props: CreatePostProps) => {
                 </Typography>
                 <TextField
                   component="div"
-                  name="create-post-body"
-                  id="create-post-body"
-                  required
+                  name="edit-post-body"
+                  id="edit-post-body"
                   fullWidth
+                  required
                   multiline
                   rows={12}
                   sx={{ backgroundColor: "back.light" }}
@@ -205,8 +191,8 @@ const CreatePost = (props: CreatePostProps) => {
                     +
                     <input
                       type="file"
-                      id="create-post-image"
-                      name="create-post-image"
+                      id="edit-post-image"
+                      name="edit-post-image"
                       accept="image/*" 
                       hidden
                     ></input>
@@ -234,14 +220,14 @@ const CreatePost = (props: CreatePostProps) => {
                       borderRadius: "10px",
                     }}
                   >
-                    {createPostImage && (
+                    {editPostImage && (
                       <>
                         <Typography
                           component="span"
                           color="primary"
                           sx={{ pl: 5, fontSize: "0.75rem" }}
                         >
-                          {createPostImage.name}
+                          {editPostImage.name}
                         </Typography>
                         <Button
                           onClick={handlePostImageRemove}
@@ -281,4 +267,4 @@ const CreatePost = (props: CreatePostProps) => {
     );
 }
 
-export default CreatePost;
+export default EditPost;
