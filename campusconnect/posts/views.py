@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 from clubs.models import Club
 
-from .serializers import PostSerializer, CommentSerializer 
+from .serializers import PostSerializer, CommentSerializer
 
 
 # Post Views Functions here
@@ -98,18 +98,20 @@ class DeletePostView(APIView):
 
 class getLikeDislikeView(APIView):
     def get(self, request, id):
+        print(id, "id")
         if id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             post = Post.objects.get(id=id)
+            print(Reaction.objects.filter(user=request.user, post=post).exists())
             if Reaction.objects.filter(user=request.user, post=post).exists():
                 reaction = Reaction.objects.get(user=request.user, post=post)
-                return Response({'like':reaction.like, 'dislike':reaction.dislike}, status=status.HTTP_200_OK)
+                return Response({'like_status':reaction.like, 'dislike_status':reaction.dislike}, status=status.HTTP_200_OK)
             else:
-                return Response({'like':False, 'dislike':False}, status=status.HTTP_200_OK)
+                return Response({'like_status':False, 'dislike_status':False}, status=status.HTTP_200_OK)
 
 class LikePostView(APIView):
-    def post(self, request, id):
+    def get(self, request, id):
         if id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -126,7 +128,7 @@ class LikePostView(APIView):
             return Response(status=status.HTTP_200_OK)
 
 class UnlikePostView(APIView):
-    def post(self, request, id):
+    def get(self, request, id):
         if id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -143,7 +145,7 @@ class UnlikePostView(APIView):
             return Response(status=status.HTTP_200_OK)
 
 class DislikePostView(APIView):
-    def post(self, request, id):
+    def get(self, request, id):
         if id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -152,15 +154,15 @@ class DislikePostView(APIView):
             post.save()
             if Reaction.objects.filter(user=request.user, post=post).exists():
                 reaction = Reaction.objects.get(user=request.user, post=post)
-                reaction.like = False
+                reaction.dislike = True
                 reaction.save()
             else:
-                reaction = Reaction.objects.create(user=request.user, post=post, like=False)
+                reaction = Reaction.objects.create(user=request.user, post=post, dislike=True)
                 reaction.save()
             return Response(status=status.HTTP_200_OK)
         
 class UndislikePostView(APIView):
-    def post(self, request, id):
+    def get(self, request, id):
         if id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -169,10 +171,10 @@ class UndislikePostView(APIView):
             post.save()
             if Reaction.objects.filter(user=request.user, post=post).exists():
                 reaction = Reaction.objects.get(user=request.user, post=post)
-                reaction.like = True
+                reaction.dislike = False
                 reaction.save()
             else:
-                reaction = Reaction.objects.create(user=request.user, post=post, like=True)
+                reaction = Reaction.objects.create(user=request.user, post=post, dislike=False)
                 reaction.save()
             return Response(status=status.HTTP_200_OK)
 

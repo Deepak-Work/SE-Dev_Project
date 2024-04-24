@@ -53,7 +53,7 @@ function App() {
           <Route path="/club/application" element={<ClubApplication username={username} isAuth={isAuth} />} />
           <Route path="/club/:name/:id" element={!isAuth? <LoadingIndicator /> : <ClubPage username={username} isAuth={isAuth}/>} />
           <Route path="/profile/:name" element={!isAuth? <LoadingIndicator /> : <Profile isAuth={isAuth}/>} />
-          <Route path="/post/:id" element={isAuth === null ? <LoadingIndicator /> : <PostPage username={username} isAuth={isAuth}/>} />
+          <Route path="/post/:id" element={isAuth === null ? <LoadingIndicator /> : <PostPage isAuth={isAuth} username={username}/>} />
           <Route path="/verify-email/:uid/:token" element={<VerifyEmail />} />
         </Routes>
       </Router>

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import CreatePostView, GetPostView, EditPostView, DeletePostView, CreateCommentView, GetCommentsView, EditCommentView, DeleteCommentView, ReplyCommentView, LikePostView, UnlikePostView, DislikePostView, UndislikePostView
+from .views import CreatePostView, GetPostView, EditPostView, DeletePostView, CreateCommentView, GetCommentsView, EditCommentView, DeleteCommentView, ReplyCommentView, LikePostView, UnlikePostView, DislikePostView, UndislikePostView, getLikeDislikeView
 
 urlpatterns = [
     path("new-post", CreatePostView.as_view()),
@@ -17,4 +17,5 @@ urlpatterns = [
     path("post/<int:id>/unlike", UnlikePostView.as_view()), # this id has to be the post id
     path("post/<int:id>/dislike", DislikePostView.as_view()), # this id has to be the post id
     path("post/<int:id>/undislike", UndislikePostView.as_view()), # this id has to be the post id
+    path("post/like-dislike/<int:id>", getLikeDislikeView.as_view()),
 ]
