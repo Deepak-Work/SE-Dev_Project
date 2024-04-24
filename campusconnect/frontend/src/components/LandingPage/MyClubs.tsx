@@ -65,6 +65,7 @@ const MyClubs = (props: MyClubsProps) => {
   });
 
   const navigate = useNavigate();
+  const [memberUpdated, setMemberUpdated] = useState<Object>({});
 
   const {
     myClubsOpen,
@@ -77,21 +78,18 @@ const MyClubs = (props: MyClubsProps) => {
   } = props;
 
   const fetchFollowedClubs: () => Promise<void> = async () => {
-    let response = await fetch(`api/clubs/followed-clubs`, {
+    let response = await fetch(`/api/clubs/followed-clubs`, {
       method: "GET",
     });
 
     if (response.ok) {
       response.json().then((value) => {
-        console.log("FollowedClubs: " + value.clubs_id);
         for (let clubID of value.clubs_id) {
           setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
         }
         setClubs(value.clubs_data);
-        console.log(value.clubs_data);
       });
     } else {
-      console.log("No Clubs Found");
       setClubs([]);
       setFollowedClubs(new Map());
     }
@@ -102,7 +100,7 @@ const MyClubs = (props: MyClubsProps) => {
     clubID: number
   ) => Promise<void> = async (clubName, clubID) => {
     const response = await fetch(
-      `api/clubs/follow-status/${clubName}/${clubID}`,
+      `/api/clubs/follow-status/${clubName}/${clubID}`,
       {
         method: "GET",
       }
@@ -112,7 +110,7 @@ const MyClubs = (props: MyClubsProps) => {
       response.json().then(async (value) => {
         if (value.follow_status && followedClubs.has(clubID)) {
           const followResponse = await fetch(
-            `api/clubs/unfollow/${clubName}/${clubID}`,
+            `/api/clubs/unfollow/${clubName}/${clubID}`,
             {
               method: "GET",
             }
@@ -121,12 +119,13 @@ const MyClubs = (props: MyClubsProps) => {
           if (followResponse.ok) {
             followedClubs.delete(clubID);
             setFollowedClubs(new Map(followedClubs));
+            setMemberUpdated({});
           } else {
             console.log("Follow Status: true - " + response.status);
           }
         } else {
           const followResponse = await fetch(
-            `api/clubs/follow/${clubName}/${clubID}`,
+            `/api/clubs/follow/${clubName}/${clubID}`,
             {
               method: "GET",
             }
@@ -134,8 +133,7 @@ const MyClubs = (props: MyClubsProps) => {
 
           if (followResponse.ok) {
             setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
-          } else {
-            console.log("Follow Status: false - " + response.status);
+            setMemberUpdated({});
           }
         }
       });
@@ -144,7 +142,7 @@ const MyClubs = (props: MyClubsProps) => {
 
   useEffect(() => {
     fetchFollowedClubs();
-  }, []);
+  }, [memberUpdated]);
 
   return (
     <ThemeProvider theme={theme}>

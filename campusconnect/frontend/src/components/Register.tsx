@@ -12,8 +12,10 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 
 import logo from "../assets/CampusConnectLogo.svg";
+import CustomPaletteOptions from "./UI/CustomPaletteOptions";
 
 interface Form {
   email: string;
@@ -26,30 +28,45 @@ interface Form {
 interface Errors {
   email: boolean;
   password: boolean;
+  verifyPassword: boolean;
   username: boolean;
   emailErrorMessage: string;
   passwordErrorMessage: string;
+  verifyPasswordErrorMessage: string;
   usernameErrorMessage: string;
 }
 
 const Register = () => {
   const defaultTheme = createTheme({
     palette: {
-      text: {
-        primary: "#e9ecef",
-        secondary: "#8B139C",
+      primary: {
+        main: "#7108d8",
       },
-    },
+      secondary: {
+        main: "#8B139C",
+      },
+      back: {
+        main: "#ced4da",
+        light: "#fff",
+        dark: "#000",
+        contrastText: "purple",
+      },
+    } as CustomPaletteOptions,
   });
 
   const navigate = useNavigate();
 
+  const [password, setPassword] = useState<string>("");
+  const [verifyPassword, setVerifyPassword] = useState<string>("");
+
   const [errors, setErrors] = useState<Errors>({
     email: false,
     password: false,
+    verifyPassword: false,
     username: false,
     emailErrorMessage: "",
     passwordErrorMessage: "",
+    verifyPasswordErrorMessage: "",
     usernameErrorMessage: "",
   });
 
@@ -72,21 +89,67 @@ const Register = () => {
       setErrors({
         ...errors,
         email: true,
-        emailErrorMessage: "Enter a valid NYU email address (ends in @nyu.edu)",
+        emailErrorMessage: "Enter a valid email address",
       });
     }
   };
 
   const handlePasswordChange = (event: any) => {
     //const validPassword = event.target.search(/[A-Z]/) != -1 && event.target.search(/[a-z]/) != -1 && event.target.search(/[0-9]/) ;
+    setPassword(event.target.value);
     if (event.target.validity.valid) {
       setErrors({ ...errors, password: false });
+      if (event.target.value == verifyPassword) {
+        setErrors({
+          ...errors,
+          password: false,
+          verifyPassword: false,
+        });
+      } else {
+        setErrors({
+          ...errors,
+          password: false,
+          verifyPassword: true,
+          verifyPasswordErrorMessage: "Passwords do not match",
+        });
+      }
+    } else {
+      if (event.target.value !== verifyPassword)
+        setErrors({
+          ...errors,
+          verifyPassword: true,
+          verifyPasswordErrorMessage: "Passwords do not match",
+          password: true,
+          passwordErrorMessage:
+            "Password needs at least 1 uppercase letter, 1 lowercase letter, 1 number, 1 special character, and at least 8 characters long",
+        });
+      else
+        setErrors({
+          ...errors,
+          password: true,
+          passwordErrorMessage:
+            "Password needs at least 1 uppercase letter, 1 lowercase letter, 1 number, 1 special character, and at least 8 characters long",
+        });
+    }
+  };
+
+  const handleVerifyPasswordChange = (event: any) => {
+    setVerifyPassword(event.target.value);
+    if (event.target.validity.valid) {
+      if (password == event.target.value) {
+        setErrors({ ...errors, verifyPassword: false });
+      } else {
+        setErrors({
+          ...errors,
+          verifyPassword: true,
+          verifyPasswordErrorMessage: "Passwords do not match",
+        });
+      }
     } else {
       setErrors({
         ...errors,
-        password: true,
-        passwordErrorMessage:
-          "Password needs at least 1 uppercase letter, 1 lowercase letter, 1 number, 1 special character, and at least 8 characters long",
+        verifyPassword: true,
+        verifyPasswordErrorMessage: "Passwords do not match",
       });
     }
   };
@@ -94,6 +157,8 @@ const Register = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     // Prevent default behavior for forms. We need this other some browsers (like Firefox) blocks the request.
     event.preventDefault();
+
+    setPassword("");
 
     const data = new FormData(event.currentTarget);
     const form: Form = {
@@ -162,7 +227,7 @@ const Register = () => {
               alignItems: "center",
             }}
           >
-            <img width="100" height="100" src={logo} alt="CampusConnect Logo" />
+            <img width="100" height="100" src={logo} alt="CampusConnect Logo" onClick={() => navigate("/login")} style={{cursor: "pointer", userSelect: "none",}} />
             <Box
               sx={{
                 px: 2,
@@ -174,7 +239,7 @@ const Register = () => {
               <Box
                 sx={{
                   px: 2,
-                  backgroundColor: "text.primary",
+                  // backgroundColor: "back.light",
                   border: "#000 solid 0px",
                   borderRadius: "20px",
                 }}
@@ -184,8 +249,10 @@ const Register = () => {
                   variant="h5"
                   sx={{
                     fontSize: "2.5rem",
-                    color: "text.secondary",
+                    color: "back.light",
                     fontFamily: "RampartOne",
+                    textShadow: "1px 1px 3px secondary.main",
+                    userSelect: "none",
                   }}
                 >
                   Create an Account
@@ -207,8 +274,8 @@ const Register = () => {
                     autoFocus
                     color="secondary"
                     sx={{
-                      input: { color: "#000" },
-                      backgroundColor: "text.primary",
+                      input: { color: "back.dark" },
+                      backgroundColor: "back.light",
                     }}
                   />
                 </Grid>
@@ -223,8 +290,8 @@ const Register = () => {
                     label="Last Name"
                     color="secondary"
                     sx={{
-                      input: { color: "#000" },
-                      backgroundColor: "text.primary",
+                      input: { color: "back.dark" },
+                      backgroundColor: "back.light",
                     }}
                   />
                 </Grid>
@@ -245,8 +312,8 @@ const Register = () => {
                     label="Username"
                     color="secondary"
                     sx={{
-                      input: { color: "#000" },
-                      backgroundColor: "text.primary",
+                      input: { color: "back.dark" },
+                      backgroundColor: "back.light",
                     }}
                   />
                 </Grid>
@@ -256,7 +323,12 @@ const Register = () => {
                     onChange={handleEmailChange}
                     error={errors.email}
                     helperText={errors.email ? errors.emailErrorMessage : ""}
-                    inputProps={{ pattern: ".*[@]nyu[.]edu$" }}
+                    // inputProps={{ pattern: ".*@nyu[.]edu$" }}
+                    inputProps={{
+                      pattern:
+                        "^([a-zA-Z0-9[.]_]-*)+@(([a-zA-Z0-9_]-*)+[.])+([a-zA-Z0-9_]-*){2,4}$",
+                    }}
+                    // inputProps={{ pattern: "^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" }}
                     autoComplete="email"
                     required
                     fullWidth
@@ -265,12 +337,12 @@ const Register = () => {
                     label="Email Address"
                     color="secondary"
                     sx={{
-                      input: { color: "#000" },
-                      backgroundColor: "text.primary",
+                      input: { color: "back.dark" },
+                      backgroundColor: "back.light",
                     }}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                   <TextField
                     variant="filled"
                     onChange={handlePasswordChange}
@@ -291,8 +363,36 @@ const Register = () => {
                     id="password"
                     color="secondary"
                     sx={{
-                      input: { color: "#000" },
-                      backgroundColor: "text.primary",
+                      input: { color: "back.dark" },
+                      backgroundColor: "back.light",
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    variant="filled"
+                    onChange={handleVerifyPasswordChange}
+                    error={errors.verifyPassword}
+                    helperText={
+                      errors.verifyPassword
+                        ? errors.verifyPasswordErrorMessage
+                        : ""
+                    }
+                    inputProps={{
+                      pattern:
+                        "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*\\-]).{8,}$",
+                    }}
+                    autoComplete="verify-new-password"
+                    required
+                    fullWidth
+                    name="verify-password"
+                    label="Re-Enter Password"
+                    type="password"
+                    id="verify-password"
+                    color="secondary"
+                    sx={{
+                      input: { color: "back.dark" },
+                      backgroundColor: "back.light",
                     }}
                   />
                 </Grid>
@@ -305,7 +405,7 @@ const Register = () => {
               >
                 Register
               </Button>
-              <Typography variant="body2" color="text.primary" align="center">
+              <Typography variant="body2" color="back.light" align="center">
                 Already have an account?{" "}
                 <a
                   href="/login"

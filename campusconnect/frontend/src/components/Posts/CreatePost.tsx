@@ -1,4 +1,4 @@
-import { Box, Button, Container, Dialog, DialogTitle, Fab, Grid, TextField, Typography } from "@mui/material";
+import { Box, Button, Container, Dialog, DialogTitle, Fab, Grid, Paper, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -15,7 +15,7 @@ interface CreatePost {
 
 interface CreatePostProps {
     createPostOpen : boolean;
-    handleCreatePostClose : () => void;
+    handleCreatePostClose : (event?:object, reason?:string) => void;
 }
 
 const CreatePost = (props: CreatePostProps) => {
@@ -25,9 +25,10 @@ const CreatePost = (props: CreatePostProps) => {
   const { id } = useParams();
 
   const handlePostImageSelect = (event: any) => {
-    let imageFiles = event.target.files;
+    const imageFiles = event.target.files;
 
     if (!imageFiles || imageFiles.length == 0) {
+      setCreatePostImage(null)
       return;
     }
 
@@ -35,6 +36,10 @@ const CreatePost = (props: CreatePostProps) => {
   };
 
   const handlePostImageRemove = () => {
+    const fileList: HTMLInputElement = document.getElementById(
+      "create-post-image"
+    ) as HTMLInputElement;
+    fileList.value = "";
     setCreatePostImage(null);
   };
   
@@ -44,21 +49,34 @@ const CreatePost = (props: CreatePostProps) => {
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
-    const form: CreatePost = {
-      title: data.get("create-post-title") as string,
-      body: data.get("create-post-body") as string,
-      id: id as string,
-    };
+    
+    const image: File | null = data.get("create-post-image") as File;
+
+    // const form: CreatePost = {
+    //   title: data.get("create-post-title") as string,
+    //   body: data.get("create-post-body") as string,
+    //   image?: createPostImage as File,
+    //   id: id as string,
+    // };
+    
+    const form = new FormData();
+
+    form.append("title", data.get("create-post-title") as string);
+    form.append("body", data.get("create-post-body") as string);
+    form.append("id", id as string)
+    if (image) form.append("image", image);
+
 
     const headers = {
-      "Content-Type": "application/json",
+      // "Content-Type": "application/json",
       "X-CSRFToken": Cookies.get("csrftoken") || "",
     };
 
     const response: Response = await fetch("/api/posts/new-post", {
       method: "POST",
       headers: headers,
-      body: JSON.stringify(form),
+      // body: JSON.stringify(form),
+      body: form,
     });
 
     if (response.ok) {
@@ -73,14 +91,15 @@ const CreatePost = (props: CreatePostProps) => {
 
 
     return (
-        <Dialog open={createPostOpen} onClose={handleCreatePostClose} fullWidth maxWidth={"md"}>
+        <Dialog open={createPostOpen} onClose={handleCreatePostClose} fullWidth maxWidth={"md"} PaperProps={{ sx:{border: "4px solid", borderColor: 
+        "back.dark", borderRadius: "20px",} }}>
         <DialogTitle
           sx={{
             background:
               "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
             color: "back.light",
-            border: "2px #000 solid",
-            borderRadius: "0 0 0px 0px",
+            borderBottom: "4px #000 solid",
+            borderRadius: "0",
           }}
         >
           <Container
@@ -91,7 +110,7 @@ const CreatePost = (props: CreatePostProps) => {
               justifyContent: "space-between",
             }}
           >
-            <Typography component="h2" variant="h2">
+            <Typography component="h2" variant="h2" fontFamily={"Lobster"}>
               New Post
             </Typography>
             <Button
@@ -115,7 +134,7 @@ const CreatePost = (props: CreatePostProps) => {
           sx={{
             py: 3,
             backgroundColor: "back.main",
-            border: "2px #000 solid",
+            // border: "2px #000 solid",
             borderRadius: "0px",
           }}
         >
@@ -201,7 +220,7 @@ const CreatePost = (props: CreatePostProps) => {
                       textAlign: "center",
                     }}
                   >
-                    Image <br></br> Attachments
+                    Image <br></br> Attachment
                   </Typography>
 
                   <Box

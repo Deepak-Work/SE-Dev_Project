@@ -21,6 +21,8 @@ class CreateClubView(APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
+            print(serializer)
+            print("Here")
             clubName = serializer.data.get('name')
             clubDesc = serializer.data.get('description')
             clubLoc = serializer.data.get('location')
@@ -34,13 +36,15 @@ class CreateClubView(APIView):
             if queryset.exists():
                 return Response(status=status.HTTP_400_BAD_REQUEST)
                         
-            # TODO - Should we immediately put the club organizer into Follows model?
+            if clubImage:
+                club = Club.objects.create(name=clubName, description=clubDesc, location=clubLoc, 
+                                                email=clubEmail, contact=clubContact, website=clubWebsite, organizer=clubOrganizer, image=clubImage)
+                club.save()
+            else:
+                club = Club.objects.create(name=clubName, description=clubDesc, location=clubLoc, 
+                                                email=clubEmail, contact=clubContact, website=clubWebsite, organizer=clubOrganizer, image='clubs/CampusConnectLogo.svg')
+                club.save()
             
-            
-            club = Club.objects.create(name=clubName, description=clubDesc, location=clubLoc, 
-                                            email=clubEmail, contact=clubContact, website=clubWebsite, organizer=clubOrganizer, image=clubImage)
-            club.save()
-
             follow = Follow.objects.create(user=request.user, club=club)
             follow.save()
             
@@ -52,7 +56,6 @@ class CreateClubView(APIView):
             log.save()
             return Response({'club_id': str(club.id)}, status=status.HTTP_201_CREATED)
         
-        # 
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
 class GetClubView(APIView):
@@ -66,6 +69,7 @@ class GetClubView(APIView):
         posts = Post.objects.filter(club=id).order_by('-time_posted').values()
         for post in posts:
             post['author'] = User.objects.get(id=post['author_id']).username
+            post['clubname'] = name
             del post['author_id']
         
         events = Event.objects.filter(club=id).order_by('-time_posted').values()
@@ -92,24 +96,27 @@ class GetFollowStatus(APIView):
             
 class FollowClubView(APIView):
     def get(self, request, name, id):
-        print("Here")
         club = Club.objects.get(id=id)
-        print(request.user)
         if club is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             follows = Follow.objects.create(user=request.user, club=club)
             follows.save()
+            followsCount = Follow.objects.filter(club=club).count()
+            club.member_count = followsCount
+            club.save()
             return Response(status=status.HTTP_200_OK)
 
 class UnfollowClubView(APIView):
     def get(self, request, name, id):
         club = Club.objects.get(id=id)
-        print(request.user)
         if club is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             Follow.objects.filter(user=request.user, club=club).delete()
+            followsCount = Follow.objects.filter(club=club).count()
+            club.member_count = followsCount
+            club.save()
             return Response(status=status.HTTP_200_OK)
         
 class GetFollowersView(APIView):
@@ -140,14 +147,8 @@ class GetExploreClubsView(APIView):
         clubs = Club.objects.all().values("id", "name", "member_count", "image")
         clubs_res = []
         for c in clubs:
-            print(json.dumps(c))
             clubs_json = json.loads(json.dumps(c))
-            # clubs_json['image'] = clubs_json['image']
             clubs_res.append(clubs_json)
-        # clubsI = [(model_to_dict(c)['image']) for c in clubs]
-        # clubs_json = model_to_dict(clubs)
-        # clubs_json['image'] = clubs.image.url
-        print(clubs_res)
         if clubs_res:
             return Response({'clubs_data' : clubs}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -158,12 +159,25 @@ class GetMyClubsView(APIView):
         if clubs:
             return Response({'clubs_data' : clubs}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
+    
+class GetMyEventsView(APIView):
+    def get(self, request):
+        followed_clubs = Follow.objects.filter(user=request.user).values_list('club', flat=True)
+        events = Event.objects.filter(club__in=followed_clubs)
+
+        events_res = []
+
+        for e in events:
+            events_res.append({'club': e.club.name, 'name': e.name, 'description': e.description, 'event_date': e.event_date, \
+                               'event_time': e.event_time, 'author': e.author.username, 'club': e.club.name, 'likes': e.likes, 'dislikes': e.dislikes, 'time_posted': e.time_posted})
+
+
+        return Response({'event_data': events_res}, status=status.HTTP_200_OK)
 
 
 class ToggleFollowClubView(APIView):
     def get(self, request, id):
         club = Club.objects.get(id=id)
-        print(request.user)
         if club is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
