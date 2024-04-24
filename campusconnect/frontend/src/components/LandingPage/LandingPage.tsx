@@ -14,9 +14,6 @@ interface Props {
 }
 
 const LandingPage = ( props: Props ) => {
-  // TODO: Landing page should be protected (only logged in users able to see it)
-
-
   const theme = createTheme();
   return (
     <>
