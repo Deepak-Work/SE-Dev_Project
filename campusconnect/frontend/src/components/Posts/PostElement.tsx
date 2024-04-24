@@ -70,17 +70,14 @@ const PostElement: React.FC<PostProps> = ({
       response.json().then((value) => {
         const posts = value.post_data;
         const postInfo: PostProps = {
+          username: posts.author,
           body: posts.body,
           title: posts.title,
           likes: posts.likes,
           dislikes: posts.dislikes,
-          author: posts.author,
-          summary: posts.summary,
-          postImage: posts.image,
-          clubName: posts.club_name,
-          clubId: posts.club_id,
-          clubImage: posts.club_image,
-          timePosted: posts.time_posted,
+          totalComments: posts.total_comments,
+          time_posted: posts.time_posted,
+          post_id: posts.id
         };
         setPostInfo(postInfo);
       });
@@ -169,6 +166,7 @@ const PostElement: React.FC<PostProps> = ({
   fetchPost();
 }
   useEffect(() => {
+    fetchPost();
     getLikeDislikeStatus();
   },[])
 
