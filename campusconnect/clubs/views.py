@@ -21,8 +21,6 @@ class CreateClubView(APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            print(serializer)
-            print("Here")
             clubName = serializer.data.get('name')
             clubDesc = serializer.data.get('description')
             clubLoc = serializer.data.get('location')
@@ -59,12 +57,15 @@ class CreateClubView(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
 class GetClubView(APIView):
-    def get(self, request, name, id):
-        # TODO: Eventually, we'll also have to include events and members associated with this club
-        
+    def get(self, request, name, id):        
         c = Club.objects.get(id=id)
         c_json = model_to_dict(c)
         c_json['image'] = c.image.url
+
+        followers = Follow.objects.filter(club_id=id)
+        club_followers = [{"id": follower.user.id, "username": follower.user.username, "image":follower.user.profile.image.url} for follower in followers]
+
+        c_json['followers'] = club_followers
 
         posts = Post.objects.filter(club=id).order_by('-time_posted').values()
         for post in posts:
