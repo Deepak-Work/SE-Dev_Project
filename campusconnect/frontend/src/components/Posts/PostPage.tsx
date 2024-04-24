@@ -98,6 +98,10 @@ const PostComponent = (props: Props) => {
   const [editPostOpen, setEditPostOpen] = useState(false);
   const [editPostImage, setEditPostImage] = useState<ImageFile>(null);
 
+  const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [isDisliked, setIsDisliked] = useState<boolean>(false);
+
+  
   const handleImageSelect = (event: any) => {
     let imageFiles = event.target.files;
 
@@ -343,7 +347,7 @@ const PostComponent = (props: Props) => {
         {postInfo.body}
         </Typography>
         </Paper>
-        <IconButton onClick={handleLike} aria-label="Like post">
+        <IconButton onClick={isLiked?handleUnlike:handleLike} aria-label="Like post">
         <ThumbUpAltIcon/>
         {postInfo.likes}
         </IconButton>

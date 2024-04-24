@@ -85,6 +85,23 @@ class DeletePostView(APIView):
             return Response({'clubname':clubname,'clubid':clubid},status=status.HTTP_200_OK)
     pass
 
+class GetLikeStatusView(APIView):
+    def get(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            post = Post.objects.get(id=id)
+            return Response({'likes': post.likes, 'dislikes': post.dislikes}, status=status.HTTP_200_OK)
+
+class GetDislikeStatusView(APIView):
+    def get(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            post = Post.objects.get(id=id)
+            return Response({'likes': post.likes, 'dislikes': post.dislikes}, status=status.HTTP_200_OK)
+
+
 class LikePostView(APIView):
     def post(self, request, id):
         if id is None:
