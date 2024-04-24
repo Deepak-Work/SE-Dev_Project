@@ -38,8 +38,8 @@ import DeletePost from "./DeletePost";
 import CommentElement from "../Comments/CommentElement";
 
 interface Props {
-  isAuth: boolean;
   username: string;
+  isAuth: boolean;
 }
 
 interface PostProps {
@@ -99,6 +99,7 @@ const PostPage = (props: Props) => {
     } as CustomPaletteOptions,
   });
 
+
   const { username } = props;
   const { id } = useParams();
   const navigate = useNavigate();
@@ -125,7 +126,83 @@ const PostPage = (props: Props) => {
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [isDisliked, setIsDisliked] = useState<boolean>(false);
 
+  const getLikeDislikeStatus = async () => {
+    console.log("Checking Like Status");
+    const response = await fetch(`/api/posts/post/like-dislike/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorzation: `Bearer ${Cookies.get("token")}`,
+      },
+    });
+    if (response.ok) {
+      response.json().then((value) => {
+        console.log(value);
+        setIsLiked(value.like_status);
+        setIsDisliked(value.dislike_status);
+      });
+    }
+    console.log(isLiked, isDisliked);
+  }
   
+  const handleLike = async () => {
+    if (!isLiked) {
+      const response = await fetch(`/api/posts/post/${id}/like`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsLiked(true);
+        console.log("Liked");
+      }
+    }
+    else {
+      const response = await fetch(`/api/posts/post/${id}/unlike`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsLiked(false);
+        console.log("Unliked");
+      }
+    }
+  }
+
+  const handleDislike = async () => {
+    if (!isDisliked) {
+      const response = await fetch(`/api/posts/post/${id}/dislike`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsDisliked(true);
+        console.log("Disliked");
+      }
+    }
+    else {
+      const response = await fetch(`/api/posts/post/${id}/undislike`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsDisliked(false);
+        console.log("Undisliked");
+      }
+  }
+}
+
   const [deletePostOpen, setDeletePostOpen] = useState(false);
   const handleDeletePostOpen = () => {
     setDeletePostOpen(true);
@@ -137,13 +214,13 @@ const PostPage = (props: Props) => {
 
   const handleEditSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     const data = new FormData(event.currentTarget);
-
+    const image = data.get("edit-post-image") as File;
     const form = new FormData();
 
     form.append("title", data.get("edit-post-title") as string);
     form.append("body", data.get("edit-post-body") as string);
     form.append("id", id as string)
-    if (data.get("edit-post-image")) form.append("image", data.get("edit-post-image"));
+    if (data.get("edit-post-image")) form.append("image", image);
 
     const headers = {
       "Content-Type": "application/json",
@@ -222,13 +299,8 @@ const PostPage = (props: Props) => {
     }
   };
 
-  const handleLike = () => {
-    // Implement like functionality
-  };
 
-  const handleDislike = () => {
-    // Implement dislike functionality
-  };
+  
 
   const handleCommentLike = () => {
     // Implement like functionality
@@ -300,6 +372,7 @@ const PostPage = (props: Props) => {
     };
     fetchPost();
     fetchComments(Number(id));
+    getLikeDislikeStatus();
   }, []);
 
   const handleNewComment: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=> void  =
@@ -544,6 +617,7 @@ const PostPage = (props: Props) => {
                   >
                     <Box sx={{ display: "flex", flexFlow: "row wrap" }}>
                       <Button
+                        onClick={handleLike}
                         sx={{
                           display: "flex",
                           margin: 2,
@@ -554,7 +628,7 @@ const PostPage = (props: Props) => {
                           "&:hover": { backgroundColor: "secondary.light" },
                         }}
                       >
-                        <IconButton onClick={handleLike} aria-label="Like post">
+                        <IconButton aria-label="Like post">
                           <ThumbUpAltIcon />
                         </IconButton>
                         <Typography
@@ -588,6 +662,7 @@ const PostPage = (props: Props) => {
                       </Button>
 
                       <Button
+                        onClick={handleDislike}
                         sx={{
                           display: "flex",
                           margin: 2,
@@ -599,7 +674,6 @@ const PostPage = (props: Props) => {
                         }}
                       >
                         <IconButton
-                          onClick={handleDislike}
                           aria-label="dislike post"
                         >
                           <ThumbDownIcon />
@@ -918,5 +992,6 @@ const PostPage = (props: Props) => {
     </>
   );
 };
+
 
 export default PostPage;
