@@ -146,14 +146,14 @@ const PostPage = (props: Props) => {
     if (data.get("edit-post-image")) form.append("image", data.get("edit-post-image"));
 
     const headers = {
-      "Content-Type": "application/json",
+      // "Content-Type": "application/json",
       "X-CSRFToken": Cookies.get("csrftoken") || "",
     };
 
     const response: Response = await fetch(`/api/posts/post/edit`, {
       method: "PUT",
       headers: headers,
-      body: JSON.stringify(form),
+      body: form,
     });
 
     if (response.ok) {
@@ -835,8 +835,8 @@ const PostPage = (props: Props) => {
 
                           <Box sx={{display:"flex", flexFlow:"row nowrap", width:"100%"}}>
                           {currentReplyId && 
-                          <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", width:"30%"}}>
-                            <Typography fontFamily={"Lobster"} sx={{border:"2px solid", borderColor:"back.dark", borderRadius: "20px", p:1, mt:1,}}>
+                          <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", width:"35%",}}>
+                            <Typography fontFamily={"Lobster"} fontSize="0.75rem" sx={{border:"2px solid", borderColor:"back.dark", borderRadius: "20px", p:1, mt:1,}}>
                             Reply: {currentReplyId}
                               </Typography>
                           </Box>
@@ -883,6 +883,7 @@ const PostPage = (props: Props) => {
                             timePosted={comment.time_posted}
                             currentReplyId={currentReplyId}
                             setCurrentReplyId={setCurrentReplyId}
+                            fetchComments={fetchComments}
                           />
                         ))
                       ) : (

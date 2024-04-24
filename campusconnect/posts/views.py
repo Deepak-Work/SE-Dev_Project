@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 from clubs.models import Club
 
-from .serializers import PostSerializer, CommentSerializer, 
+from .serializers import PostSerializer, CommentSerializer 
 
 
 # Post Views Functions here
@@ -225,9 +225,9 @@ class EditCommentView(APIView):
             return Response(status=status.HTTP_200_OK)
 
 class DeleteCommentView(APIView):
-    def delete(self, request, instance_id):
-        instance = Comment.objects.get(id=instance_id)
-        if id is None:
+    def delete(self, request, id):
+        instance = Comment.objects.get(id=id)
+        if instance is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             Comment.objects.filter(id=id).delete()
