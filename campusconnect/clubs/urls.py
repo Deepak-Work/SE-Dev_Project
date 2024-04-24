@@ -1,6 +1,7 @@
 from django.urls import path
 
-from .views import CreateClubView, GetClubView, FollowClubView, UnfollowClubView, GetFollowStatus, GetExploreClubsView, GetFollowedClubsView, ToggleFollowClubView
+from .views import CreateClubView, GetClubView, FollowClubView, UnfollowClubView, GetFollowStatus, GetExploreClubsView, GetFollowedClubsView, \
+ToggleFollowClubView, GetFollowersView
 
 urlpatterns = [
     path("create", CreateClubView.as_view()),
@@ -11,5 +12,6 @@ urlpatterns = [
     path("follow-status/<str:name>/<int:id>", GetFollowStatus.as_view()),
     path("explore-clubs", GetExploreClubsView.as_view()),
     path("followed-clubs", GetFollowedClubsView.as_view()),
+    path("followers/<int:id>", GetFollowersView.as_view()),
     
 ]

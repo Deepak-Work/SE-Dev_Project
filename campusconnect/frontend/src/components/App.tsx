@@ -8,7 +8,6 @@ import LandingPage from "./LandingPage/LandingPage";
 import ClubApplication from "./Club/ClubApplication";
 import ClubPage from "./Club/ClubPage";
 import Profile from "./Profile/Profile";
-import Members from "./Club/Members";
 
 import LoadingIndicator from "./Utils/LoadingIndicator";
 
@@ -52,7 +51,6 @@ function App() {
           <Route path="/home" element={isAuth === null ? <LoadingIndicator /> : <LandingPage username={username} isAuth={isAuth} />} />
           <Route path="/club/application" element={<ClubApplication />} />
           <Route path="/club/:name/:id" element={isAuth === null ? <LoadingIndicator /> : <ClubPage username={username} isAuth={isAuth}/>} />
-          <Route path="/club/:name/members" element={isAuth === null ? <LoadingIndicator /> : <Members username={username} isAuth={isAuth}/>} />
           <Route path="/profile/:name" element={isAuth === null ? <LoadingIndicator /> : <Profile isAuth={isAuth}/>} />
         </Routes>
       </Router>

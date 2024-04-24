@@ -111,6 +111,12 @@ class UnfollowClubView(APIView):
         else:
             Follow.objects.filter(user=request.user, club=club).delete()
             return Response(status=status.HTTP_200_OK)
+        
+class GetFollowersView(APIView):
+    def get(self, request, id):
+        followers = Follow.objects.filter(club=id).values()
+        print(followers)
+        return Response(status=status.HTTP_404_NOT_FOUND)
           
 class GetClubsView(APIView):
     def get(self, request):

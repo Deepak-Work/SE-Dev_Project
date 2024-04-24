@@ -27,6 +27,7 @@ import PostElement from "../Posts/PostElement";
 import CreatePost from "../Posts/CreatePost";
 import CreateEvent from "../Events/CreateEvent";
 import EventElement from "../Events/EventElement";
+import Members from "./Members";
 
 interface Props {
   username: string;
@@ -132,6 +133,11 @@ const ClubPage = (props: Props) => {
 
   const handleCreateEventOpen = () => setCreateEventOpen(true);
   const handleCreateEventClose = () => setCreateEventOpen(false);
+
+  // Create a Members list Modal
+  const [membersOpen, setMembersOpen] = useState<boolean>(false);
+  const handleMembersOpen: () => void = () => setMembersOpen(true);
+  const handleMembersClose: () => void = () => setMembersOpen(false);
 
   // // Explore Modal
   // const [exploreOpen, setExploreOpen] = useState<boolean>(false);
@@ -350,12 +356,14 @@ const ClubPage = (props: Props) => {
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Members List">
-                      <IconButton sx={{ color: "white" }}>
+                      <IconButton onClick={handleMembersOpen} sx={{ color: "white" }}>
                         <PeopleIcon />
                       </IconButton>
                     </Tooltip>
                   </div>
                 </div>
+                <Members clubID={id} membersOpen={membersOpen} handleMembersOpen={handleMembersOpen} handleMembersClose={handleMembersClose} />
+
               </Box>
 
               <CreatePost
