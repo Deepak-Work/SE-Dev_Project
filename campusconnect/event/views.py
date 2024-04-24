@@ -7,7 +7,7 @@ from rest_framework import status
 from clubs.models import Club
 from .models import Event
 from .serializers import EventSerializer
-
+from clubs.models import AuditLog
 from datetime import datetime
 
 class CreateEventView(APIView):
@@ -30,6 +30,8 @@ class CreateEventView(APIView):
             club = Club.objects.get(id=club_id)
             event = Event.objects.create(name=name, description=description, event_date=date, event_time=time, author=request.user, club=club)
             event.save()
+            log = AuditLog.objects.create(club=club, action="Created", item="Event: " + name, user=request.user)
+            log.save()
             return Response(status=status.HTTP_201_CREATED)
         else:
             print(serializer_class.errors)
@@ -64,6 +66,8 @@ class EditEventView(APIView):
             instance.date = validated_data.get('date', instance.date)
             instance.time = validated_data.get('time', instance.time)
             instance.save()
+            log = AuditLog.objects.create(club=instance.club, action="Edited", item="Event: " + instance.name, user=request.user)
+            log.save()
             return Response(status=status.HTTP_200_OK)
 
 class DeleteEventView(APIView):
@@ -73,4 +77,6 @@ class DeleteEventView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             Event.objects.filter(id=id).delete()
+            log = AuditLog.objects.create(club=instance.club, action="Deleted", item="Event: " + instance.name, user=request.user)
+            log.save()
             return Response(status=status.HTTP_200_OK)

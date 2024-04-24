@@ -6,13 +6,13 @@ from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
 
 from rest_framework.views import APIView
-from .models import Club, Follow
+from .models import Club, Follow, Role, Membership, AuditLog
 from rest_framework import status
 
 from posts.models import Post
 from event.models import Event
 
-from .serializers import ClubSerializer
+from .serializers import ClubSerializer, RoleSerializer, MembershipSerializer
 
 # Create your views here.
 class CreateClubView(APIView):
@@ -21,8 +21,6 @@ class CreateClubView(APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            print(serializer)
-            print("Here")
             clubName = serializer.data.get('name')
             clubDesc = serializer.data.get('description')
             clubLoc = serializer.data.get('location')
@@ -48,17 +46,26 @@ class CreateClubView(APIView):
             follow = Follow.objects.create(user=request.user, club=club)
             follow.save()
             
+            role = Role.objects.create(user=request.user, club=club, role="member")
+            role.save()
+            
+            log = AuditLog.objects.create(club=club, action="Created", item="Club: " + clubName ,user=request.user)
+            # TODO - Should we immediately put the club organizer into Follows model?
+            log.save()
             return Response({'club_id': str(club.id)}, status=status.HTTP_201_CREATED)
         
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
 class GetClubView(APIView):
-    def get(self, request, name, id):
-        # TODO: Eventually, we'll also have to include events and members associated with this club
-        
+    def get(self, request, name, id):        
         c = Club.objects.get(id=id)
         c_json = model_to_dict(c)
         c_json['image'] = c.image.url
+
+        followers = Follow.objects.filter(club_id=id)
+        club_followers = [{"id": follower.user.id, "username": follower.user.username, "image":follower.user.profile.image.url} for follower in followers]
+
+        c_json['followers'] = club_followers
 
         posts = Post.objects.filter(club=id).order_by('-time_posted').values()
         for post in posts:
@@ -112,6 +119,12 @@ class UnfollowClubView(APIView):
             club.member_count = followsCount
             club.save()
             return Response(status=status.HTTP_200_OK)
+        
+class GetFollowersView(APIView):
+    def get(self, request, id):
+        followers = Follow.objects.filter(club=id).values()
+        print(followers)
+        return Response(status=status.HTTP_404_NOT_FOUND)
           
 class GetClubsView(APIView):
     def get(self, request):
@@ -173,3 +186,76 @@ class ToggleFollowClubView(APIView):
             return Response(status=status.HTTP_200_OK)
             
             
+
+class AddRoleView(APIView):
+    serializer = RoleSerializer
+    def get(self, request, id):
+        serializer_data = self.serializer_class(data=request.data)
+        if serializer_data.is_valid():
+            club = Club.objects.get(id=id)
+            if club is None:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            else:
+                role = Role.objects.create(user=request.user, club=club, role=serializer_data.data.get('role'))
+                role.save()
+                return Response(status=status.HTTP_200_OK)
+            
+class RemoveRoleView(APIView):
+    serializer = RoleSerializer
+    def get(self, request, id):
+        serializer_data = self.serializer_class(data=request.data)
+        if serializer_data.is_valid():
+            club = Club.objects.get(id=id)
+            # I would like any member in the club with a admin role to be able to delete the role
+            if club is None:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            else:
+                Role.objects.filter(user=request.user, club=club, role=serializer_data.data.get('role')).delete()
+                return Response(status=status.HTTP_200_OK)
+            
+class GetRoleView(APIView):
+    def get(self, request, id):
+        roles = Role.objects.filter(club=id).values()
+        if roles:
+            return Response({'roles_data' : roles}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+
+
+class AssignRoleView(APIView):
+    serializer = MembershipSerializer
+    def get(self, request, id):
+        serializer_data = self.serializer_class(data=request.data)
+        if serializer_data.is_valid():
+            club = Club.objects.get(id=id)
+            if club is None:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            else:
+                user = request.user
+                role = Role.objects.get(user=user, club=club, role=serializer_data.data.get('role'))
+                if role is None:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    membership = Membership.objects.create(user=user, club=club, role=role)
+                    membership.save()
+                    return Response(status=status.HTTP_200_OK)
+
+
+class RemoveMembershipView(APIView):
+    def get(self, request, id):
+        membership = Membership.objects.get(id=id)
+        if membership is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            membership.delete()
+            return Response(status=status.HTTP_200_OK)
+        
+class GetMembershipView(APIView):
+    def get(self, request, id):
+        memberships = Membership.objects.filter(user=request.user, club=id).values()
+        # this is to view the roles of a user in a club
+        
+        if memberships:
+            return Response({'memberships_data' : memberships}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    

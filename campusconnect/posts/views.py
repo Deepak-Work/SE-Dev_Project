@@ -4,7 +4,7 @@ from .models import Post, Comment, React
 from rest_framework import status
 from django.contrib.auth.models import User
 
-from clubs.models import Club
+from clubs.models import Club, AuditLog
 
 from .serializers import PostSerializer, CommentSerializer
 
@@ -25,6 +25,8 @@ class CreatePostView(APIView):
             
             # TODO: Add post image and summary of post            
             post.save()
+            log = AuditLog.objects.create(club=club, action="Created", item="Post: " + title, user=request.user)
+            log.save()
             return Response(status=status.HTTP_201_CREATED)
         
         else:
@@ -92,6 +94,7 @@ class DeletePostView(APIView):
             clubid = Post.objects.get(id=id).club.id
             clubname = Club.objects.get(id=clubid).name
             post = Post.objects.get(id=id)
+            print(post)
             post.delete()
             return Response({'club_name':clubname,'club_id':clubid},status=status.HTTP_200_OK)
     pass

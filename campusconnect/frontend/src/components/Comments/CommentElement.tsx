@@ -95,7 +95,7 @@ const CommentElement = (props: CommentProps) => {
 
     if (response.ok) {
       setCurrentReplyId(null);
-      fetchComments(id);
+      fetchComments(Number(id));
     }
   };
 

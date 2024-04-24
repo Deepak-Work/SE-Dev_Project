@@ -157,7 +157,8 @@ const PostElement: React.FC<PostProps> = ({
   return (
     <Card
       sx={{
-          border: "3px solid black",
+          border: "3px solid",
+          borderColor:"back.dark",
         borderRadius: "35px",
         // width: "450px",
         // maxWidth: "450px",
@@ -179,37 +180,30 @@ const PostElement: React.FC<PostProps> = ({
           onClick: () => navigate(`/post/${post_id}`),
           sx: {
             fontFamily: "Lobster",
-            color: "secondary.contrast",
+            color: "back.light",
             cursor: "pointer",
             textDecoration: "underline",
             textDecorationColor: "back.dark",
             textDecorationThickness: "3px",
-            "&:hover": { color: "back.light" },
+            "&:hover": { color: "back.dark" },
           },
         }}
         subheader={`${username} - ${time_posted}`} // The subheader is the post date
-        subheaderTypographyProps={{ sx: { fontFamily: "Lobster" } }}
+        subheaderTypographyProps={{ sx: { color:"back.light", fontFamily: "Lobster" } }}
         sx={{ backgroundColor: "secondary.main" }}
         />
-        {/* Post Image */}
-        {/* <CardMedia
-        // The image of the post
-        component="img"
-        height="300" // The height of the post image
-        // image={postImage} // The URL of the post image
-        alt="Post Image" // The alt text of the post image
-      /> */}
 
-        {/* Post Caption */}
-      <CardContent sx={{ backgroundColor: "back.dark", color: "back.light" }}>
+      <CardContent sx={{ backgroundColor: "back.main", color: "back.dark" }}>
         <Typography
           variant="body2"
           fontFamily={"Lobster"}
+          fontSize="1.25rem"
           sx={{
-            color: "back.light",
+            color: "back.dark",
             border: "2px solid",
-            borderColor: "back.light",
+            borderColor: "back.dark",
             borderRadius: "20px",
+            backgroundColor:"back.light",
             padding: 2,
             overflowWrap: "break-word",
           }}
@@ -225,7 +219,10 @@ const PostElement: React.FC<PostProps> = ({
             justifyContent: "space-between",
             mt: 2,
             mb: -2,
-            ml: -2,
+            ml: 0,
+            border:"2px solid",
+            borderRadius:"20px",
+            backgroundColor:"back.light",
           }}
         >
           <Box sx={{ display: "flex", flexFlow: "row wrap", columnGap:1}}>
@@ -241,13 +238,13 @@ const PostElement: React.FC<PostProps> = ({
                 component="h6"
                 variant="h6"
                 fontFamily={"Lobster"}
-                sx={{ userSelect: "none", py: 1 }}
+                sx={{ color: "primary.main", userSelect: "none", py: 1 }}
               >
                 {likes}
               </Typography>
             <Tooltip title="Like">
               <IconButton onClick={handleLike} aria-label="like post">
-                  <ThumbUpAltIcon sx={{ color: "back.light" }} />
+                  <ThumbUpAltIcon sx={{ color: "back.dark" }} />
               </IconButton>
             </Tooltip>
             </Box>
@@ -264,13 +261,13 @@ const PostElement: React.FC<PostProps> = ({
                 component="h6"
                 variant="h6"
                 fontFamily={"Lobster"}
-                sx={{ userSelect: "none", py: 1 }}
+                sx={{ color: "primary.main", userSelect: "none", py: 1 }}
               >
                 {dislikes}
               </Typography>
             <Tooltip title="Dislike">
               <IconButton onClick={handleDislike} aria-label="dislike post">
-                  <ThumbDownIcon sx={{ color: "back.light" }} />
+                  <ThumbDownIcon sx={{ color: "back.dark" }} />
                 </IconButton>
               </Tooltip>
             </Box>
@@ -284,13 +281,13 @@ const PostElement: React.FC<PostProps> = ({
                 component="h6"
                 variant="h6"
                 fontFamily={"Lobster"}
-                sx={{ userSelect: "none", py: 1 }}
+                sx={{ color: "primary.main", userSelect: "none", py: 1 }}
               >
                 {totalComments}
               </Typography>
               <Tooltip title="Comments">
                 <IconButton aria-label="total comments">
-                  <CommentOutlinedIcon sx={{ color: "back.light" }} />
+                  <CommentOutlinedIcon sx={{ color: "back.dark" }} />
                 </IconButton>
               </Tooltip>
             </Box>
@@ -298,7 +295,7 @@ const PostElement: React.FC<PostProps> = ({
           <Box>
           <Tooltip title="More">
                 <IconButton aria-label="more">
-                  <MoreIcon sx={{ color: "back.light" }} />
+                  <MoreIcon sx={{ color: "back.dark" }} />
               </IconButton>
             </Tooltip>            
           </Box>

@@ -78,8 +78,9 @@ const EventElement: React.FC<EventProps> = ({
   return (
     <Card
       sx={{
-        border: "3px solid black",
+        border: "3px solid",
         borderRadius: "35px",
+        borderColor: "back.dark",
         // width: "450px",
         // maxWidth: "450px",
         textWrap: "balance",
@@ -99,16 +100,16 @@ const EventElement: React.FC<EventProps> = ({
           onClick: () => navigate("/"),
           sx: {
             fontFamily: "Lobster",
-            color: "secondary.contrast",
+            color: "back.light",
             cursor: "pointer",
             textDecoration: "underline",
             textDecorationColor: "back.dark",
             textDecorationThickness: "3px",
-            "&:hover": { color: "back.light" },
+            "&:hover": { color: "back.dark" },
           },
         }}
         subheader={`Event Time: ${event_date} @ ${StandardTime(event_time)}`} // The subheader is the post date
-        subheaderTypographyProps={{ sx: { fontFamily: "Lobster" } }}
+        subheaderTypographyProps={{ sx: { color: "back.light", fontFamily: "Lobster" } }}
         sx={{ backgroundColor: "secondary.main" }}
       />
       {/* Post Image */}
@@ -121,14 +122,16 @@ const EventElement: React.FC<EventProps> = ({
       /> */}
 
       {/* Post Caption */}
-      <CardContent sx={{ backgroundColor: "back.dark", color: "back.light" }}>
+      <CardContent sx={{ backgroundColor: "back.main", color: "back.dark" }}>
         <Typography
           variant="body2"
+          fontFamily="Lobster"
+          fontSize="1.25rem"
           sx={{
-            fontFamily: "Lobster",
-            color: "back.light",
+            backgroundColor:"back.light",
+            color: "back.dark",
             border: "2px solid",
-            borderColor: "back.light",
+            borderColor: "back.dark",
             borderRadius: "20px",
             padding: 2,
             overflowWrap: "break-word",
@@ -140,12 +143,16 @@ const EventElement: React.FC<EventProps> = ({
         {/* Reactions */}
         <CardActions
           sx={{
+            backgroundColor: "back.light",
             display: "flex",
+            border:"2px solid",
+            borderColor: "back.dark",
+            borderRadius: "20px",
             flexFlow: "row wrap",
             justifyContent: "space-between",
             mt: 2,
             mb: -2,
-            ml: -2,
+            ml: 0,
           }}
         >
           <Box sx={{ display: "flex", flexFlow: "row wrap" }}>
@@ -160,14 +167,14 @@ const EventElement: React.FC<EventProps> = ({
               <Typography
                 component="h6"
                 variant="h6"
-                sx={{ userSelect: "none", py: 1 }}
+                sx={{ color:"primary.main", userSelect: "none", py: 1 }}
                 fontFamily={"Lobster"}
               >
                 {likes}
               </Typography>
               <Tooltip title="Like">
                 <IconButton aria-label="like post">
-                  <ThumbUpAltIcon sx={{ color: "back.light" }} />
+                  <ThumbUpAltIcon sx={{ color: "back.dark" }} />
                 </IconButton>
               </Tooltip>
             </Box>
@@ -184,13 +191,13 @@ const EventElement: React.FC<EventProps> = ({
                 component="h6"
                 variant="h6"
                 fontFamily={"Lobster"}
-                sx={{ userSelect: "none", py: 1 }}
+                sx={{ color:"primary.main", userSelect: "none", py: 1 }}
               >
                 {dislikes}
               </Typography>
               <Tooltip title="Dislike">
                 <IconButton aria-label="dislike post">
-                  <ThumbDownIcon sx={{ color: "back.light" }} />
+                  <ThumbDownIcon sx={{ color: "back.dark" }} />
                 </IconButton>
               </Tooltip>
             </Box>
@@ -209,20 +216,20 @@ const EventElement: React.FC<EventProps> = ({
               component="h6"
               variant="h6"
               fontFamily={"Lobster"}
-              sx={{ userSelect: "none", py: 1 }}
+              sx={{ color:"primary.main", userSelect: "none", py: 1 }}
             >
               {attendingCount}
             </Typography>
             <Tooltip title="Attending">
               <IconButton>
-                <ReceiptLongIcon sx={{ color: "back.light" }} />
+                <ReceiptLongIcon sx={{ color: "back.dark" }} />
               </IconButton>
             </Tooltip>
             <Button
               sx={{
                 fontFamily: "Lobster",
                 border: "2px solid",
-                borderColor: "back.light",
+                borderColor: "back.dark",
                 borderRadius: "20px",
               }}
             >
@@ -232,7 +239,7 @@ const EventElement: React.FC<EventProps> = ({
           <Box>
           <Tooltip title="More">
                 <IconButton aria-label="more">
-                  <MoreIcon sx={{ color: "back.light" }} />
+                  <MoreIcon sx={{ color: "back.dark" }} />
                 </IconButton>
               </Tooltip>
           </Box>
