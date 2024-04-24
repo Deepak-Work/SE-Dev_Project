@@ -50,14 +50,12 @@ const NavBar = ( { username }: Props) => {
 
     if (response.ok) {
       response.json().then((value) => {
-        console.log("FollowedClubs: " + value.clubs_id);
         for (let clubID of value.clubs_id) {
           setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
         }
         setClubs(value.clubs_data);
       });
     } else {
-      console.log("fetchFollowedClubs: No Clubs Found");
       setFollowedClubs(new Map());
       setClubs([]);
     }
@@ -70,13 +68,11 @@ const NavBar = ( { username }: Props) => {
 
     if (response.ok) {
       response.json().then((value) => {
-        console.log("FollowedClubs: " + value.clubs_id);
         for (let clubID of value.clubs_id) {
           setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
         }
       });
     } else {
-      console.log("FetchFolowedClubsID: No Clubs Found");
       setFollowedClubs(new Map());
     }
   };
@@ -88,11 +84,9 @@ const NavBar = ( { username }: Props) => {
     if (response.ok) {
       response.json().then((value) => {
         const club_data = value.clubs_data;
-        console.log("ExploreClubs2: " + club_data[0].image);
         setClubs(club_data);
       });
     } else {
-      console.log("fetchClubs: No Clubs Found");
       setClubs([]);
     }
   };
@@ -102,12 +96,9 @@ const NavBar = ( { username }: Props) => {
   const [exploreOpen, setExploreOpen] = useState<boolean>(false);
 
   const handleExploreOpen: () => void = async () => {
-    // console.log("Followed Clubs: ", followedClubs)
     fetchClubs();
     fetchFollowedClubsID();
-    // console.log("Followed Clubs2: ", followedClubs);
     setExploreOpen(true);
-    // console.log("Clubs: ", clubs)
   };
   const handleExploreClose: () => void = () => setExploreOpen(false);
 
@@ -204,7 +195,7 @@ const NavBar = ( { username }: Props) => {
                   sx={{ ml: "20px", py: "6px", px: "12px" }}
                   onClick={handleMyClubsOpen}
                 >
-                  <Typography variant="h6" color="back.light" sx={{fontFamily:"RampartOne",}}>
+                  <Typography variant="h6" color="back.light" sx={{fontFamily:"Lobster",}}>
                     My Clubs
                   </Typography>
                 </MenuItem>
@@ -213,7 +204,7 @@ const NavBar = ( { username }: Props) => {
                     variant="h6"
                     color="back.light"
                     onClick={handleExploreOpen}
-                    sx={{fontFamily:"RampartOne",}}
+                    sx={{fontFamily:"Lobster",}}
                   >
                     Explore
                   </Typography>
@@ -222,7 +213,7 @@ const NavBar = ( { username }: Props) => {
                   onClick={() => navigate("/club/application")}
                   sx={{ py: "6px", px: "12px" }}
                 >
-                  <Typography variant="h6" color="back.light" sx={{fontFamily:"RampartOne",}}>
+                  <Typography variant="h6" color="back.light" sx={{fontFamily:"Lobster",}}>
                     Create a Club
                   </Typography>
                 </MenuItem>

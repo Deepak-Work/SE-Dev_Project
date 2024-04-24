@@ -90,15 +90,12 @@ const Explore = (props: ExploreProps) => {
     });
 
     if (response.ok) {
-      console.log(response);
       response.json().then((value) => {
-        console.log("FollowedClubs: " + value.clubs_id);
         for (let clubID of value.clubs_id) {
           setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
         }
       });
     } else {
-      console.log("No Clubs Found");
       setFollowedClubs(new Map());
     }
   };
@@ -108,14 +105,11 @@ const Explore = (props: ExploreProps) => {
       method: "GET",
     });
     if (response.ok) {
-      console.log(response);
       response.json().then((value) => {
         const club_data = value.clubs_data;
-        console.log("ExploreClubs1: " + club_data.id);
         setClubs(club_data);
       });
     } else {
-      console.log("No Clubs Found");
       setClubs([]);
     }
   };
@@ -145,8 +139,6 @@ const Explore = (props: ExploreProps) => {
             followedClubs.delete(clubID);
             setFollowedClubs(new Map(followedClubs));
             setMemberUpdated({});
-          } else {
-            console.log("Follow Status: true - " + response.status);
           }
         } else {
           const followResponse = await fetch(
@@ -159,8 +151,6 @@ const Explore = (props: ExploreProps) => {
           if (followResponse.ok) {
             setFollowedClubs(new Map(followedClubs.set(clubID, 1)));
             setMemberUpdated({});
-          } else {
-            console.log("Follow Status: false - " + response.status);
           }
         }
       });

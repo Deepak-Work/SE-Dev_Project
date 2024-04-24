@@ -10,6 +10,7 @@ import {
   List,
   ListItem,
   PaletteOptions,
+  Button,
 } from "@mui/material";
 
 import Cookies from "js-cookie";
@@ -19,6 +20,8 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CreateIcon from "@mui/icons-material/Create";
 import SettingsIcon from "@mui/icons-material/Settings";
 import AddBoxIcon from "@mui/icons-material/AddBox";
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import PeopleIcon from "@mui/icons-material/People";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
@@ -142,50 +145,6 @@ const ClubPage = (props: Props) => {
     setCreateEventOpen(false);
   }
 
-  // // Explore Modal
-  // const [exploreOpen, setExploreOpen] = useState<boolean>(false);
-
-  // const handleExploreOpen: () => void = () => setExploreOpen(true);
-  // const handleExploreClose: () => void = () => setExploreOpen(false);
-
-  // CreatePostsDisplay
-  // const createPostsDisplay = (posts_data: any) => {
-  //   const PostsComponent = posts_data.map((post: any) => (
-  //     <ListItem key={post.id}>
-  //       <PostElement
-  //         username={post.author}
-  //         title={post.title}
-  //         body={post.body}
-  //         time_posted={convertDate(new Date(post.time_posted))}
-  //         likes={post.likes}
-  //         dislikes={post.dislikes}
-  //       />
-  //     </ListItem>
-  //   ));
-  //   const final = <List sx={{ ml: 0 }}>{PostsComponent}</List>;
-  //   setPosts(final);
-  // };
-
-  // CreatePostsDisplay
-  //  const createEventsDisplay = (events_data: any) => {
-  //   const EventsComponent = events_data.map((event: any) => (
-  //     <ListItem key={event.id}>
-  //       <EventElement
-  //         id={event.id}
-  //         username={event.author}
-  //         name={event.name}
-  //         description={event.description}
-  //         event_time={event.event_time}
-  //         event_date={event.event_date}
-  //         // likes={event.likes}
-  //         // dislikes={event.dislikes}
-  //       />
-  //     </ListItem>
-  //   ));
-  //   const final = <List sx={{ ml: 0 }}>{EventsComponent}</List>;
-  //   setEvents(final);
-  // };
-
   const getFollowStatus = async () => {
     console.log("Checking Follow Status");
     const response: Response = await fetch(
@@ -199,9 +158,56 @@ const ClubPage = (props: Props) => {
       }
     );
     if (response.ok) {
-      setFollowed(true);
+      response.json().then((value) => {
+        setFollowed(value.follow_status);
+      })
     }
     console.log(followed);
+  };
+
+  const ToggleFollow: (
+    clubName: string | undefined,
+    clubID: string | undefined
+  ) => Promise<void> = async (clubName, clubID) => {
+    const response = await fetch(
+      `/api/clubs/follow-status/${clubName}/${clubID}`,
+      {
+        method: "GET",
+      }
+    );
+
+    if (response.ok) {
+      response.json().then(async (value) => {
+        if (followed) {
+          const followResponse = await fetch(
+            `/api/clubs/unfollow/${clubName}/${clubID}`,
+            {
+              method: "GET",
+            }
+          );
+
+          if (followResponse.ok) {
+            setFollowed(false);
+            // setMemberUpdated({})
+          } else {
+            console.log("Follow Status: true - " + response.status);
+          }
+        } else {
+          const followResponse = await fetch(
+            `/api/clubs/follow/${clubName}/${clubID}`,
+            {
+              method: "GET",
+            }
+          );
+
+          if (followResponse.ok) {
+            setFollowed(true);
+          } else {
+            console.log("Follow Status: false - " + response.status);
+          }
+        }
+      });
+    }
   };
 
   useEffect(() => {
@@ -241,7 +247,7 @@ const ClubPage = (props: Props) => {
     getFollowStatus();
     console.log("club exists:" + clubExists);
     console.log("auth: " + props.isAuth);
-  }, []);
+  }, [followed]);
 
   return (
     <>
@@ -323,13 +329,13 @@ const ClubPage = (props: Props) => {
 
                   }}
                 >
-                  <Box sx={{width : "100%" , overflow:"auto", scrollbarColor:"#8B139C #7108d8", scrollbarWidth:"thin"}}>
-                  <Typography ml={2} variant="h5" color="white" fontFamily={"Lobster"} sx={{wordBreak:"break-word"}}>
+                  <Box sx={{width : "100%" , minHeight: "25%", overflow:"auto", scrollbarColor:"#8B139C #7108d8", scrollbarWidth:"thin"}}>
+                  <Typography ml={2} variant="h5" color="white" fontFamily={"RampartOne"} sx={{ whiteSpace:"pre-line", wordBreak:"break-word" }}>
                     {clubInfo.name}
                   </Typography>
                   </Box>
                   <Box sx={{width : "100%" , overflow:"auto", scrollbarColor:"#8B139C #7108d8", scrollbarWidth:"thin"}}>
-                  <Typography ml={2} variant="subtitle1" color="white" fontFamily={"Lobster"} sx={{wordBreak:"break-word"}}>
+                  <Typography ml={2} variant="subtitle1" color="white" fontFamily={"Lobster"} sx={{ whiteSpace:"pre-line", wordBreak:"break-word" }}>
                     {clubInfo.description}
                   </Typography>
                   </Box>
@@ -345,14 +351,27 @@ const ClubPage = (props: Props) => {
                       marginLeft: "10px",
                     }}
                   >
-                    <Tooltip title="Follow Club">
+                    <Tooltip title={followed? "Unfollow Club" : "Follow Club"}>
                       <IconButton
-                        // onClick={followed ? handleUnfollowClub : handleFollowClub}
+                        onClick={() => ToggleFollow(name, id)}
                         sx={{ color: "white" }}
                       >
-                        <AddBoxIcon />
+                        {followed? <RemoveCircleIcon/>: <AddCircleIcon />}
                       </IconButton>
                     </Tooltip>
+                                            {/* <Button
+                          key={id}
+                          sx={{
+                            backgroundColor: "primary.main",
+                            color: "back.light",
+                            border: "2px solid #000",
+                            borderRadius: "20px",
+                            "&:hover": { backgroundColor: "secondary.main" },
+                          }}
+                          onClick={() => ToggleFollow(name,id)}
+                        >
+                          {followed ? "Unfollow" : "Follow"}
+                        </Button> */}
                     <Tooltip title="Create Post">
                       <IconButton
                         onClick={handleCreatePostOpen}
@@ -440,6 +459,7 @@ const ClubPage = (props: Props) => {
                       posts.map((post: Post) => (
                         <Box key={post.id} sx={{ my: 1 }}>
                           <PostElement
+                            post_id={post.id}
                             username={post.author}
                             title={post.title}
                             body={post.body}
