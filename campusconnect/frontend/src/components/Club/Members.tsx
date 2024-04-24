@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { Container, List, ListItem, ListItemText, Button, Typography,   DialogContent,
+import { Container, List, ListItem, ListItemText, Button, Typography,   DialogContent, Grid, Box, Link,
   DialogTitle,
   Dialog,
   Slide, } from '@mui/material';
+
+
+import { useNavigate } from "react-router-dom";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import { TransitionProps } from "@mui/material/transitions";
 
+import CustomPaletteOptions from "../UI/CustomPaletteOptions";
+
+
 
 interface MembersProps {
   clubID: string | undefined,
+  members: any[],
   membersOpen: boolean;
   handleMembersOpen: () => void;
   handleMembersClose: () => void;
@@ -26,9 +33,9 @@ const slideTransition = React.forwardRef(function Transition(
 });
 
 const Members = (props: MembersProps) => {
-  const { clubID, membersOpen, handleMembersOpen, handleMembersClose } = props;
+  const navigate = useNavigate();
 
-  const [members, setMembers] = useState([]);
+  const { clubID, members, membersOpen, handleMembersOpen, handleMembersClose } = props;
 
   const theme = createTheme({
     palette: {
@@ -38,29 +45,21 @@ const Members = (props: MembersProps) => {
       secondary: {
         main: "#8B139C",
       },
-    },
+      back: {
+        main: "#ced4da",
+        light: "#fff",
+        dark: "#000",
+        contrastText: "purple",
+      },
+    } as CustomPaletteOptions,
   });
-
-
-  useEffect(() => {
-    const fetchMembers = async () => {
-      const response = await fetch(`/api/clubs/followers/${clubID}`, {
-        method: 'GET',
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setMembers(data.members);
-        console.log(data.members);
-      }
-    };
-
-    fetchMembers();
-  }, []);
 
   const handleEditMember = (memberId: any) => {
     // Implement edit functionality
     console.log('Edit member:', memberId);
   };
+
+
 
   // return (
   //   // <Container>
@@ -131,7 +130,91 @@ const Members = (props: MembersProps) => {
             borderRadius: "20px",
           }}
         >
+  {members && members.length != 0 ? (
+    <Grid
+      container
+      spacing={0}
+      sx={{ display: "flex", justifyContent: "center" }}
+    >
+      {members.map((member) => (
+        <Grid
+          item
+          xs={12}
+          sx={{
+            padding: 2,
+            margin: 2,
+            display: "flex",
+            backgroundColor: "back.main",
+            border: "2px back.dark solid",
+            borderRadius: "20px",
+            justifyContent: "space-around",
+            alignItems: "center",
+          }}
+        >
+          <Box
+           component="img"
+           alt="Club Logo"
+           src={member.image}
+            sx={{
+              width: "50px",
+              height: "50px",
+              border: "2px solid black",
+              borderRadius: "10px",
+              display: { xs: "none", sm: "block", md: "block" },
+            }}
+          >
+          </Box>
+          <Box
+            sx={{ display: "flex", flexFlow: "column wrap", justifyContent:"flex-start", px: 2 }}
+          >
+            <Box sx={{border:"0px black solid",  width: "13.5vw", maxWidth: "20vw"}}>
+              <Link
+                variant="h5"
+                onClick={() => {
+                  navigate(`/profile/${member.username}`)
+                  location.reload();
+                }
+                  
+                }
+                sx={{
+                  wordBreak: "break-word",
+                  color: "back.dark",
+                  cursor: "pointer",
+                  "&:hover": { color: "primary.main" },
+                }}
+                underline="always"
+                color="primary.main"
+              >
+                {member.username}
+              </Link>
 
+            </Box>
+          </Box>
+        </Grid>
+      ))}
+    </Grid>
+  ) : (
+    <Box
+      sx={{
+        height: "100%",
+        display: "flex",
+        flexFlow: "column nowrap",
+        alignItems: "center",
+      }}
+    >
+      <Typography
+        component="h2"
+        variant="h2"
+        sx={{
+          color: "back.light",
+          fontFamily: "RampartOne",
+          fontSize: "2rem",
+        }}
+      >
+        No Members To Show...
+      </Typography>
+    </Box>
+  )}
 
         </DialogContent>
       </Dialog>

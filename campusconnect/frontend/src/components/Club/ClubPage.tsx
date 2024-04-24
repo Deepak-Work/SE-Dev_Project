@@ -46,7 +46,7 @@ interface ClubInfo {
   memberCount: string;
   image?: string;
 
-  // members: any[];
+  members: any[];
   posts: any[];
   events: any[];
   // auditLog: any[];
@@ -264,7 +264,6 @@ const ClubPage = (props: Props) => {
       if (response.ok) {
         setClubExists(true);
         response.json().then((value) => {
-          // console.log(value)
           const club_data = value.club_data;
           const posts = value.posts;
           const events = value.events;
@@ -279,7 +278,9 @@ const ClubPage = (props: Props) => {
             posts: posts,
             events: events,
             image: club_data.image,
+            members: club_data.followers,
           };
+          console.log(clubInfo);
           setPosts(posts);
           setEvents(events);
           setClubInfo(clubInfo);
@@ -440,6 +441,7 @@ const ClubPage = (props: Props) => {
                         <PeopleIcon />
                       </IconButton>
                     </Tooltip>
+                    <Members clubID={id} members={clubInfo.members} membersOpen={membersOpen} handleMembersClose={handleMembersClose} handleMembersOpen={handleMembersOpen}  />
                     <Tooltip title="Club Settings">
                       <IconButton sx={{ color: "white" }}>
                         <SettingsIcon />
