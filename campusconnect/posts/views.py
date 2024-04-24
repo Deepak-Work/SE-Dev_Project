@@ -1,12 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Post, Comment
+from .models import Post, Comment, Reaction
 from rest_framework import status
 from django.contrib.auth.models import User
 
 from clubs.models import Club
 
-from .serializers import PostSerializer, CommentSerializer
+from .serializers import PostSerializer, CommentSerializer, 
 
 
 # Post Views Functions here
@@ -96,22 +96,17 @@ class DeletePostView(APIView):
             return Response({'club_name':clubname,'club_id':clubid},status=status.HTTP_200_OK)
     pass
 
-class GetLikeStatusView(APIView):
+class getLikeDislikeView(APIView):
     def get(self, request, id):
         if id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             post = Post.objects.get(id=id)
-            return Response({'likes': post.likes, 'dislikes': post.dislikes}, status=status.HTTP_200_OK)
-
-class GetDislikeStatusView(APIView):
-    def get(self, request, id):
-        if id is None:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        else:
-            post = Post.objects.get(id=id)
-            return Response({'likes': post.likes, 'dislikes': post.dislikes}, status=status.HTTP_200_OK)
-
+            if Reaction.objects.filter(user=request.user, post=post).exists():
+                reaction = Reaction.objects.get(user=request.user, post=post)
+                return Response({'like':reaction.like, 'dislike':reaction.dislike}, status=status.HTTP_200_OK)
+            else:
+                return Response({'like':False, 'dislike':False}, status=status.HTTP_200_OK)
 
 class LikePostView(APIView):
     def post(self, request, id):
@@ -121,6 +116,13 @@ class LikePostView(APIView):
             post = Post.objects.get(id=id)
             post.likes += 1
             post.save()
+            if Reaction.objects.filter(user=request.user, post=post).exists():
+                reaction = Reaction.objects.get(user=request.user, post=post)
+                reaction.like = True
+                reaction.save()
+            else:
+                reaction = Reaction.objects.create(user=request.user, post=post, like=True)
+                reaction.save()                
             return Response(status=status.HTTP_200_OK)
 
 class UnlikePostView(APIView):
@@ -131,6 +133,13 @@ class UnlikePostView(APIView):
             post = Post.objects.get(id=id)
             post.likes -= 1
             post.save()
+            if Reaction.objects.filter(user=request.user, post=post).exists():
+                reaction = Reaction.objects.get(user=request.user, post=post)
+                reaction.like = False
+                reaction.save()
+            else:
+                reaction = Reaction.objects.create(user=request.user, post=post, like=False)
+                reaction.save()
             return Response(status=status.HTTP_200_OK)
 
 class DislikePostView(APIView):
@@ -141,6 +150,13 @@ class DislikePostView(APIView):
             post = Post.objects.get(id=id)
             post.dislikes += 1
             post.save()
+            if Reaction.objects.filter(user=request.user, post=post).exists():
+                reaction = Reaction.objects.get(user=request.user, post=post)
+                reaction.like = False
+                reaction.save()
+            else:
+                reaction = Reaction.objects.create(user=request.user, post=post, like=False)
+                reaction.save()
             return Response(status=status.HTTP_200_OK)
         
 class UndislikePostView(APIView):
@@ -151,6 +167,13 @@ class UndislikePostView(APIView):
             post = Post.objects.get(id=id)
             post.dislikes -= 1
             post.save()
+            if Reaction.objects.filter(user=request.user, post=post).exists():
+                reaction = Reaction.objects.get(user=request.user, post=post)
+                reaction.like = True
+                reaction.save()
+            else:
+                reaction = Reaction.objects.create(user=request.user, post=post, like=True)
+                reaction.save()
             return Response(status=status.HTTP_200_OK)
 
 # Comments view functions here

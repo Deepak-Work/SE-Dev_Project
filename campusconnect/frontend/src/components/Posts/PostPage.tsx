@@ -125,6 +125,7 @@ const PostPage = (props: Props) => {
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [isDisliked, setIsDisliked] = useState<boolean>(false);
 
+  
   const [deletePostOpen, setDeletePostOpen] = useState(false);
   const handleDeletePostOpen = () => {
     setDeletePostOpen(true);
@@ -134,35 +135,35 @@ const PostPage = (props: Props) => {
     setDeletePostOpen(false);
   };
 
-  // const handleEditSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-  //   const data = new FormData(event.currentTarget);
+  const handleEditSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const data = new FormData(event.currentTarget);
 
-  //   const form = new FormData();
+    const form = new FormData();
 
-  //   form.append("title", data.get("edit-post-title") as string);
-  //   form.append("body", data.get("edit-post-body") as string);
-  //   form.append("id", id as string)
-  //   if (data.get("edit-post-image")) form.append("image", data.get("edit-post-image"));
+    form.append("title", data.get("edit-post-title") as string);
+    form.append("body", data.get("edit-post-body") as string);
+    form.append("id", id as string)
+    if (data.get("edit-post-image")) form.append("image", data.get("edit-post-image"));
 
-  //   const headers = {
-  //     "Content-Type": "application/json",
-  //     "X-CSRFToken": Cookies.get("csrftoken") || "",
-  //   };
+    const headers = {
+      "Content-Type": "application/json",
+      "X-CSRFToken": Cookies.get("csrftoken") || "",
+    };
 
-  //   const response: Response = await fetch(`/api/posts/post/edit`, {
-  //     method: "PUT",
-  //     headers: headers,
-  //     body: JSON.stringify(form),
-  //   });
+    const response: Response = await fetch(`/api/posts/post/edit`, {
+      method: "PUT",
+      headers: headers,
+      body: JSON.stringify(form),
+    });
 
-  //   if (response.ok) {
-  //     handleEditPostClose();
-  //     // window.location.reload();
-  //     console.log("New Post Edited Successfully");
-  //   } else {
-  //     console.log("Edit Post failed");
-  //   }
-  // };
+    if (response.ok) {
+      handleEditPostClose();
+      // window.location.reload();
+      console.log("New Post Edited Successfully");
+    } else {
+      console.log("Edit Post failed");
+    }
+  };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
