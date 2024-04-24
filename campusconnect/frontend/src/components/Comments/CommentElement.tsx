@@ -46,13 +46,9 @@ interface CommentProps {
   likes: number;
   dislikes: number;
   timePosted: string;
+  currentReplyId: number | null;
+  setCurrentReplyId: (value: number | null) => void;
 }
-
-const handleCommentLike = () => {};
-const handleCommentDislike = () => {};
-const handleReply = () => {};
-const handleEdit = () => {};
-const handleDelete = () => {};
 
 const CommentElement = (props: CommentProps) => {
   const {
@@ -66,7 +62,21 @@ const CommentElement = (props: CommentProps) => {
     likes,
     dislikes,
     timePosted,
+    currentReplyId,
+    setCurrentReplyId,
   } = props;
+
+  const handleCommentLike = () => {};
+  const handleCommentDislike = () => {};
+  const handleReply = () => {
+    if (currentReplyId == commentId) {
+      setCurrentReplyId(null);
+      return;
+    }
+    setCurrentReplyId(commentId);
+  };
+  const handleEdit = () => {};
+  const handleDelete = () => {};
 
   return (
     <Box
@@ -81,7 +91,7 @@ const CommentElement = (props: CommentProps) => {
         justifyContent: "space-between",
         alignItems: "center",
         flexFlow: "column nowrap",
-        my: 1,
+        my: 2,
       }}
     >
       <Box
@@ -109,7 +119,7 @@ const CommentElement = (props: CommentProps) => {
             borderColor: "back.light",
             borderRadius: "10px",
             mt: 1,
-            overflow:"auto",
+            overflow: "auto",
           }}
         >
           <Typography
@@ -118,10 +128,10 @@ const CommentElement = (props: CommentProps) => {
             fontFamily={"Lobster"}
             sx={{ ml: 2, wordBreak: "break-word" }}
           >
-            {replyAuthor} - {replyBody && replyBody.length < 20
+            {replyAuthor} -{" "}
+            {replyBody && replyBody.length < 20
               ? replyBody
               : replyBody?.substring(0, 20) + "..."}
-
           </Typography>
         </Box>
       )}
@@ -142,7 +152,7 @@ const CommentElement = (props: CommentProps) => {
           "&::-webkit-scrollbar": {
             display: "none",
           },
-          my:1,
+          my: 1,
         }}
       >
         <Typography
@@ -167,9 +177,8 @@ const CommentElement = (props: CommentProps) => {
           border: "2px solid",
           borderColor: "back.dark",
           borderRadius: "10px",
-          borderTopLeftRadius:"0px",
-          borderTopRightRadius:"0px",
-
+          borderTopLeftRadius: "0px",
+          borderTopRightRadius: "0px",
         }}
       >
         <Box sx={{ display: "flex", flexFlow: "row nowrap" }}>

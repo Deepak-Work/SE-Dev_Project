@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect, FormEvent, ChangeEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import convertDate from "../Functions/convertDate";
@@ -105,7 +105,10 @@ const PostPage = (props: Props) => {
 
   const [showComments, setShowComments] = useState<boolean>(false);
   const [comments, setComments] = useState<Comment[]>([]);
-  const [replyId, setReplyId] = useState<String | null>(null);
+
+  const [newCommentBody, setNewCommentBody] = useState<string>("")
+  const [currentReplyId, setCurrentReplyId] = useState<number | null>(null);
+  
   const [postInfo, setPostInfo] = useState<PostProps>({} as PostProps);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -231,34 +234,38 @@ const PostPage = (props: Props) => {
     // Implement dislike functionality
   };
 
-  
-  const handleCommentSubmit : (event: FormEvent<HTMLFormElement>) => void 
-  = async (event) => 
-    {
-      event.preventDefault();
 
-      const data = new FormData(event.currentTarget);
+  const handleCommentSubmit: (
+    event: FormEvent<HTMLFormElement>
+  ) => void = async (event) => {
+    event.preventDefault();
 
-      const form = new FormData();
-      form.append("body", data.get("new-comment-body") as string);
-      form.append("reply_id", replyId as string);
-  
-      const headers = {
-        "X-CSRFToken": Cookies.get("csrftoken") || "",
-      };
-  
-      const response: Response = await fetch(`/api/posts/post/${id}/comment/new`, {
+    const data = new FormData(event.currentTarget);
+
+    const form = new FormData();
+    // form.append("body", data.get("new-comment-body") as string);
+    form.append("body", newCommentBody as string);
+    form.append("reply_id", currentReplyId?.toString() as string);
+
+    const headers = {
+      "X-CSRFToken": Cookies.get("csrftoken") || "",
+    };
+
+    const response: Response = await fetch(
+      `/api/posts/post/${id}/comment/new`,
+      {
         method: "POST",
         headers: headers,
         body: form,
-      });
-  
-      if (response.ok) {
-        
-        fetchComments(Number(id));
       }
-    };
+    );
 
+    if (response.ok) {
+      setNewCommentBody("");
+      setCurrentReplyId(null);
+      fetchComments(Number(id));
+    }
+  };
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -290,6 +297,11 @@ const PostPage = (props: Props) => {
     fetchPost();
     fetchComments(Number(id));
   }, []);
+
+  const handleNewComment: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=> void  =
+  (event) => {
+    setNewCommentBody(event.currentTarget.value);
+  }
 
   return (
     <>
@@ -752,40 +764,95 @@ const PostPage = (props: Props) => {
                         color="white"
                         fontWeight="bold"
                         fontFamily={"Lobster"}
-                        sx={{ pt: 1, pl: 3, pr: 3 }}
+                        sx={{ pt: 1, pl: 3, pr: 3, userSelect:"none" }}
                       >
                         Comments
                       </Typography>
                     </Box>
-                    <Box sx={{display:"flex", width:"100%", minHeight:"10%", maxHeight:"30%",}}>
-                        <Box component="form" onSubmit={handleCommentSubmit} sx={{width:"100%", height: "100%", overflow: "auto",}}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexFlow: "row nowrap",
+                        justifyContent: "center",
+                        width: "100%",
+                        border: "2px solid",
+                        borderRadius: "0px",
+                        // minHeight: "30%",
+                        maxHeight: "50%",
+                        m: 0,
+                      }}
+                    >
+                      <Box
+                        component="form"
+                        onSubmit={handleCommentSubmit}
+                        sx={{
+                          display: "flex",
+                          flexFlow: "column wrap",
+                          justifyContent: "center",
+                          width: "100%",
+                          height: "100%",
+                          overflow: "auto",
+                          "&::-webkit-scrollbar":{
+                            display:"none"
+                          },
+                        }}
+                      >
                         <TextField
-                    sx={{ backgroundColor: "back.light",  }}
-                    variant="filled"
-                    autoComplete="comment-field"
-                    required
-                    fullWidth
-                    multiline
-                    id="new-comment-body"
-                    name="new-comment-body"
-                    label="New Comment"
-                    type="text"
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">📜</InputAdornment>
-                      ),
-                      endAdornment: (                  
-                      <Button
-  type="submit"
-  variant="contained"
-  sx={{ mt: 3, mb: 2 }}
->
-  Send
-</Button>)
-                    }}
-                    />
+                          sx={{ backgroundColor: "back.light",}}
+                          variant="filled"
+                          autoComplete="comment-field"
+                          required
+                          fullWidth
+                          multiline
+                          maxRows={7}
+                          id="new-comment-body"
+                          name="new-comment-body"
+                          label="New Comment 📜"
+                          type="text"
+                          onChange={handleNewComment}
+                          value={newCommentBody}
+                          InputProps={{
+                            // startAdornment: (
+                            //   <InputAdornment position="start">
+                            //     📜
+                            //   </InputAdornment>
+                            // ),
+                            // endAdornment: (
+                            //   <Button
+                            //     type="submit"
+                            //     variant="contained"
+                            //     sx={{ mt: 3, mb: 2 }}
+                            //   >
+                            //     Send
+                            //   </Button>
+                            // ),
+                          }}
+                        />
+
+                          <Box sx={{display:"flex", flexFlow:"row nowrap", width:"100%"}}>
+                          {currentReplyId && 
+                          <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", width:"30%"}}>
+                            <Typography fontFamily={"Lobster"} sx={{border:"2px solid", borderColor:"back.dark", borderRadius: "20px", p:1, mt:1,}}>
+                            Reply: {currentReplyId}
+                              </Typography>
+                          </Box>
+                          }
+
+
+
+                          <Button
+                          type="submit"
+                          variant="contained"
+                          
+                          sx={{ width: "100%", my: 2, mx: 1 }}
+                        >
+                          Send
+                        </Button>
                         </Box>
+                      </Box>
                     </Box>
+      
+                    
                     <Box
                       sx={{
                         display: "flex",
@@ -794,9 +861,9 @@ const PostPage = (props: Props) => {
                         // justifyContent: "center",
                         height: "100%",
                         overflow: "auto",
-                        border: "2px solid black"
+                        border: "2px solid black",
                       }}
-                    > 
+                    >
                       {comments.length > 0 ? (
                         comments.map((comment) => (
                           <CommentElement
@@ -810,15 +877,17 @@ const PostPage = (props: Props) => {
                             likes={comment.likes}
                             dislikes={comment.dislikes}
                             timePosted={comment.time_posted}
+                            currentReplyId={currentReplyId}
+                            setCurrentReplyId={setCurrentReplyId}
                           />
                         ))
                       ) : (
                         <Typography
-                          variant="h2"
-                          color="primary.main"
+                          variant="h3"
+                          color="secondary.main"
                           fontWeight="bold"
                           fontFamily={"Lobster"}
-                          sx={{ pt: 1, pl: 3, pr: 3 }}
+                          sx={{ pt: 1, pl: 3, pr: 3, userSelect:"none" }}
                         >
                           No Comments Yet
                         </Typography>
@@ -828,31 +897,6 @@ const PostPage = (props: Props) => {
                 )}
               </Box>
 
-              {/* <Grid
-                mt={0}
-                container
-                direction={"row"}
-                wrap={"wrap"}
-                rowSpacing={5}
-                justifyContent={"space-between"}
-                // alignContent={"center"}
-                sx={{height:"100%"}}
-              >
-                <Grid item xs={12}>
-                    
-
-                    </Grid>
-
-                    <Grid item xs={12}>
-
-
-                    </Grid>
-
-                  <Grid item xs={12}>
-                    
-                  
-                    </Grid>
-                </Grid> */}
               <EditPost
                 editPostOpen={editPostOpen}
                 handleEditPostClose={handleEditPostClose}

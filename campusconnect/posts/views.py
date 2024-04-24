@@ -147,7 +147,7 @@ class CreateCommentView(APIView):
             author = request.user
             # post = self.context['request'].parser_context['kwargs']['id']
             post = Post.objects.get(id=id)
-            reply_id = None if request.data["reply_id"] == "null" else request.data["reply_id"]
+            reply_id = None if request.data["reply_id"] == "undefined" else request.data["reply_id"]
             if reply_id is not None:
                 parent = Comment.objects.get(id=reply_id)
                 comment = Comment.objects.create(body=body, author=author, post=post, parent=parent)
