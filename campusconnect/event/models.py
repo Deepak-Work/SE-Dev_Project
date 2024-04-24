@@ -1,5 +1,6 @@
 import datetime
 from django.db import models
+import pytz
 
 from clubs.models import Club
 # Create your models here.

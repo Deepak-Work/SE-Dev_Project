@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import Cookies from "js-cookie";
 
 import {
   Card,
@@ -56,6 +58,89 @@ const PostElement: React.FC<PostProps> = ({
 }) => {
 
   const navigate = useNavigate()
+
+  const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [isDisliked, setIsDisliked] = useState<boolean>(false);
+
+  const getLikeDislikeStatus = async () => {
+    console.log("Checking Like Status");
+    const response = await fetch(`/api/posts/post/like-dislike/${post_id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorzation: `Bearer ${Cookies.get("token")}`,
+      },
+    });
+    if (response.ok) {
+      response.json().then((value) => {
+        console.log(value);
+        setIsLiked(value.like_status);
+        setIsDisliked(value.dislike_status);
+      });
+    }
+    console.log(isLiked, isDisliked);
+  }
+  
+  const handleLike = async () => {
+    if (!isLiked) {
+      const response = await fetch(`/api/posts/post/${post_id}/like`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsLiked(true);
+        console.log("Liked");
+      }
+    }
+    else {
+      const response = await fetch(`/api/posts/post/${post_id}/unlike`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsLiked(false);
+        console.log("Unliked");
+      }
+    }
+  }
+
+  const handleDislike = async () => {
+    if (!isDisliked) {
+      const response = await fetch(`/api/posts/post/${post_id}/dislike`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsDisliked(true);
+        console.log("Disliked");
+      }
+    }
+    else {
+      const response = await fetch(`/api/posts/post/${post_id}/undislike`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsDisliked(false);
+        console.log("Undisliked");
+      }
+  }
+}
+  useEffect(() => {
+    getLikeDislikeStatus();
+  })
 
   const handlePostClick = async(event: React.MouseEvent<HTMLDivElement>) =>{
     event.preventDefault();
@@ -161,7 +246,7 @@ const PostElement: React.FC<PostProps> = ({
                 {likes}
               </Typography>
             <Tooltip title="Like">
-              <IconButton aria-label="like post">
+              <IconButton onClick={handleLike} aria-label="like post">
                   <ThumbUpAltIcon sx={{ color: "back.light" }} />
               </IconButton>
             </Tooltip>
@@ -184,7 +269,7 @@ const PostElement: React.FC<PostProps> = ({
                 {dislikes}
               </Typography>
             <Tooltip title="Dislike">
-              <IconButton aria-label="dislike post">
+              <IconButton onClick={handleDislike} aria-label="dislike post">
                   <ThumbDownIcon sx={{ color: "back.light" }} />
                 </IconButton>
               </Tooltip>

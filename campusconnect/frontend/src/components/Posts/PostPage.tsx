@@ -38,8 +38,8 @@ import DeletePost from "./DeletePost";
 import CommentElement from "../Comments/CommentElement";
 
 interface Props {
-  isAuth: boolean;
   username: string;
+  isAuth: boolean;
 }
 
 interface PostProps {
@@ -99,6 +99,7 @@ const PostPage = (props: Props) => {
     } as CustomPaletteOptions,
   });
 
+
   const { username } = props;
   const { id } = useParams();
   const navigate = useNavigate();
@@ -113,6 +114,34 @@ const PostPage = (props: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const [editPostOpen, setEditPostOpen] = useState(false);
+
+  const fetchPost = async () => {
+    let response = await fetch(`/api/posts/post/${id}`, {
+      method: "GET",
+    });
+    if (response.ok) {
+      response.json().then((value) => {
+        const posts = value.post_data;
+        const postInfo: PostProps = {
+          body: posts.body,
+          title: posts.title,
+          likes: posts.likes,
+          dislikes: posts.dislikes,
+          author: posts.author,
+          summary: posts.summary,
+          postImage: posts.image,
+          clubName: posts.club_name,
+          clubId: posts.club_id,
+          clubImage: posts.club_image,
+          timePosted: posts.time_posted,
+        };
+        setPostInfo(postInfo);
+      });
+    } else {
+      console.log("Post cannot be loaded");
+    }
+  };
+  
   const handleEditPostOpen = () => {
     setAnchorEl(null);
     setEditPostOpen(true);
@@ -121,6 +150,88 @@ const PostPage = (props: Props) => {
     if (reason == "backdropClick") return;
     setEditPostOpen(false);
   };
+
+  const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [isDisliked, setIsDisliked] = useState<boolean>(false);
+
+  const getLikeDislikeStatus = async () => {
+    console.log("Checking Like Status");
+    const response = await fetch(`/api/posts/post/like-dislike/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorzation: `Bearer ${Cookies.get("token")}`,
+      },
+    });
+    if (response.ok) {
+      response.json().then((value) => {
+        console.log(value);
+        setIsLiked(value.like_status);
+        setIsDisliked(value.dislike_status);
+      });
+    }
+    console.log(isLiked, isDisliked);
+  }
+  
+  const handleLike = async () => {
+    if (!isLiked) {
+      const response = await fetch(`/api/posts/post/${id}/like`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsLiked(true);
+        console.log("Liked");
+      }
+    }
+    else {
+      const response = await fetch(`/api/posts/post/${id}/unlike`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsLiked(false);
+        console.log("Unliked");
+      }
+    }
+    fetchPost();
+  }
+
+  const handleDislike = async () => {
+    if (!isDisliked) {
+      const response = await fetch(`/api/posts/post/${id}/dislike`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsDisliked(true);
+        console.log("Disliked");
+      }
+    }
+    else {
+      const response = await fetch(`/api/posts/post/${id}/undislike`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsDisliked(false);
+        console.log("Undisliked");
+      }
+  }
+  fetchPost();
+}
 
   const [deletePostOpen, setDeletePostOpen] = useState(false);
   const handleDeletePostOpen = () => {
@@ -131,35 +242,35 @@ const PostPage = (props: Props) => {
     setDeletePostOpen(false);
   };
 
-  // const handleEditSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-  //   const data = new FormData(event.currentTarget);
+  const handleEditSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const data = new FormData(event.currentTarget);
+    const image = data.get("edit-post-image") as File;
+    const form = new FormData();
 
-  //   const form = new FormData();
+    form.append("title", data.get("edit-post-title") as string);
+    form.append("body", data.get("edit-post-body") as string);
+    form.append("id", id as string)
+    if (data.get("edit-post-image")) form.append("image", image);
 
-  //   form.append("title", data.get("edit-post-title") as string);
-  //   form.append("body", data.get("edit-post-body") as string);
-  //   form.append("id", id as string)
-  //   if (data.get("edit-post-image")) form.append("image", data.get("edit-post-image"));
+    const headers = {
+      // "Content-Type": "application/json",
+      "X-CSRFToken": Cookies.get("csrftoken") || "",
+    };
 
-  //   const headers = {
-  //     "Content-Type": "application/json",
-  //     "X-CSRFToken": Cookies.get("csrftoken") || "",
-  //   };
+    const response: Response = await fetch(`/api/posts/post/edit`, {
+      method: "PUT",
+      headers: headers,
+      body: form,
+    });
 
-  //   const response: Response = await fetch(`/api/posts/post/edit`, {
-  //     method: "PUT",
-  //     headers: headers,
-  //     body: JSON.stringify(form),
-  //   });
-
-  //   if (response.ok) {
-  //     handleEditPostClose();
-  //     // window.location.reload();
-  //     console.log("New Post Edited Successfully");
-  //   } else {
-  //     console.log("Edit Post failed");
-  //   }
-  // };
+    if (response.ok) {
+      handleEditPostClose();
+      // window.location.reload();
+      console.log("New Post Edited Successfully");
+    } else {
+      console.log("Edit Post failed");
+    }
+  };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -218,13 +329,8 @@ const PostPage = (props: Props) => {
     }
   };
 
-  const handleLike = () => {
-    // Implement like functionality
-  };
 
-  const handleDislike = () => {
-    // Implement dislike functionality
-  };
+  
 
   const handleCommentLike = () => {
     // Implement like functionality
@@ -268,34 +374,9 @@ const PostPage = (props: Props) => {
   };
 
   useEffect(() => {
-    const fetchPost = async () => {
-      let response = await fetch(`/api/posts/post/${id}`, {
-        method: "GET",
-      });
-      if (response.ok) {
-        response.json().then((value) => {
-          const posts = value.post_data;
-          const postInfo: PostProps = {
-            body: posts.body,
-            title: posts.title,
-            likes: posts.likes,
-            dislikes: posts.dislikes,
-            author: posts.author,
-            summary: posts.summary,
-            postImage: posts.image,
-            clubName: posts.club_name,
-            clubId: posts.club_id,
-            clubImage: posts.club_image,
-            timePosted: posts.time_posted,
-          };
-          setPostInfo(postInfo);
-        });
-      } else {
-        console.log("Post cannot be loaded");
-      }
-    };
     fetchPost();
     fetchComments(Number(id));
+    getLikeDislikeStatus();
   }, []);
 
   const handleNewComment: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=> void  =
@@ -540,6 +621,7 @@ const PostPage = (props: Props) => {
                   >
                     <Box sx={{ display: "flex", flexFlow: "row wrap" }}>
                       <Button
+                        onClick={handleLike}
                         sx={{
                           display: "flex",
                           margin: 2,
@@ -550,7 +632,7 @@ const PostPage = (props: Props) => {
                           "&:hover": { backgroundColor: "secondary.light" },
                         }}
                       >
-                        <IconButton onClick={handleLike} aria-label="Like post">
+                        <IconButton aria-label="Like post">
                           <ThumbUpAltIcon />
                         </IconButton>
                         <Typography
@@ -584,6 +666,7 @@ const PostPage = (props: Props) => {
                       </Button>
 
                       <Button
+                        onClick={handleDislike}
                         sx={{
                           display: "flex",
                           margin: 2,
@@ -595,7 +678,6 @@ const PostPage = (props: Props) => {
                         }}
                       >
                         <IconButton
-                          onClick={handleDislike}
                           aria-label="dislike post"
                         >
                           <ThumbDownIcon />
@@ -669,7 +751,7 @@ const PostPage = (props: Props) => {
                             fontFamily={"Lobster"}
                             sx={{ color: "back.light" }}
                           >
-                            {1}
+                            {comments.length}
                           </Typography>
                         </Box>
                       </Button>
@@ -831,8 +913,8 @@ const PostPage = (props: Props) => {
 
                           <Box sx={{display:"flex", flexFlow:"row nowrap", width:"100%"}}>
                           {currentReplyId && 
-                          <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", width:"30%"}}>
-                            <Typography fontFamily={"Lobster"} sx={{border:"2px solid", borderColor:"back.dark", borderRadius: "20px", p:1, mt:1,}}>
+                          <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", width:"35%",}}>
+                            <Typography fontFamily={"Lobster"} fontSize="0.75rem" sx={{border:"2px solid", borderColor:"back.dark", borderRadius: "20px", p:1, mt:1,}}>
                             Reply: {currentReplyId}
                               </Typography>
                           </Box>
@@ -879,6 +961,7 @@ const PostPage = (props: Props) => {
                             timePosted={comment.time_posted}
                             currentReplyId={currentReplyId}
                             setCurrentReplyId={setCurrentReplyId}
+                            fetchComments={fetchComments}
                           />
                         ))
                       ) : (
@@ -914,5 +997,6 @@ const PostPage = (props: Props) => {
     </>
   );
 };
+
 
 export default PostPage;

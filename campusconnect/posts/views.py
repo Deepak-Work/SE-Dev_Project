@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Post, Comment
+from .models import Post, Comment, React
 from rest_framework import status
 from django.contrib.auth.models import User
 
@@ -96,44 +96,86 @@ class DeletePostView(APIView):
             return Response({'club_name':clubname,'club_id':clubid},status=status.HTTP_200_OK)
     pass
 
+class getLikeDislikeView(APIView):
+    def get(self, request, id):
+        print(id, "id")
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            post = Post.objects.get(id=id)
+            print(React.objects.filter(user=request.user, post=post).exists())
+            if React.objects.filter(user=request.user, post=post).exists():
+                reaction = React.objects.get(user=request.user, post=post)
+                return Response({'like_status':reaction.like, 'dislike_status':reaction.dislike}, status=status.HTTP_200_OK)
+            else:
+                return Response({'like_status':False, 'dislike_status':False}, status=status.HTTP_200_OK)
+
 class LikePostView(APIView):
-    def post(self, request, id):
+    def get(self, request, id):
         if id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             post = Post.objects.get(id=id)
             post.likes += 1
             post.save()
+            if React.objects.filter(user=request.user, post=post).exists():
+                reaction = React.objects.get(user=request.user, post=post)
+                reaction.like = True
+                reaction.save()
+            else:
+                reaction = React.objects.create(user=request.user, post=post, like=True)
+                reaction.save()                
             return Response(status=status.HTTP_200_OK)
 
 class UnlikePostView(APIView):
-    def post(self, request, id):
+    def get(self, request, id):
         if id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             post = Post.objects.get(id=id)
             post.likes -= 1
             post.save()
+            if React.objects.filter(user=request.user, post=post).exists():
+                reaction = React.objects.get(user=request.user, post=post)
+                reaction.like = False
+                reaction.save()
+            else:
+                reaction = React.objects.create(user=request.user, post=post, like=False)
+                reaction.save()
             return Response(status=status.HTTP_200_OK)
 
 class DislikePostView(APIView):
-    def post(self, request, id):
+    def get(self, request, id):
         if id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             post = Post.objects.get(id=id)
             post.dislikes += 1
             post.save()
+            if React.objects.filter(user=request.user, post=post).exists():
+                reaction = React.objects.get(user=request.user, post=post)
+                reaction.dislike = True
+                reaction.save()
+            else:
+                reaction = React.objects.create(user=request.user, post=post, dislike=True)
+                reaction.save()
             return Response(status=status.HTTP_200_OK)
         
 class UndislikePostView(APIView):
-    def post(self, request, id):
+    def get(self, request, id):
         if id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             post = Post.objects.get(id=id)
             post.dislikes -= 1
             post.save()
+            if React.objects.filter(user=request.user, post=post).exists():
+                reaction = React.objects.get(user=request.user, post=post)
+                reaction.dislike = False
+                reaction.save()
+            else:
+                reaction = React.objects.create(user=request.user, post=post, dislike=False)
+                reaction.save()
             return Response(status=status.HTTP_200_OK)
 
 # Comments view functions here
@@ -185,9 +227,9 @@ class EditCommentView(APIView):
             return Response(status=status.HTTP_200_OK)
 
 class DeleteCommentView(APIView):
-    def delete(self, request, instance_id):
-        instance = Comment.objects.get(id=instance_id)
-        if id is None:
+    def delete(self, request, id):
+        instance = Comment.objects.get(id=id)
+        if instance is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             Comment.objects.filter(id=id).delete()
