@@ -102,6 +102,7 @@ const PostComponent = (props: Props) => {
   const [isDisliked, setIsDisliked] = useState<boolean>(false);
 
   
+  
   const handleImageSelect = (event: any) => {
     let imageFiles = event.target.files;
 
