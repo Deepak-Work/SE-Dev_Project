@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Post, Comment, Reaction
+from .models import Post, Comment, React
 from rest_framework import status
 from django.contrib.auth.models import User
 
@@ -103,9 +103,9 @@ class getLikeDislikeView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             post = Post.objects.get(id=id)
-            print(Reaction.objects.filter(user=request.user, post=post).exists())
-            if Reaction.objects.filter(user=request.user, post=post).exists():
-                reaction = Reaction.objects.get(user=request.user, post=post)
+            print(React.objects.filter(user=request.user, post=post).exists())
+            if React.objects.filter(user=request.user, post=post).exists():
+                reaction = React.objects.get(user=request.user, post=post)
                 return Response({'like_status':reaction.like, 'dislike_status':reaction.dislike}, status=status.HTTP_200_OK)
             else:
                 return Response({'like_status':False, 'dislike_status':False}, status=status.HTTP_200_OK)
@@ -118,12 +118,12 @@ class LikePostView(APIView):
             post = Post.objects.get(id=id)
             post.likes += 1
             post.save()
-            if Reaction.objects.filter(user=request.user, post=post).exists():
-                reaction = Reaction.objects.get(user=request.user, post=post)
+            if React.objects.filter(user=request.user, post=post).exists():
+                reaction = React.objects.get(user=request.user, post=post)
                 reaction.like = True
                 reaction.save()
             else:
-                reaction = Reaction.objects.create(user=request.user, post=post, like=True)
+                reaction = React.objects.create(user=request.user, post=post, like=True)
                 reaction.save()                
             return Response(status=status.HTTP_200_OK)
 
@@ -135,12 +135,12 @@ class UnlikePostView(APIView):
             post = Post.objects.get(id=id)
             post.likes -= 1
             post.save()
-            if Reaction.objects.filter(user=request.user, post=post).exists():
-                reaction = Reaction.objects.get(user=request.user, post=post)
+            if React.objects.filter(user=request.user, post=post).exists():
+                reaction = React.objects.get(user=request.user, post=post)
                 reaction.like = False
                 reaction.save()
             else:
-                reaction = Reaction.objects.create(user=request.user, post=post, like=False)
+                reaction = React.objects.create(user=request.user, post=post, like=False)
                 reaction.save()
             return Response(status=status.HTTP_200_OK)
 
@@ -152,12 +152,12 @@ class DislikePostView(APIView):
             post = Post.objects.get(id=id)
             post.dislikes += 1
             post.save()
-            if Reaction.objects.filter(user=request.user, post=post).exists():
-                reaction = Reaction.objects.get(user=request.user, post=post)
+            if React.objects.filter(user=request.user, post=post).exists():
+                reaction = React.objects.get(user=request.user, post=post)
                 reaction.dislike = True
                 reaction.save()
             else:
-                reaction = Reaction.objects.create(user=request.user, post=post, dislike=True)
+                reaction = React.objects.create(user=request.user, post=post, dislike=True)
                 reaction.save()
             return Response(status=status.HTTP_200_OK)
         
@@ -169,12 +169,12 @@ class UndislikePostView(APIView):
             post = Post.objects.get(id=id)
             post.dislikes -= 1
             post.save()
-            if Reaction.objects.filter(user=request.user, post=post).exists():
-                reaction = Reaction.objects.get(user=request.user, post=post)
+            if React.objects.filter(user=request.user, post=post).exists():
+                reaction = React.objects.get(user=request.user, post=post)
                 reaction.dislike = False
                 reaction.save()
             else:
-                reaction = Reaction.objects.create(user=request.user, post=post, dislike=False)
+                reaction = React.objects.create(user=request.user, post=post, dislike=False)
                 reaction.save()
             return Response(status=status.HTTP_200_OK)
 

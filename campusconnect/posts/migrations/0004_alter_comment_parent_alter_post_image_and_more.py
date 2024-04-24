@@ -28,14 +28,4 @@ class Migration(migrations.Migration):
             name='summary',
             field=models.TextField(default='No Summary', max_length=255),
         ),
-        migrations.CreateModel(
-            name='Reaction',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('like', models.BooleanField(default=False)),
-                ('dislike', models.BooleanField(default=False)),
-                ('post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='posts.post')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
     ]

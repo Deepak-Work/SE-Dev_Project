@@ -114,6 +114,34 @@ const PostPage = (props: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const [editPostOpen, setEditPostOpen] = useState(false);
+
+  const fetchPost = async () => {
+    let response = await fetch(`/api/posts/post/${id}`, {
+      method: "GET",
+    });
+    if (response.ok) {
+      response.json().then((value) => {
+        const posts = value.post_data;
+        const postInfo: PostProps = {
+          body: posts.body,
+          title: posts.title,
+          likes: posts.likes,
+          dislikes: posts.dislikes,
+          author: posts.author,
+          summary: posts.summary,
+          postImage: posts.image,
+          clubName: posts.club_name,
+          clubId: posts.club_id,
+          clubImage: posts.club_image,
+          timePosted: posts.time_posted,
+        };
+        setPostInfo(postInfo);
+      });
+    } else {
+      console.log("Post cannot be loaded");
+    }
+  };
+  
   const handleEditPostOpen = () => {
     setAnchorEl(null);
     setEditPostOpen(true);
@@ -172,6 +200,7 @@ const PostPage = (props: Props) => {
         console.log("Unliked");
       }
     }
+    fetchPost();
   }
 
   const handleDislike = async () => {
@@ -201,6 +230,7 @@ const PostPage = (props: Props) => {
         console.log("Undisliked");
       }
   }
+  fetchPost();
 }
 
   const [deletePostOpen, setDeletePostOpen] = useState(false);
@@ -344,32 +374,6 @@ const PostPage = (props: Props) => {
   };
 
   useEffect(() => {
-    const fetchPost = async () => {
-      let response = await fetch(`/api/posts/post/${id}`, {
-        method: "GET",
-      });
-      if (response.ok) {
-        response.json().then((value) => {
-          const posts = value.post_data;
-          const postInfo: PostProps = {
-            body: posts.body,
-            title: posts.title,
-            likes: posts.likes,
-            dislikes: posts.dislikes,
-            author: posts.author,
-            summary: posts.summary,
-            postImage: posts.image,
-            clubName: posts.club_name,
-            clubId: posts.club_id,
-            clubImage: posts.club_image,
-            timePosted: posts.time_posted,
-          };
-          setPostInfo(postInfo);
-        });
-      } else {
-        console.log("Post cannot be loaded");
-      }
-    };
     fetchPost();
     fetchComments(Number(id));
     getLikeDislikeStatus();
@@ -747,7 +751,7 @@ const PostPage = (props: Props) => {
                             fontFamily={"Lobster"}
                             sx={{ color: "back.light" }}
                           >
-                            {1}
+                            {comments.length}
                           </Typography>
                         </Box>
                       </Button>
