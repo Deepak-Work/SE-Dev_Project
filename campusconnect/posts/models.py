@@ -12,8 +12,8 @@ class Post(models.Model):
     title = models.CharField(max_length=128)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     body = models.TextField()
-    image = models.ImageField(upload_to='images/', blank=True, null=True)
-    summary = models.TextField(max_length=255)
+    image = models.ImageField(upload_to='images', blank=True, null=True, default=None)
+    summary = models.TextField(max_length=255, default="No Summary")
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
@@ -26,7 +26,7 @@ class Comment(models.Model):
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
     time_posted = models.DateTimeField(default=datetime.datetime.now)
-    parent = models.ForeignKey('self', default=None, on_delete=models.CASCADE, null=True, related_name='replies')
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True,blank=True, default=None,  related_name='replies')
     
     def __str__(self):
         return self.body

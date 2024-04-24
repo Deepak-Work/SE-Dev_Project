@@ -25,9 +25,10 @@ const CreatePost = (props: CreatePostProps) => {
   const { id } = useParams();
 
   const handlePostImageSelect = (event: any) => {
-    let imageFiles = event.target.files;
+    const imageFiles = event.target.files;
 
     if (!imageFiles || imageFiles.length == 0) {
+      setCreatePostImage(null)
       return;
     }
 
@@ -35,6 +36,10 @@ const CreatePost = (props: CreatePostProps) => {
   };
 
   const handlePostImageRemove = () => {
+    const fileList: HTMLInputElement = document.getElementById(
+      "create-post-image"
+    ) as HTMLInputElement;
+    fileList.value = "";
     setCreatePostImage(null);
   };
   
@@ -44,21 +49,34 @@ const CreatePost = (props: CreatePostProps) => {
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
-    const form: CreatePost = {
-      title: data.get("create-post-title") as string,
-      body: data.get("create-post-body") as string,
-      id: id as string,
-    };
+    
+    const image: File | null = data.get("create-post-image") as File;
+
+    // const form: CreatePost = {
+    //   title: data.get("create-post-title") as string,
+    //   body: data.get("create-post-body") as string,
+    //   image?: createPostImage as File,
+    //   id: id as string,
+    // };
+    
+    const form = new FormData();
+
+    form.append("title", data.get("create-post-title") as string);
+    form.append("body", data.get("create-post-body") as string);
+    form.append("id", id as string)
+    if (image) form.append("image", image);
+
 
     const headers = {
-      "Content-Type": "application/json",
+      // "Content-Type": "application/json",
       "X-CSRFToken": Cookies.get("csrftoken") || "",
     };
 
     const response: Response = await fetch("/api/posts/new-post", {
       method: "POST",
       headers: headers,
-      body: JSON.stringify(form),
+      // body: JSON.stringify(form),
+      body: form,
     });
 
     if (response.ok) {

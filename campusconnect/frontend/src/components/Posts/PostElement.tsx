@@ -129,7 +129,7 @@ const PostElement: React.FC<PostProps> = ({
             overflowWrap: "break-word",
           }}
         >
-            {body}
+            {body.length < 50 ? body : body.substring(0, 60) + "..."}
           </Typography>
 
           {/* Reactions */}

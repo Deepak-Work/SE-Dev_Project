@@ -195,7 +195,7 @@ const NavBar = ( { username }: Props) => {
                   sx={{ ml: "20px", py: "6px", px: "12px" }}
                   onClick={handleMyClubsOpen}
                 >
-                  <Typography variant="h6" color="back.light" sx={{fontFamily:"RampartOne",}}>
+                  <Typography variant="h6" color="back.light" sx={{fontFamily:"Lobster",}}>
                     My Clubs
                   </Typography>
                 </MenuItem>
@@ -204,7 +204,7 @@ const NavBar = ( { username }: Props) => {
                     variant="h6"
                     color="back.light"
                     onClick={handleExploreOpen}
-                    sx={{fontFamily:"RampartOne",}}
+                    sx={{fontFamily:"Lobster",}}
                   >
                     Explore
                   </Typography>
@@ -213,7 +213,7 @@ const NavBar = ( { username }: Props) => {
                   onClick={() => navigate("/club/application")}
                   sx={{ py: "6px", px: "12px" }}
                 >
-                  <Typography variant="h6" color="back.light" sx={{fontFamily:"RampartOne",}}>
+                  <Typography variant="h6" color="back.light" sx={{fontFamily:"Lobster",}}>
                     Create a Club
                   </Typography>
                 </MenuItem>
