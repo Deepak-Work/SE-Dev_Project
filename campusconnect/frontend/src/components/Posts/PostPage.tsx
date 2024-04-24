@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import convertDate from "../Functions/convertDate";
@@ -20,6 +20,8 @@ import {
   TextField,
   Button,
   Container,
+  FilledInput,
+  InputAdornment,
 } from "@mui/material";
 
 // import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -58,15 +60,16 @@ interface PostProps {
 
 interface Comment {
   replyStatus: boolean;
-  commentId: number;
-  replyId? : number
+  id: number;
+  parent_id?: number;
   author: string;
-  replyAuthor?: string;
+  reply_author?: string;
   body: string;
-  replyBody?: string;
+  reply_body?: string;
   likes: number;
   dislikes: number;
-  timePosted : string;
+  time_posted: string;
+  author_id: number;
 }
 
 interface CustomPaletteOptions extends PaletteOptions {
@@ -96,13 +99,13 @@ const PostPage = (props: Props) => {
     } as CustomPaletteOptions,
   });
 
-  const { id } = useParams();
   const { username } = props;
-
-  type ImageFile = File | null;
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   const [showComments, setShowComments] = useState<boolean>(false);
   const [comments, setComments] = useState<Comment[]>([]);
+  const [replyId, setReplyId] = useState<String | null>(null);
   const [postInfo, setPostInfo] = useState<PostProps>({} as PostProps);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -159,8 +162,6 @@ const PostPage = (props: Props) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const navigate = useNavigate();
-
   const handleClose = async (action: string) => {
     const headers = {
       "Content-Type": "application/json",
@@ -188,25 +189,30 @@ const PostPage = (props: Props) => {
   };
 
   const toggleComments = () => {
-    setShowComments(!showComments);
     // Fetch comments from server when toggling comments
     if (!showComments) {
-      fetchComments(id);
+      fetchComments(Number(id));
     }
+    setShowComments(!showComments);
   };
 
-  const fetchComments = (postId: any) => {
+  const fetchComments = async (postId: number) => {
     // Simulating fetching comments from server
     // Replace this with your actual API call
-    const mockComments: Comment[] = [
-      { replyStatus: true, commentId: 1, replyId:2, author:"dsfd", replyAuthor:"ssdf", body:"Nice Day", replyBody:"sdfdsaa", likes: 0, dislikes: 0, timePosted: "2024-10-23T00:02:13"},
-      { replyStatus: true, commentId: 1, replyId:2, author:"dsfd", replyAuthor:"ssdf", 
-      body:"Nice Day Nice Day Nice DayNice DayNice DayNice DayNice DayNice DayNice DayNice Day Nice Day Nice DayNice DayNice DayNice DayNice DayNice DayNice Day", replyBody:"sdfdsaa", likes: 0, dislikes: 0, timePosted: "2024-10-23T00:02:13"},
-      { replyStatus: false, commentId: 2, author:"dsfd", body:"Nice Day", likes: 0, dislikes: 0, timePosted: "2024-10-23T00:02:13"},
+    const headers = {
+      // "Content-Type":"application/json",
+      "X-CSRFToken": Cookies.get("csrftoken") || "",
+    };
 
-      // Add more comments as needed
-    ];
-    setComments(mockComments);
+    let response = await fetch(`/api/posts/post/${postId}/comments`, {
+      method: "GET",
+      headers: headers,
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setComments(data.comments_data);
+    }
   };
 
   const handleLike = () => {
@@ -224,6 +230,35 @@ const PostPage = (props: Props) => {
   const handleCommentDislike = () => {
     // Implement dislike functionality
   };
+
+  
+  const handleCommentSubmit : (event: FormEvent<HTMLFormElement>) => void 
+  = async (event) => 
+    {
+      event.preventDefault();
+
+      const data = new FormData(event.currentTarget);
+
+      const form = new FormData();
+      form.append("body", data.get("new-comment-body") as string);
+      form.append("reply_id", replyId as string);
+  
+      const headers = {
+        "X-CSRFToken": Cookies.get("csrftoken") || "",
+      };
+  
+      const response: Response = await fetch(`/api/posts/post/${id}/comment/new`, {
+        method: "POST",
+        headers: headers,
+        body: form,
+      });
+  
+      if (response.ok) {
+        
+        fetchComments(Number(id));
+      }
+    };
+
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -253,6 +288,7 @@ const PostPage = (props: Props) => {
       }
     };
     fetchPost();
+    fetchComments(Number(id));
   }, []);
 
   return (
@@ -281,7 +317,7 @@ const PostPage = (props: Props) => {
               sx={{
                 width: "100%",
                 height: "80vh",
-                minWidth:"650px",
+                minWidth: "650px",
                 border: "0px white solid",
                 padding: 2,
                 "&::-webkit-scrollbar": {
@@ -370,7 +406,7 @@ const PostPage = (props: Props) => {
               <Box
                 sx={{
                   width: "80%",
-                  height: "80%",
+                  height: "90%",
                   minWidth: "700px",
                   display: "flex",
                   flexFlow: "row nowrap",
@@ -684,15 +720,15 @@ const PostPage = (props: Props) => {
                       height: "100%",
                       width: "40%",
                       minWidth: "300px",
-                      minHeight: "400px",
+                      // minHeight: "400px",
                       maxHeight: "800px",
                       overflow: "auto",
                       display: "flex",
                       flexDirection: "column",
                       border: "5px solid #000000",
                       float: "right",
-                      "&::-webkit-scrollbar":{
-                        display:"none"
+                      "&::-webkit-scrollbar": {
+                        display: "none",
                       },
                       // position:"absolute",
                     }}
@@ -721,10 +757,72 @@ const PostPage = (props: Props) => {
                         Comments
                       </Typography>
                     </Box>
-                    <Box sx={{display:"flex", flexFlow:"column nowrap", alignItems:"center"}}>
-                      {comments.map((comment) => (
-                          <CommentElement replyStatus={comment.replyStatus} commentId={comment.commentId} replyId={comment.replyId} author={comment.author} replyAuthor={comment.replyAuthor} body={comment.body} replyBody={comment.replyBody} likes={comment.likes} dislikes={comment.dislikes} timePosted={comment.timePosted}/>
-                      ))}
+                    <Box sx={{display:"flex", width:"100%", minHeight:"10%", maxHeight:"30%",}}>
+                        <Box component="form" onSubmit={handleCommentSubmit} sx={{width:"100%", height: "100%", overflow: "auto",}}>
+                        <TextField
+                    sx={{ backgroundColor: "back.light",  }}
+                    variant="filled"
+                    autoComplete="comment-field"
+                    required
+                    fullWidth
+                    multiline
+                    id="new-comment-body"
+                    name="new-comment-body"
+                    label="New Comment"
+                    type="text"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">📜</InputAdornment>
+                      ),
+                      endAdornment: (                  
+                      <Button
+  type="submit"
+  variant="contained"
+  sx={{ mt: 3, mb: 2 }}
+>
+  Send
+</Button>)
+                    }}
+                    />
+                        </Box>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexFlow: "column nowrap",
+                        alignItems: "center",
+                        // justifyContent: "center",
+                        height: "100%",
+                        overflow: "auto",
+                        border: "2px solid black"
+                      }}
+                    > 
+                      {comments.length > 0 ? (
+                        comments.map((comment) => (
+                          <CommentElement
+                            replyStatus={Boolean(comment.parent_id)}
+                            commentId={comment.id}
+                            replyId={comment.parent_id}
+                            author={comment.author}
+                            replyAuthor={comment.reply_author}
+                            body={comment.body}
+                            replyBody={comment.reply_body}
+                            likes={comment.likes}
+                            dislikes={comment.dislikes}
+                            timePosted={comment.time_posted}
+                          />
+                        ))
+                      ) : (
+                        <Typography
+                          variant="h2"
+                          color="primary.main"
+                          fontWeight="bold"
+                          fontFamily={"Lobster"}
+                          sx={{ pt: 1, pl: 3, pr: 3 }}
+                        >
+                          No Comments Yet
+                        </Typography>
+                      )}
                     </Box>
                   </Paper>
                 )}

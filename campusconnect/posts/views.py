@@ -35,7 +35,6 @@ class CreatePostView(APIView):
 
 
 class GetPostView(APIView):
-
     def get(self, request, name, id):
         if id is None:
             posts = Post.objects.order_by('-time_posted').values()
@@ -141,26 +140,39 @@ class UndislikePostView(APIView):
 class CreateCommentView(APIView):
     serializer_class = CommentSerializer
     
-    def post(self, request):
+    def post(self, request, id):
         serializer_class = self.serializer_class(data=request.data)
         if serializer_class.is_valid():
             body = serializer_class.data.get('body')
             author = request.user
-            post = self.context['request'].parser_context['kwargs']['id']
-            comment = Comment.objects.create(body=body, author=author, post=post)
+            # post = self.context['request'].parser_context['kwargs']['id']
+            post = Post.objects.get(id=id)
+            reply_id = None if request.data["reply_id"] == "null" else request.data["reply_id"]
+            if reply_id is not None:
+                parent = Comment.objects.get(id=reply_id)
+                comment = Comment.objects.create(body=body, author=author, post=post, parent=parent)
+            else:
+                comment = Comment.objects.create(body=body, author=author, post=post)
             
             comment.save()
             return Response(status=status.HTTP_201_CREATED)
         
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class GetCommentView(APIView):
+class GetCommentsView(APIView):
     def get(self, request, id):
         if id is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            c = Comment.objects.filter(post=id).order_by('-timestamp').values()
-            return Response({'comment_data': c}, status=status.HTTP_200_OK)
+            post = Post.objects.get(id=id)
+            comments = Comment.objects.filter(post=post).order_by('-time_posted').values()
+            for comment in comments:
+                comment['author'] = User.objects.get(id=comment['author_id']).username
+                if comment['parent_id']:
+                    parent = Comment.objects.get(id=comment['parent_id'])
+                    comment['reply_author'] = parent.author.username
+                    comment['reply_body'] = parent.body
+            return Response({'comments_data': comments}, status=status.HTTP_200_OK)
 
 class EditCommentView(APIView):
     def put(self, request, instance_id, validated_data):
