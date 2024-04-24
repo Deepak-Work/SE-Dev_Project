@@ -171,6 +171,7 @@ const PostPage = (props: Props) => {
       });
     }
     console.log(isLiked, isDisliked);
+    // fetchPost();
   }
   
   const handleLike = async () => {
