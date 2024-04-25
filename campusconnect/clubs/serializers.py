@@ -12,3 +12,13 @@ class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
         fields=('user', 'club')
+
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields=('role')
+        
+class MembershipSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields=('user', 'club', 'role')

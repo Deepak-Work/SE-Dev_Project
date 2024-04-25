@@ -17,9 +17,11 @@ import SettingsIcon from "@mui/icons-material/Settings";
 
 import NavBar from "../LandingPage/NavBar";
 import ProfileSettings from "./ProfileSettings";
+import LoadingIndicator from "../Utils/LoadingIndicator";
 
 interface Props {
   isAuth: boolean;
+  loading: boolean;
 }
 
 interface User {
@@ -71,12 +73,20 @@ const Profile = (props: Props) => {
     fetchUser();
   }, []);
 
+  if (!props.isAuth && !props.loading) {
+    return <p>You are not authorized to view this page.</p>;
+  }
+
+  if(!userExists && !props.loading) {
+    return (
+      <p>User does not exist.</p>
+    )
+  }
+
   return (
     <>
-      {!props.isAuth ? (
-        <p>You are not authorized to view this page.</p>
-      ) : !userExists ? (
-        <p>User does not exist.</p>
+      {!props.isAuth && !userExists? (
+        <LoadingIndicator />
       )
       : (
         <ThemeProvider theme={theme}>

@@ -48,6 +48,7 @@ interface CommentProps {
   timePosted: string;
   currentReplyId: number | null;
   setCurrentReplyId: (value: number | null) => void;
+  fetchComments: (value: number) => void;
 }
 
 const CommentElement = (props: CommentProps) => {
@@ -64,7 +65,10 @@ const CommentElement = (props: CommentProps) => {
     timePosted,
     currentReplyId,
     setCurrentReplyId,
+    fetchComments,
   } = props;
+  
+  const {id} = useParams();
 
   const handleCommentLike = () => {};
   const handleCommentDislike = () => {};
@@ -75,8 +79,25 @@ const CommentElement = (props: CommentProps) => {
     }
     setCurrentReplyId(commentId);
   };
-  const handleEdit = () => {};
-  const handleDelete = () => {};
+  const handleCommentEdit = () => {
+
+  };
+  const handleCommentDelete = async () => {
+    const headers = {
+      // "Content-Type":"application/json",
+      "X-CSRFToken": Cookies.get("csrftoken") || "",
+    };
+
+    let response = await fetch(`/api/posts/comment/${commentId}/delete`, {
+      method: "DELETE",
+      headers: headers,
+    });
+
+    if (response.ok) {
+      setCurrentReplyId(null);
+      fetchComments(Number(id));
+    }
+  };
 
   return (
     <Box
@@ -270,7 +291,7 @@ const CommentElement = (props: CommentProps) => {
               },
             }}
           >
-            <IconButton onClick={handleEdit} aria-label="Edit comment">
+            <IconButton onClick={handleCommentEdit} aria-label="Edit comment">
               <EditIcon />
             </IconButton>
           </Box>
@@ -287,7 +308,7 @@ const CommentElement = (props: CommentProps) => {
               },
             }}
           >
-            <IconButton onClick={handleDelete} aria-label="Delete comment">
+            <IconButton onClick={handleCommentDelete} aria-label="Delete comment">
               <DeleteIcon />
             </IconButton>
           </Box>

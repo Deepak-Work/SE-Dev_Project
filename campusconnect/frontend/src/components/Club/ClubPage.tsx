@@ -30,10 +30,13 @@ import PostElement from "../Posts/PostElement";
 import CreatePost from "../Posts/CreatePost";
 import CreateEvent from "../Events/CreateEvent";
 import EventElement from "../Events/EventElement";
+import Members from "./Members";
+import LoadingIndicator from "../Utils/LoadingIndicator";
 
 interface Props {
   username: string;
   isAuth: boolean;
+  loading: boolean;
 }
 interface ClubInfo {
   name: string;
@@ -45,7 +48,7 @@ interface ClubInfo {
   memberCount: string;
   image?: string;
 
-  // members: any[];
+  members: any[];
   posts: any[];
   events: any[];
   // auditLog: any[];
@@ -139,11 +142,56 @@ const ClubPage = (props: Props) => {
   const [createEventOpen, setCreateEventOpen] = useState(false);
 
   const handleCreateEventOpen = () => setCreateEventOpen(true);
-  const handleCreateEventClose = (event?: object, reason?: string) => {
-    if(reason == "backdropClick")
-      return;
-    setCreateEventOpen(false);
-  }
+  const handleCreateEventClose = () => setCreateEventOpen(false);
+
+  // Create a Members list Modal
+  const [membersOpen, setMembersOpen] = useState<boolean>(false);
+  const handleMembersOpen: () => void = () => setMembersOpen(true);
+  const handleMembersClose: () => void = () => setMembersOpen(false);
+
+  // // Explore Modal
+  // const [exploreOpen, setExploreOpen] = useState<boolean>(false);
+
+  // const handleExploreOpen: () => void = () => setExploreOpen(true);
+  // const handleExploreClose: () => void = () => setExploreOpen(false);
+
+  // CreatePostsDisplay
+  // const createPostsDisplay = (posts_data: any) => {
+  //   const PostsComponent = posts_data.map((post: any) => (
+  //     <ListItem key={post.id}>
+  //       <PostElement
+  //         username={post.author}
+  //         title={post.title}
+  //         body={post.body}
+  //         time_posted={convertDate(new Date(post.time_posted))}
+  //         likes={post.likes}
+  //         dislikes={post.dislikes}
+  //       />
+  //     </ListItem>
+  //   ));
+  //   const final = <List sx={{ ml: 0 }}>{PostsComponent}</List>;
+  //   setPosts(final);
+  // };
+
+  // CreatePostsDisplay
+  //  const createEventsDisplay = (events_data: any) => {
+  //   const EventsComponent = events_data.map((event: any) => (
+  //     <ListItem key={event.id}>
+  //       <EventElement
+  //         id={event.id}
+  //         username={event.author}
+  //         name={event.name}
+  //         description={event.description}
+  //         event_time={event.event_time}
+  //         event_date={event.event_date}
+  //         // likes={event.likes}
+  //         // dislikes={event.dislikes}
+  //       />
+  //     </ListItem>
+  //   ));
+  //   const final = <List sx={{ ml: 0 }}>{EventsComponent}</List>;
+  //   setEvents(final);
+  // };
 
   const getFollowStatus = async () => {
     console.log("Checking Follow Status");
@@ -218,7 +266,6 @@ const ClubPage = (props: Props) => {
       if (response.ok) {
         setClubExists(true);
         response.json().then((value) => {
-          // console.log(value)
           const club_data = value.club_data;
           const posts = value.posts;
           const events = value.events;
@@ -233,7 +280,9 @@ const ClubPage = (props: Props) => {
             posts: posts,
             events: events,
             image: club_data.image,
+            members: club_data.followers,
           };
+          console.log(clubInfo);
           setPosts(posts);
           setEvents(events);
           setClubInfo(clubInfo);
@@ -249,12 +298,14 @@ const ClubPage = (props: Props) => {
     console.log("auth: " + props.isAuth);
   }, [followed]);
 
+  if (!props.isAuth && !props.loading) {
+    return <p>You are not authorized to view this page.</p>;
+  }
+
   return (
     <>
-      {!clubExists || !props.isAuth ? (
-        <p>
-          The club does not exist or you are not authorized to view this page.
-        </p>
+      {!props.isAuth ? (
+        <LoadingIndicator />
       ) : (
         <ThemeProvider theme={theme}>
           <Box
@@ -390,10 +441,11 @@ const ClubPage = (props: Props) => {
                     </Tooltip>
        
                     <Tooltip title="Members List">
-                      <IconButton sx={{ color: "white" }}>
+                      <IconButton onClick={handleMembersOpen} sx={{ color: "white" }}>
                         <PeopleIcon />
                       </IconButton>
                     </Tooltip>
+                    <Members clubID={id} members={clubInfo.members} membersOpen={membersOpen} handleMembersClose={handleMembersClose} handleMembersOpen={handleMembersOpen}  />
                     <Tooltip title="Club Settings">
                       <IconButton sx={{ color: "white" }}>
                         <SettingsIcon />

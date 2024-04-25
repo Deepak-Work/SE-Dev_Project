@@ -46,3 +46,29 @@ class Follow(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
+    
+    
+class Role(models.Model):
+    class Meta:
+        # Build a composite primary key for the model
+        unique_together = (('user', 'club'),)
+    user = models.ForeignKey(User, on_delete=models.CASCADE) # this is the user who created the role
+    club = models.ForeignKey(Club, on_delete=models.CASCADE)
+    role = models.CharField(max_length=100)
+    
+class Membership(models.Model):
+    class Meta:
+        # Build a composite primary key for the model
+        unique_together = (('user', 'club', 'role'),)
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    club = models.ForeignKey(Club, on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
+    
+
+class AuditLog(models.Model):
+    club = models.ForeignKey(Club, on_delete=models.CASCADE)
+    action = models.CharField(max_length=100)
+    item = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    time = models.DateTimeField(auto_now=True)

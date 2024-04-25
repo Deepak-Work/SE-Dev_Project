@@ -15,7 +15,10 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 
 import logo from "../assets/CampusConnectLogo.svg";
+import backgroundImg from "../assets/black-and-white-7494005_1280_0Vh3CSJ.jpg";
 import CustomPaletteOptions from "./UI/CustomPaletteOptions";
+import { IconButton, InputAdornment, Link } from "@mui/material";
+import { VisibilityOff, Visibility } from "@mui/icons-material";
 
 interface Form {
   email: string;
@@ -58,6 +61,12 @@ const Register = () => {
 
   const [password, setPassword] = useState<string>("");
   const [verifyPassword, setVerifyPassword] = useState<string>("");
+
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  }
 
   const [errors, setErrors] = useState<Errors>({
     email: false,
@@ -158,7 +167,10 @@ const Register = () => {
     // Prevent default behavior for forms. We need this other some browsers (like Firefox) blocks the request.
     event.preventDefault();
 
-    setPassword("");
+    if(password !== verifyPassword) {
+      console.log("Passwords did not match")
+      return;
+    }
 
     const data = new FormData(event.currentTarget);
     const form: Form = {
@@ -182,13 +194,15 @@ const Register = () => {
 
     if (response.ok) {
       navigate("/login");
+      setPassword("");
+      setVerifyPassword("");
       console.log("Registration successful");
     } else {
       console.log("Registration failed");
       setErrors({
         ...errors,
         username: true,
-        usernameErrorMessage: "Username found",
+        usernameErrorMessage: "Username Found, Please Enter A New Username ",
       });
     }
   };
@@ -197,20 +211,24 @@ const Register = () => {
     <ThemeProvider theme={defaultTheme}>
       <Box
         sx={{
-          backgroundImage:
-            "url(https://cdn.pixabay.com/photo/2022/10/02/17/12/black-and-white-7494005_1280.jpg)",
+          backgroundImage: `url(${backgroundImg})`,
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
-          height: "100vh",
+          minHeight: "100vh",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
         }}
       >
         <Container
-          component="main"
+          component="div"
           maxWidth="md"
           sx={{
+            minHeight:"80vh",
+            display:"flex",
+            flexFlow: "column nowrap",
+            justifyContent:"center",
+            alignItems:"center",
             background: "linear-gradient(to right, #111, #7A028B)",
             pb: 10,
             border: "2px #000 solid",
@@ -219,36 +237,23 @@ const Register = () => {
         >
           <CssBaseline />
 
-          <Box
-            sx={{
-              marginTop: 8,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <img width="100" height="100" src={logo} alt="CampusConnect Logo" onClick={() => navigate("/login")} style={{cursor: "pointer", userSelect: "none",}} />
+            
             <Box
               sx={{
-                px: 2,
+                display:"flex",
+                flexFlow:"column nowrap",
+                justifyContent:"center",
+                alignItems:"center",
                 backgroundColor: "transparent",
-                border: "#000 solid 0px",
-                borderRadius: "20px",
+                height:"20%",
               }}
             >
-              <Box
-                sx={{
-                  px: 2,
-                  // backgroundColor: "back.light",
-                  border: "#000 solid 0px",
-                  borderRadius: "20px",
-                }}
-              >
+              <Box component="img" width={250} height={150} src={logo} alt="CampusConnect Logo" onClick={() => navigate("/login")} style={{cursor: "pointer", userSelect: "none",}} />
                 <Typography
                   component="h1"
-                  variant="h5"
+                  variant="h3"
                   sx={{
-                    fontSize: "2.5rem",
+                    // fontSize: "2.5rem",
                     color: "back.light",
                     fontFamily: "RampartOne",
                     textShadow: "1px 1px 3px secondary.main",
@@ -257,8 +262,8 @@ const Register = () => {
                 >
                   Create an Account
                 </Typography>
-              </Box>
             </Box>
+
 
             <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
               <Grid container spacing={2}>
@@ -346,10 +351,23 @@ const Register = () => {
                   <TextField
                     variant="filled"
                     onChange={handlePasswordChange}
+                    value={password}
                     error={errors.password}
                     helperText={
                       errors.password ? errors.passwordErrorMessage : ""
                     }
+                    InputProps={{endAdornment: (
+                      <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        // onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                    ),}}
                     inputProps={{
                       pattern:
                         "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*\\-]).{8,}$",
@@ -359,7 +377,7 @@ const Register = () => {
                     fullWidth
                     name="password"
                     label="Password"
-                    type="password"
+                    type= {showPassword ? "text" : "password"}
                     id="password"
                     color="secondary"
                     sx={{
@@ -371,6 +389,7 @@ const Register = () => {
                 <Grid item xs={6}>
                   <TextField
                     variant="filled"
+                    value={verifyPassword}
                     onChange={handleVerifyPasswordChange}
                     error={errors.verifyPassword}
                     helperText={
@@ -378,6 +397,18 @@ const Register = () => {
                         ? errors.verifyPasswordErrorMessage
                         : ""
                     }
+                    InputProps={{endAdornment: (
+                      <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        // onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                    ),}}
                     inputProps={{
                       pattern:
                         "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*\\-]).{8,}$",
@@ -386,8 +417,8 @@ const Register = () => {
                     required
                     fullWidth
                     name="verify-password"
-                    label="Re-Enter Password"
-                    type="password"
+                    label="Verify Password"
+                    type= {showPassword ? "text" : "password"}
                     id="verify-password"
                     color="secondary"
                     sx={{
@@ -401,21 +432,21 @@ const Register = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2 }}
+                sx={{ mt: 3, mb: 2, }}
+                
               >
                 Register
               </Button>
-              <Typography variant="body2" color="back.light" align="center">
+              <Typography variant="h6" color="back.light" fontFamily="Lobster" align="center">
                 Already have an account?{" "}
-                <a
+                <Link
                   href="/login"
-                  style={{ color: "#1976d2", textDecoration: "underline" }}
+                  sx={{ color: "#1976d2", textDecoration: "underline", "&:hover": {color: "secondary.main"} }}
                 >
                   Login
-                </a>
+                </Link>
               </Typography>
             </Box>
-          </Box>
         </Container>
       </Box>
     </ThemeProvider>

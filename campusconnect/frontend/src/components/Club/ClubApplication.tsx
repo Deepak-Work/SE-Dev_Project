@@ -17,6 +17,7 @@ import { useState } from "react";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import logo from "../../assets/CampusConnectLogo.svg";
 import NavBar from "../LandingPage/NavBar";
+import LoadingIndicator from "../Utils/LoadingIndicator";
 
 // Club Name
 // Club Description
@@ -55,6 +56,7 @@ const VisuallyHiddenInput = styled("input")({
 interface Props {
   username: string;
   isAuth: boolean;
+  loading: boolean;
 }
 
 interface Errors {
@@ -200,7 +202,15 @@ const CreateClub = (props: Props) => {
     }
   };
 
+  if (!props.isAuth && !props.loading) {
+    return <p>You are not authorized to view this page.</p>;
+  }
+
   return (
+    <>
+      {!props.isAuth ? (
+        <LoadingIndicator />
+      ) :
     <ThemeProvider theme={defaultTheme}>
       <Box
         sx={{
@@ -485,6 +495,8 @@ const CreateClub = (props: Props) => {
         </Container>
       </Box>
     </ThemeProvider>
+}
+    </>
   );
 };
 

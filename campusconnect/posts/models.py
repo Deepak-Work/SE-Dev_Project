@@ -30,4 +30,16 @@ class Comment(models.Model):
     
     def __str__(self):
         return self.body
+    
+# class Reaction(models.Model):
+#     post = models.ForeignKey(Post, on_delete=models.CASCADE)
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     like = models.BooleanField(default=False)
+#     dislike = models.BooleanField(default=False)
+
+class React(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    like = models.BooleanField(default=False)
+    dislike = models.BooleanField(default=False)
 
