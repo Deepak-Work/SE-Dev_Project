@@ -31,10 +31,12 @@ import CreatePost from "../Posts/CreatePost";
 import CreateEvent from "../Events/CreateEvent";
 import EventElement from "../Events/EventElement";
 import Members from "./Members";
+import LoadingIndicator from "../Utils/LoadingIndicator";
 
 interface Props {
   username: string;
   isAuth: boolean;
+  loading: boolean;
 }
 interface ClubInfo {
   name: string;
@@ -296,12 +298,14 @@ const ClubPage = (props: Props) => {
     console.log("auth: " + props.isAuth);
   }, [followed]);
 
+  if (!props.isAuth && !props.loading) {
+    return <p>You are not authorized to view this page.</p>;
+  }
+
   return (
     <>
-      {!clubExists || !props.isAuth ? (
-        <p>
-          The club does not exist or you are not authorized to view this page.
-        </p>
+      {!props.isAuth ? (
+        <LoadingIndicator />
       ) : (
         <ThemeProvider theme={theme}>
           <Box

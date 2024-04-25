@@ -36,10 +36,12 @@ import CommentIcon from "@mui/icons-material/Comment";
 import EditPost from "./EditPost";
 import DeletePost from "./DeletePost";
 import CommentElement from "../Comments/CommentElement";
+import LoadingIndicator from "../Utils/LoadingIndicator";
 
 interface Props {
   username: string;
   isAuth: boolean;
+  loading: boolean;
 }
 
 interface PostProps {
@@ -384,12 +386,15 @@ const PostPage = (props: Props) => {
     setNewCommentBody(event.currentTarget.value);
   }
 
+  
+  if (!props.isAuth && !props.loading) {
+    return <p>You are not authorized to view this page.</p>;
+  }
+
   return (
     <>
       {!props.isAuth ? (
-        <p>
-          The club does not exist or you are not authorized to view this page.
-        </p>
+        <LoadingIndicator />
       ) : (
         <ThemeProvider theme={theme}>
           <Box
