@@ -48,6 +48,8 @@ interface CommentProps {
   timePosted: string;
   currentReplyId: number | null;
   setCurrentReplyId: (value: number | null) => void;
+  editCommentId: number | null;
+  setEditCommentId: (value: number | null) => void;
   fetchComments: (value: number) => void;
 }
 
@@ -65,14 +67,98 @@ const CommentElement = (props: CommentProps) => {
     timePosted,
     currentReplyId,
     setCurrentReplyId,
+    editCommentId,
+    setEditCommentId,
     fetchComments,
   } = props;
   
   const {id} = useParams();
+  const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [isDisliked, setIsDisliked] = useState<boolean>(false);
 
-  const handleCommentLike = () => {};
-  const handleCommentDislike = () => {};
+  const CommentLikeDislikeStatus = async () => {
+    console.log("Checking Comment Like Status");
+    const response = await fetch(`/api/posts/comment/${commentId}/like-dislike`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorzation: `Bearer ${Cookies.get("token")}`,
+      },
+    });
+    if (response.ok) {
+      response.json().then((value) => {
+        console.log(value);
+        setIsLiked(value.like_status);
+        setIsDisliked(value.dislike_status);
+      });
+    }
+    console.log(isLiked, isDisliked);
+    //  fetchPost();
+  }
+  
+  const handleCommentLike = async () => {
+    if (!isLiked) {
+      const response = await fetch(`/api/posts/comment/${commentId}/like`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsLiked(true);
+        console.log("Comment Liked");
+      }
+    }
+    else {
+      const response = await fetch(`/api/posts/comment/${commentId}/unlike`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsLiked(false);
+        console.log("Comment Unliked");
+      }
+    }
+    fetchComments(Number(id));
+  }
+
+  const handleCommentDislike = async () => {
+    if (!isDisliked) {
+      const response = await fetch(`/api/posts/comment/${commentId}/dislike`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsDisliked(true);
+        console.log("Comment Disliked");
+      }
+    }
+    else {
+      const response = await fetch(`/api/posts/comment/${commentId}/undislike`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsDisliked(false);
+        console.log("Comment Undisliked");
+      }
+  }
+  fetchComments(Number(id));
+}
+
   const handleReply = () => {
+    setEditCommentId(null);
+
     if (currentReplyId == commentId) {
       setCurrentReplyId(null);
       return;
@@ -80,8 +166,16 @@ const CommentElement = (props: CommentProps) => {
     setCurrentReplyId(commentId);
   };
   const handleCommentEdit = () => {
+    setCurrentReplyId(null);
 
+    if (editCommentId === commentId) {
+      setEditCommentId(null);
+      return;
+    }
+
+    setEditCommentId(commentId);
   };
+
   const handleCommentDelete = async () => {
     const headers = {
       // "Content-Type":"application/json",
@@ -95,9 +189,14 @@ const CommentElement = (props: CommentProps) => {
 
     if (response.ok) {
       setCurrentReplyId(null);
-      fetchComments(id as unknown as number);
+      fetchComments(Number(id));
     }
   };
+
+  useEffect(() => {
+    fetchComments(Number(id));
+    CommentLikeDislikeStatus();
+  }, []);
 
   return (
     <Box
@@ -107,7 +206,7 @@ const CommentElement = (props: CommentProps) => {
         borderRadius: "10px",
         backgroundColor: "secondary.main",
         width: "95%",
-        height: "40%",
+        minHeight: "40%",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
@@ -116,14 +215,14 @@ const CommentElement = (props: CommentProps) => {
       }}
     >
       <Box
-        sx={{ width: "100%", display: "flex", justifyContent: "center", px: 1 }}
+        sx={{ width: "100%", display: "flex", justifyContent: "center", }}
       >
         <Typography
           component="h6"
           variant="h6"
           fontFamily={"Lobster"}
           fontSize="0.8rem"
-          sx={{ wordBreak: "break-word" }}
+          sx={{ wordBreak: "break-word", }}
         >
           {author} - {convertDate(new Date(timePosted))}
         </Typography>
@@ -139,7 +238,7 @@ const CommentElement = (props: CommentProps) => {
             border: "2px solid",
             borderColor: "back.light",
             borderRadius: "10px",
-            mt: 1,
+            mt: 0,
             overflow: "auto",
           }}
         >
@@ -181,7 +280,7 @@ const CommentElement = (props: CommentProps) => {
           variant="subtitle1"
           color="secondary.dark"
           fontFamily={"Lobster"}
-          sx={{ ml: 2 }}
+          sx={{ mx: 2 }}
         >
           {body}
         </Typography>
@@ -202,7 +301,7 @@ const CommentElement = (props: CommentProps) => {
           borderTopRightRadius: "0px",
         }}
       >
-        <Box sx={{ display: "flex", flexFlow: "row nowrap" }}>
+        <Box sx={{ display: "flex", flexFlow: "row nowrap", justifyContent:"space-around", ml:1, }}>
           <Box
             sx={{
               display: "flex",
@@ -226,7 +325,7 @@ const CommentElement = (props: CommentProps) => {
             </Typography>
 
             <IconButton onClick={handleCommentLike} aria-label="Like comment">
-              <ThumbUpAltIcon />
+              {isLiked ? <ThumbUpAltIcon sx={{color:"primary.main"}} /> : <ThumbUpAltIcon /> }
             </IconButton>
           </Box>
 
@@ -256,7 +355,7 @@ const CommentElement = (props: CommentProps) => {
               onClick={handleCommentDislike}
               aria-label="dislike comment"
             >
-              <ThumbDownIcon />
+            {isDisliked ? <ThumbDownIcon sx={{color:"primary.main"}} /> : <ThumbDownIcon /> }
             </IconButton>
           </Box>
 
@@ -273,7 +372,7 @@ const CommentElement = (props: CommentProps) => {
             }}
           >
             <IconButton onClick={handleReply} aria-label="reply comment">
-              <ReplyIcon />
+            {currentReplyId === commentId ? <ReplyIcon sx={{color:"primary.main"}} /> : <ReplyIcon /> }
             </IconButton>
           </Box>
         </Box>
@@ -292,7 +391,7 @@ const CommentElement = (props: CommentProps) => {
             }}
           >
             <IconButton onClick={handleCommentEdit} aria-label="Edit comment">
-              <EditIcon />
+              {editCommentId === commentId ? <EditIcon sx={{color:"primary.main"}}/> : <EditIcon /> }
             </IconButton>
           </Box>
 

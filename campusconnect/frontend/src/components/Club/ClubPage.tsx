@@ -60,6 +60,7 @@ interface Post {
   author: string;
   likes: number;
   dislikes: number;
+  total_comments: number;
 }
 
 interface Event {
@@ -234,6 +235,7 @@ const ClubPage = (props: Props) => {
             events: events,
             image: club_data.image,
           };
+          console.log(posts);
           setPosts(posts);
           setEvents(events);
           setClubInfo(clubInfo);
@@ -468,7 +470,7 @@ const ClubPage = (props: Props) => {
                             )}
                             likes={post.likes}
                             dislikes={post.dislikes}
-                            totalComments={1}
+                            totalComments={post.total_comments}
                           />
                         </Box>
                       )): (                <Box

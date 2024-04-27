@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from .models import Club, Follow
 from rest_framework import status
 
-from posts.models import Post
+from posts.models import Post, Comment
 from event.models import Event
 
 from .serializers import ClubSerializer
@@ -62,8 +62,10 @@ class GetClubView(APIView):
 
         posts = Post.objects.filter(club=id).order_by('-time_posted').values()
         for post in posts:
+            post_obj = Post.objects.get(id=post['id'])
             post['author'] = User.objects.get(id=post['author_id']).username
             post['clubname'] = name
+            post['total_comments'] = Comment.objects.filter(post=post_obj).count()
             del post['author_id']
         
         events = Event.objects.filter(club=id).order_by('-time_posted').values()
