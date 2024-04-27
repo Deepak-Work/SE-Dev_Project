@@ -61,6 +61,30 @@ const PostElement: React.FC<PostProps> = ({
 
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [isDisliked, setIsDisliked] = useState<boolean>(false);
+  const [postInfo, setPostInfo] = useState<PostProps>({} as PostProps);
+  const fetchPost = async () => {
+    let response = await fetch(`/api/posts/post/${post_id}`, {
+      method: "GET",
+    });
+    if (response.ok) {
+      response.json().then((value) => {
+        const posts = value.post_data;
+        const postInfo: PostProps = {
+          username: posts.author,
+          body: posts.body,
+          title: posts.title,
+          likes: posts.likes,
+          dislikes: posts.dislikes,
+          totalComments: posts.total_comments,
+          time_posted: posts.time_posted,
+          post_id: posts.id
+        };
+        setPostInfo(postInfo);
+      });
+    } else {
+      console.log("Post cannot be loaded");
+    }
+  };
 
   const getLikeDislikeStatus = async () => {
     console.log("Checking Like Status");
@@ -79,6 +103,7 @@ const PostElement: React.FC<PostProps> = ({
       });
     }
     console.log(isLiked, isDisliked);
+    // fetchPost();
   }
   
   const handleLike = async () => {
@@ -108,6 +133,7 @@ const PostElement: React.FC<PostProps> = ({
         console.log("Unliked");
       }
     }
+    fetchPost();
   }
 
   const handleDislike = async () => {
@@ -137,10 +163,12 @@ const PostElement: React.FC<PostProps> = ({
         console.log("Undisliked");
       }
   }
+  fetchPost();
 }
   useEffect(() => {
+    fetchPost();
     getLikeDislikeStatus();
-  })
+  },[])
 
   const handlePostClick = async(event: React.MouseEvent<HTMLDivElement>) =>{
     event.preventDefault();
@@ -240,7 +268,7 @@ const PostElement: React.FC<PostProps> = ({
                 fontFamily={"Lobster"}
                 sx={{ color: "primary.main", userSelect: "none", py: 1 }}
               >
-                {likes}
+                {postInfo.likes}
               </Typography>
             <Tooltip title="Like">
               <IconButton onClick={handleLike} aria-label="like post">
@@ -263,7 +291,7 @@ const PostElement: React.FC<PostProps> = ({
                 fontFamily={"Lobster"}
                 sx={{ color: "primary.main", userSelect: "none", py: 1 }}
               >
-                {dislikes}
+                {postInfo.dislikes}
               </Typography>
             <Tooltip title="Dislike">
               <IconButton onClick={handleDislike} aria-label="dislike post">

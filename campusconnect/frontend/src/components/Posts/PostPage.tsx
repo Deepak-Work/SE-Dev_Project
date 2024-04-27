@@ -111,6 +111,10 @@ const PostPage = (props: Props) => {
 
   const [newCommentBody, setNewCommentBody] = useState<string>("")
   const [currentReplyId, setCurrentReplyId] = useState<number | null>(null);
+
+  const [editCommentBody, setEditCommentBody] = useState<string>("");
+  const [editCommentId, setEditCommentId] = useState<number | null>(null);
+
   
   const [postInfo, setPostInfo] = useState<PostProps>({} as PostProps);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -173,6 +177,7 @@ const PostPage = (props: Props) => {
       });
     }
     console.log(isLiked, isDisliked);
+    // fetchPost();
   }
   
   const handleLike = async () => {
@@ -332,15 +337,14 @@ const PostPage = (props: Props) => {
   };
 
 
-  
 
-  const handleCommentLike = () => {
-    // Implement like functionality
-  };
+  // const handleCommentLike = () => {
+  //   // Implement like functionality
+  // };
 
-  const handleCommentDislike = () => {
-    // Implement dislike functionality
-  };
+  // const handleCommentDislike = () => {
+  //   // Implement dislike functionality
+  // };
 
 
   const handleCommentSubmit: (
@@ -371,12 +375,47 @@ const PostPage = (props: Props) => {
     if (response.ok) {
       setNewCommentBody("");
       setCurrentReplyId(null);
+      setComments([]);
+      fetchComments(Number(id));
+    }
+  };
+
+  const handleEditCommentSubmit: (
+    event: FormEvent<HTMLFormElement>,
+  ) => void = async (event) => {
+    event.preventDefault();
+
+    // const data = new FormData(event.currentTarget);
+
+    const form = new FormData();
+    // form.append("body", data.get("new-comment-body") as string);
+    form.append("body", editCommentBody as string);
+    // form.append("reply_id", currentReplyId?.toString() as string);
+
+    const headers = {
+      "X-CSRFToken": Cookies.get("csrftoken") || "",
+    };
+
+    const response: Response = await fetch(
+      `/api/posts/comment/${editCommentId}/edit`,
+      {
+        method: "PUT",
+        headers: headers,
+        body: form,
+      }
+    );
+
+    if (response.ok) {
+      setEditCommentId(null);
+      setEditCommentBody("");
+      setCurrentReplyId(null);
       fetchComments(Number(id));
     }
   };
 
   useEffect(() => {
     fetchPost();
+    setComments([]);
     fetchComments(Number(id));
     getLikeDislikeStatus();
   }, []);
@@ -384,6 +423,11 @@ const PostPage = (props: Props) => {
   const handleNewComment: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=> void  =
   (event) => {
     setNewCommentBody(event.currentTarget.value);
+  }
+
+  const handleEditComment: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=> void  =
+  (event) => {
+    setEditCommentBody(event.currentTarget.value);
   }
 
   
@@ -869,7 +913,73 @@ const PostPage = (props: Props) => {
                         m: 0,
                       }}
                     >
-                      <Box
+                      {editCommentId ?                       <Box
+                        component="form"
+                        onSubmit={handleEditCommentSubmit}
+                        sx={{
+                          display: "flex",
+                          flexFlow: "column wrap",
+                          justifyContent: "center",
+                          width: "100%",
+                          height: "100%",
+                          overflow: "auto",
+                          "&::-webkit-scrollbar":{
+                            display:"none"
+                          },
+                        }}
+                      >
+                        <TextField
+                          sx={{ backgroundColor: "back.light",}}
+                          variant="filled"
+                          autoComplete="edit-comment-field"
+                          required
+                          fullWidth
+                          multiline
+                          maxRows={7}
+                          id="edit-comment-body"
+                          name="edit-comment-body"
+                          label="Edit Comment 📜"
+                          type="text"
+                          onChange={handleEditComment}
+                          value={editCommentBody}
+                          InputProps={{
+                            // startAdornment: (
+                            //   <InputAdornment position="start">
+                            //     📜
+                            //   </InputAdornment>
+                            // ),
+                            // endAdornment: (
+                            //   <Button
+                            //     type="submit"
+                            //     variant="contained"
+                            //     sx={{ mt: 3, mb: 2 }}
+                            //   >
+                            //     Send
+                            //   </Button>
+                            // ),
+                          }}
+                        />
+
+                          <Box sx={{display:"flex", flexFlow:"row nowrap", width:"100%"}}> 
+                          <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", width:"35%",}}>
+                            <Typography fontFamily={"Lobster"} fontSize="0.75rem" sx={{border:"2px solid", borderColor:"back.dark", borderRadius: "20px", p:1, mt:1,}}>
+                            Edit: {editCommentId}
+                              </Typography>
+                          </Box>
+                          
+
+
+
+                          <Button
+                          type="submit"
+                          variant="contained"
+                          
+                          sx={{ width: "100%", my: 2, mx: 1 }}
+                        >
+                          Send
+                        </Button>
+                        </Box>
+                      </Box> :                       <Box
                         component="form"
                         onSubmit={handleCommentSubmit}
                         sx={{
@@ -936,7 +1046,7 @@ const PostPage = (props: Props) => {
                           Send
                         </Button>
                         </Box>
-                      </Box>
+                      </Box>  }
                     </Box>
       
                     
@@ -966,6 +1076,8 @@ const PostPage = (props: Props) => {
                             timePosted={comment.time_posted}
                             currentReplyId={currentReplyId}
                             setCurrentReplyId={setCurrentReplyId}
+                            editCommentId={editCommentId}
+                            setEditCommentId={setEditCommentId}
                             fetchComments={fetchComments}
                           />
                         ))

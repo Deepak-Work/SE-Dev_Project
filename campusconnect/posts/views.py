@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Post, Comment, React
+from .models import Post, Comment, React, CommentReact
 from rest_framework import status
 from django.contrib.auth.models import User
 
@@ -220,14 +220,20 @@ class GetCommentsView(APIView):
             return Response({'comments_data': comments}, status=status.HTTP_200_OK)
 
 class EditCommentView(APIView):
-    def put(self, request, instance_id, validated_data):
-        instance = Comment.objects.get(id=instance_id)
+    serializer_class = CommentSerializer
+
+    def put(self, request, id):
+        serializer_class = self.serializer_class(data=request.data)
+        instance = Comment.objects.get(id=id)
         if id is None:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         else:
-            instance.body = validated_data.get('body', instance.body)
-            instance.save()
-            return Response(status=status.HTTP_200_OK)
+            if serializer_class.is_valid():
+                # instance.body = validated_data.get('body', instance.body)
+                instance.body = serializer_class.data.get("body")
+                instance.save()
+                return Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class DeleteCommentView(APIView):
     def delete(self, request, id):
@@ -252,7 +258,90 @@ class ReplyCommentView(APIView):
             return Response(status=status.HTTP_201_CREATED)
         
         return Response(status=status.HTTP_400_BAD_REQUEST)
-           
+
+class LikeDislikeCommentView(APIView):
+    def get(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            comment = Comment.objects.get(id=id)
+            print(CommentReact.objects.filter(user=request.user, comment=comment).exists())
+            if CommentReact.objects.filter(user=request.user, comment=comment).exists():
+                reaction = CommentReact.objects.get(user=request.user, comment=comment)
+                return Response({'like_status':reaction.like, 'dislike_status':reaction.dislike}, status=status.HTTP_200_OK)
+            else:
+                return Response({'like_status':False, 'dislike_status':False}, status=status.HTTP_200_OK)
+
+class LikeCommentView(APIView):
+    def get(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            comment = Comment.objects.get(id=id)
+            comment.likes += 1
+            comment.save()
+            if CommentReact.objects.filter(user=request.user, comment=comment).exists():
+                reaction = CommentReact.objects.get(user=request.user, comment=comment)
+                reaction.like = True
+                reaction.save()
+            else:
+                reaction = CommentReact.objects.create(user=request.user, comment=comment, like=True)
+                reaction.save()                
+            return Response(status=status.HTTP_200_OK)
+
+class UnlikeCommentView(APIView):
+    def get(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            comment = Comment.objects.get(id=id)
+            comment.likes -= 1
+            comment.save()
+            if CommentReact.objects.filter(user=request.user, comment=comment).exists():
+                reaction = CommentReact.objects.get(user=request.user, comment=comment)
+                reaction.like = False
+                reaction.save()
+            else:
+                reaction = CommentReact.objects.create(user=request.user, comment=comment, like=False)
+                reaction.save()
+            return Response(status=status.HTTP_200_OK)
+
+class DislikeCommentView(APIView):
+    def get(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            comment = Comment.objects.get(id=id)
+            comment.dislikes += 1
+            comment.save()
+            if CommentReact.objects.filter(user=request.user, comment=comment).exists():
+                reaction = CommentReact.objects.get(user=request.user, comment=comment)
+                reaction.dislike = True
+                reaction.save()
+            else:
+                reaction = CommentReact.objects.create(user=request.user, comment=comment, dislike=True)
+                reaction.save()
+            return Response(status=status.HTTP_200_OK)
+        
+class UndislikeCommentView(APIView):
+    def get(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            comment = Comment.objects.get(id=id)
+            comment.dislikes -= 1
+            comment.save()
+            if CommentReact.objects.filter(user=request.user, comment=comment).exists():
+                reaction = CommentReact.objects.get(user=request.user, comment=comment)
+                reaction.dislike = False
+                reaction.save()
+            else:
+                reaction = CommentReact.objects.create(user=request.user, comment=comment, dislike=False)
+                reaction.save()
+            return Response(status=status.HTTP_200_OK)
+
+
+
         
 # this is a potential way to get comment threads
 class GetCommentThreadsView(APIView):
