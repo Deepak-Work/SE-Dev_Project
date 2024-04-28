@@ -25,10 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-=ylbnb+a*q-4vl@w77z8edgsucee1f5^^8--!7y73y9s(u8wf8"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['campusconnect.on.dockerize.io',
-                 '0.0.0.0', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['SE-Dev-Project-dev.us-east-1.elasticbeanstalk.com']
 
 
 # Application definition
