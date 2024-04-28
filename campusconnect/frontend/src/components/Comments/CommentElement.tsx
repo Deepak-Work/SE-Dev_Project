@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import convertDate from "../Functions/convertDate";
+import formatCount from "../Functions/formatCount";
 import Cookies from "js-cookie";
 
 import {
@@ -76,6 +77,7 @@ const CommentElement = (props: CommentProps) => {
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [isDisliked, setIsDisliked] = useState<boolean>(false);
 
+
   const CommentLikeDislikeStatus = async () => {
     console.log("Checking Comment Like Status");
     const response = await fetch(`/api/posts/comment/${commentId}/like-dislike`, {
@@ -93,7 +95,6 @@ const CommentElement = (props: CommentProps) => {
       });
     }
     console.log(isLiked, isDisliked);
-    //  fetchPost();
   }
   
   const handleCommentLike = async () => {
@@ -206,7 +207,7 @@ const CommentElement = (props: CommentProps) => {
         borderRadius: "10px",
         backgroundColor: "secondary.main",
         width: "95%",
-        minHeight: "40%",
+        minHeight: "50%",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
@@ -222,7 +223,7 @@ const CommentElement = (props: CommentProps) => {
           variant="h6"
           fontFamily={"Lobster"}
           fontSize="0.8rem"
-          sx={{ wordBreak: "break-word", }}
+          sx={{ color: "back.main", wordBreak: "break-word", }}
         >
           {author} - {convertDate(new Date(timePosted))}
         </Typography>
@@ -232,6 +233,7 @@ const CommentElement = (props: CommentProps) => {
         <Box
           sx={{
             display: "flex",
+            alignItems:"center",
             width: "75%",
             minHeight: "15%",
             backgroundColor: "back.light",
@@ -289,10 +291,11 @@ const CommentElement = (props: CommentProps) => {
       <Box
         sx={{
           display: "flex",
-          flexFlow: "row nowrap",
+          flexFlow: "row wrap",
           justifyContent: "space-between",
           width: "100%",
           // height: "40%",
+          minHeight:"30%",
           backgroundColor: "back.light",
           border: "2px solid",
           borderColor: "back.dark",
@@ -301,7 +304,7 @@ const CommentElement = (props: CommentProps) => {
           borderTopRightRadius: "0px",
         }}
       >
-        <Box sx={{ display: "flex", flexFlow: "row nowrap", justifyContent:"space-around", ml:1, }}>
+        <Box sx={{ display: "flex", flexFlow: "row nowrap", justifyContent:"space-around",ml:1, }}>
           <Box
             sx={{
               display: "flex",
@@ -310,9 +313,6 @@ const CommentElement = (props: CommentProps) => {
               borderColor: "back.dark",
               borderRadius: "10px",
               backgroundColor: "back.light",
-              "&:hover": {
-                backgroundColor: "secondary.light",
-              },
             }}
           >
             <Typography
@@ -321,10 +321,13 @@ const CommentElement = (props: CommentProps) => {
               fontFamily={"Lobster"}
               sx={{ color: "secondary.dark" }}
             >
-              {likes}
+              {formatCount(likes)}
             </Typography>
 
-            <IconButton onClick={handleCommentLike} aria-label="Like comment">
+            <IconButton onClick={handleCommentLike} aria-label="Like comment" sx={{              
+              "&:hover": {
+                backgroundColor: "back.main",
+              },}}>
               {isLiked ? <ThumbUpAltIcon sx={{color:"primary.main"}} /> : <ThumbUpAltIcon /> }
             </IconButton>
           </Box>
@@ -337,9 +340,6 @@ const CommentElement = (props: CommentProps) => {
               borderColor: "back.dark",
               borderRadius: "10px",
               backgroundColor: "back.light",
-              "&:hover": {
-                backgroundColor: "secondary.light",
-              },
             }}
           >
             <Typography
@@ -348,12 +348,16 @@ const CommentElement = (props: CommentProps) => {
               fontFamily={"Lobster"}
               sx={{ color: "secondary.dark" }}
             >
-              {dislikes}
+              {formatCount(dislikes)}
             </Typography>
 
             <IconButton
               onClick={handleCommentDislike}
               aria-label="dislike comment"
+              sx={{              
+                "&:hover": {
+                  backgroundColor: "back.main",
+                },}}
             >
             {isDisliked ? <ThumbDownIcon sx={{color:"primary.main"}} /> : <ThumbDownIcon /> }
             </IconButton>
@@ -362,16 +366,17 @@ const CommentElement = (props: CommentProps) => {
           <Box
             sx={{
               display: "flex",
+              alignItems: "center",
               border: "0px solid",
               borderColor: "back.dark",
               borderRadius: "10px",
               backgroundColor: "back.light",
-              "&:hover": {
-                backgroundColor: "secondary.light",
-              },
             }}
           >
-            <IconButton onClick={handleReply} aria-label="reply comment">
+            <IconButton onClick={handleReply} aria-label="reply comment" sx={{              
+              "&:hover": {
+                backgroundColor: "back.main",
+              },}}>
             {currentReplyId === commentId ? <ReplyIcon sx={{color:"primary.main"}} /> : <ReplyIcon /> }
             </IconButton>
           </Box>
@@ -381,16 +386,17 @@ const CommentElement = (props: CommentProps) => {
           <Box
             sx={{
               display: "flex",
+              alignItems: "center",
               border: "0px solid",
               borderColor: "back.dark",
               borderRadius: "10px",
               backgroundColor: "back.light",
-              "&:hover": {
-                backgroundColor: "secondary.light",
-              },
             }}
           >
-            <IconButton onClick={handleCommentEdit} aria-label="Edit comment">
+            <IconButton onClick={handleCommentEdit} aria-label="Edit comment" sx={{              
+              "&:hover": {
+                backgroundColor: "back.main",
+              },}}>
               {editCommentId === commentId ? <EditIcon sx={{color:"primary.main"}}/> : <EditIcon /> }
             </IconButton>
           </Box>
@@ -398,16 +404,17 @@ const CommentElement = (props: CommentProps) => {
           <Box
             sx={{
               display: "flex",
+              alignItems: "center",
               border: "0px solid",
               borderColor: "back.dark",
               borderRadius: "10px",
               backgroundColor: "back.light",
-              "&:hover": {
-                backgroundColor: "secondary.light",
-              },
             }}
           >
-            <IconButton onClick={handleCommentDelete} aria-label="Delete comment">
+            <IconButton onClick={handleCommentDelete} aria-label="Delete comment" sx={{              
+              "&:hover": {
+                backgroundColor: "back.main",
+              },}}>
               <DeleteIcon />
             </IconButton>
           </Box>
