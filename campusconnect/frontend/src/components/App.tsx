@@ -12,6 +12,7 @@ import Profile from "./Profile/Profile";
 import VerifyEmail from "./VerifyEmail";
 
 import LoadingIndicator from "./Utils/LoadingIndicator";
+import EventPage from "./Events/EventPage";
 
 
 function App() {
@@ -61,9 +62,10 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={!isAuth? <LoadingIndicator /> : <LandingPage username={username} isAuth={isAuth} loading={loading} />} />
           <Route path="/club/application" element={<ClubApplication username={username} isAuth={isAuth} loading={loading} />} />
-          <Route path="/club/:name/:id" element={!isAuth? <LoadingIndicator /> : <ClubPage username={username} isAuth={isAuth} loading={loading}/>} />
+          <Route path="/club/:name/:id" element={!isAuth? <LoadingIndicator /> : <ClubPage username={username} isAuth={isAuth} loading={loading} />} />
           <Route path="/profile/:name" element={!isAuth? <LoadingIndicator /> : <Profile isAuth={isAuth} loading={loading}/>} />
           <Route path="/post/:id" element={!isAuth? <LoadingIndicator /> : <PostPage isAuth={isAuth} username={username} loading={loading}/>} />
+          <Route path="/event/:id" element={!isAuth? <LoadingIndicator /> : <EventPage isAuth={isAuth} username={username} loading={loading}/>} />
           <Route path="/verify-email/:uid/:token" element={<VerifyEmail />} />
         </Routes>
       </Router>

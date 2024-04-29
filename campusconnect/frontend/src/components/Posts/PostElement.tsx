@@ -242,7 +242,7 @@ const PostElement: React.FC<PostProps> = ({
             overflowWrap: "break-word",
           }}
         >
-          {body.length < 50 ? body : body.substring(0, 60) + "..."}
+          {body.length < 50 ? body : body.substring(0, 50) + "..."}
         </Typography>
 
         {/* Reactions */}
@@ -279,7 +279,7 @@ const PostElement: React.FC<PostProps> = ({
               </Typography>
               <Tooltip title="Like">
                 <IconButton onClick={handleLike} aria-label="like post">
-                  <ThumbUpAltIcon sx={{ color: "back.dark" }} />
+                  {isLiked ? <ThumbUpAltIcon sx={{ color: "primary.main" }} /> : <ThumbUpAltIcon sx={{ color: "back.dark" }} /> }
                 </IconButton>
               </Tooltip>
             </Box>
@@ -302,7 +302,7 @@ const PostElement: React.FC<PostProps> = ({
               </Typography>
               <Tooltip title="Dislike">
                 <IconButton onClick={handleDislike} aria-label="dislike post">
-                  <ThumbDownIcon sx={{ color: "back.dark" }} />
+                {isDisliked ? <ThumbDownIcon sx={{ color: "primary.main" }} /> : <ThumbDownIcon sx={{ color: "back.dark" }} /> }
                 </IconButton>
               </Tooltip>
             </Box>

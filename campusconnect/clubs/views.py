@@ -10,7 +10,7 @@ from .models import Club, Follow, Role, Membership, AuditLog
 from rest_framework import status
 
 from posts.models import Post, Comment
-from event.models import Event
+from event.models import Event, EventAttending
 
 from .serializers import ClubSerializer, RoleSerializer, MembershipSerializer
 
@@ -77,6 +77,7 @@ class GetClubView(APIView):
         
         events = Event.objects.filter(club=id).order_by('-time_posted').values()
         for event in events:
+            event['total_RSVP'] = EventAttending.objects.filter(event=event['id']).count()
             event['author'] = User.objects.get(id=event['author_id']).username
             del event['author_id']
 

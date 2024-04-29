@@ -68,14 +68,16 @@ interface Post {
 
 interface Event {
   id: number;
-  name: string;
-  description: string;
+  title: string;
+  body: string;
   event_date: string;
   event_time: string;
   time_posted: string;
   author: string;
   likes: number;
   dislikes: number;
+  attendees: number;
+  // total_RSVP: number;
 }
 
 interface CustomPaletteOptions extends PaletteOptions {
@@ -284,6 +286,7 @@ const ClubPage = (props: Props) => {
             members: club_data.followers,
           };
           console.log(posts);
+          console.log("events" + events);
           console.log(clubInfo);
           setPosts(posts);
           setEvents(events);
@@ -598,12 +601,13 @@ const ClubPage = (props: Props) => {
                           <EventElement
                             id={event.id}
                             username={event.author}
-                            name={event.name}
-                            description={event.description}
+                            title={event.title}
+                            body={event.body}
                             event_time={event.event_time}
                             event_date={event.event_date}
                             likes={event.likes}
                             dislikes={event.dislikes}
+                            total_RSVP={event.attendees}
                           />
                         </Box>
                       )) : (                <Box
