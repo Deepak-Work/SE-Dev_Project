@@ -117,8 +117,8 @@ const Profile = (props: Props) => {
                 bgcolor: "primary.main",
               }}
             >
-              <div
-                style={{
+              <Box
+                sx={{
                   display: "flex",
                   flexDirection: "row",
                   marginLeft: "20px",
@@ -136,12 +136,12 @@ const Profile = (props: Props) => {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    paddingRight: "10px",
+                    // paddingRight: "10px",
                   }}
                   src={user.image}
-                ></Box>
-                <div
-                  style={{
+                />
+                <Box
+                  sx={{
                     display: "flex",
                     flexDirection: "column",
                     marginLeft: "20px",
@@ -170,22 +170,22 @@ const Profile = (props: Props) => {
                     </Typography>
                   </Link>
                   {/* <Typography variant="h5">{us}</Typography> */}
-                </div>
+                </Box>
 
                 {user.is_self ? (
-                        <div style={{ marginLeft: "200px" }}>
+                        <Box sx={{ marginLeft: "200px" }}>
                         <Tooltip title="Profile Settings">
                           <IconButton onClick={handleSettingsOpen} sx={{ color: "white" }}>
                             <SettingsIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
-                      </div>          
+                      </Box>          
                 ) : (
                   <></>
                 )}
 
 
-              </div>
+              </Box>
             </Box>
           </Box>
           <ProfileSettings user={user} settingsOpen={settingsOpen} handleSettingsOpen={handleSettingsOpen} handleSettingsClose={handleSettingsClose} />

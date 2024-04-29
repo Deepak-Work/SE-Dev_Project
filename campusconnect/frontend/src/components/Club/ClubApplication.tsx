@@ -284,7 +284,7 @@ const CreateClub = (props: Props) => {
                     required
                     fullWidth
                     id="name"
-                    label="Club Name"
+                    label="Club Name (≤ 100 Characters)"
                     autoFocus
                   />
                 </Grid>
@@ -319,7 +319,7 @@ const CreateClub = (props: Props) => {
                     fullWidth
                     id="location"
                     name="location"
-                    label="Club Location"
+                    label="Club Location (≤ 100 Characters)"
                     type="text"
                     InputProps={{
                       startAdornment: (
@@ -342,7 +342,7 @@ const CreateClub = (props: Props) => {
                     fullWidth
                     id="email"
                     name="email"
-                    label="Club Email"
+                    label="Club Email (≤ 100 Characters)"
                     type="email"
                     InputProps={{
                       startAdornment: (
@@ -359,7 +359,7 @@ const CreateClub = (props: Props) => {
                     fullWidth
                     id="website"
                     name="website"
-                    label="Club Website"
+                    label="Club Website (https://example.com)"
                     type="url"
                     InputProps={{
                       startAdornment: (
@@ -379,6 +379,10 @@ const CreateClub = (props: Props) => {
                     name="contact"
                     label="Club Contact"
                     type="tel"
+                    placeholder="XXX-XXX-XXXX"
+                    inputProps={{
+                      pattern:"[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                    }}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">📞</InputAdornment>

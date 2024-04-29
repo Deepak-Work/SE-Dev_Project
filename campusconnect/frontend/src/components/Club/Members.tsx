@@ -99,7 +99,10 @@ const Members = (props: MembersProps) => {
             background:
               "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
             border: "2px #000 solid",
-            borderRadius: "15px",
+            borderBottom:"4px solid",
+            borderRadius: "15px 15px 0 0",
+            // borderBottomLeftRadius:"0px",
+            // borderBottomRightRadius:"0px",
           }}
         >
           <Container
@@ -127,14 +130,17 @@ const Members = (props: MembersProps) => {
             ml: 2,
             mr: 2,
             bgcolor: "primary.main",
+            border:"2px solid",
+            borderColor: "back.dark",
             borderRadius: "20px",
+            overflow:"auto", "&::-webkit-scrollbar" : { display:"none"}
           }}
         >
   {members && members.length != 0 ? (
     <Grid
       container
       spacing={0}
-      sx={{ display: "flex", justifyContent: "center" }}
+      sx={{ display: "flex", justifyContent: "center",  }}
     >
       {members.map((member) => (
         <Grid
@@ -145,7 +151,8 @@ const Members = (props: MembersProps) => {
             margin: 2,
             display: "flex",
             backgroundColor: "back.main",
-            border: "2px back.dark solid",
+            border: "2px solid",
+            borderColor:"back.dark",
             borderRadius: "20px",
             justifyContent: "space-around",
             alignItems: "center",

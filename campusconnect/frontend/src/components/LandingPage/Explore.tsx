@@ -219,6 +219,8 @@ const Explore = (props: ExploreProps) => {
             sx={{
               mt: "3%",
               backgroundColor: "primary.main",
+              border: "2px solid",
+              borderColor: "back.dark",
               borderRadius: "20px",
               minHeight: "95%",
             }}
@@ -245,7 +247,8 @@ const Explore = (props: ExploreProps) => {
                         margin: 2,
                         display: "flex",
                         backgroundColor: "back.main",
-                        border: "2px back.dark solid",
+                        border: "2px solid",
+                        borderColor:"back.dark",
                         borderRadius: "20px",
                         justifyContent: "space-around",
                         alignItems: "center",
@@ -330,7 +333,9 @@ const Explore = (props: ExploreProps) => {
                           }}
                           onClick={() => ToggleFollow(club.name, club.id)}
                         >
+                          <Typography fontFamily={"cursive"} sx={{color:"back.light"}}>
                           {followedClubs.has(club.id) ? "Unfollow" : "Follow"}
+                          </Typography>
                         </Button>
                       </Box>
                     </Grid>

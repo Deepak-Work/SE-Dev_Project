@@ -172,7 +172,7 @@ class GetMyEventsView(APIView):
         events_res = []
 
         for e in events:
-            events_res.append({'club': e.club.name, 'name': e.name, 'description': e.description, 'event_date': e.event_date, \
+            events_res.append({'club': e.club.name, 'name': e.title, 'description': e.body, 'event_date': e.event_date, \
                                'event_time': e.event_time, 'author': e.author.username, 'club': e.club.name, 'likes': e.likes, 'dislikes': e.dislikes, 'time_posted': e.time_posted})
 
 

@@ -199,6 +199,8 @@ const MyClubs = (props: MyClubsProps) => {
             sx={{
               mt: "3%",
               backgroundColor: "primary.main",
+              border:"2px solid",
+              borderColor:"back.dark",
               borderRadius: "20px",
               minHeight: "95%",
             }}
@@ -225,7 +227,8 @@ const MyClubs = (props: MyClubsProps) => {
                         margin: 2,
                         display: "flex",
                         backgroundColor: "back.main",
-                        border: "2px back.dark solid",
+                        border: "2px solid",
+                        borderColor:"back.dark",
                         borderRadius: "20px",
                         justifyContent: "space-around",
                         alignItems: "center",
@@ -310,7 +313,9 @@ const MyClubs = (props: MyClubsProps) => {
                           }}
                           onClick={() => ToggleFollow(club.name, club.id)}
                         >
+                          <Typography fontFamily={"cursive"} sx={{color:"back.light"}}>
                           {followedClubs.has(club.id) ? "Unfollow" : "Follow"}
+                          </Typography>
                         </Button>
                       </Box>
                     </Grid>
