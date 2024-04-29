@@ -59,6 +59,20 @@ class GetPostView(APIView):
         return Response(status=status.HTTP_404_NOT_FOUND)
     
 
+# this is the new function
+class getPostsByClubView(APIView):
+    def get(self, request, id):
+        id = id.split(",")
+        print(id, type(id))
+        if id is None:
+            posts = Post.objects.order_by('-time_posted').values()
+        elif type(id) is list:
+            posts = Post.objects.filter(club__in=id).order_by('-time_posted').values()
+        else:
+            posts = Post.objects.filter(club=id).order_by('-time_posted').values()
+        if posts:
+            return Response({'posts_data': posts}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class EditPostView(APIView):        

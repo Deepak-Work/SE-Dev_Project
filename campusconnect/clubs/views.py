@@ -136,6 +136,19 @@ class GetClubsView(APIView):
             return Response({'clubs_data': clubs}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+
+# this is the new function here
+class getClubsByUserView(APIView):
+    def get(self, request):
+        # TODO: Eventually, we'll also have to include events and members associated with this club
+        user = request.user
+        clubs = Follow.objects.filter(user=user).values_list('club')
+        if clubs:
+            return Response({'clubs_data': clubs}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+        
+
+
 class GetFollowedClubsView(APIView):
     def get(self, request):
         follows = Follow.objects.filter(user=request.user).values("club_id")
