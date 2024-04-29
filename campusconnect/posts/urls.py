@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import CreatePostView, GetPostView, EditPostView, DeletePostView, CreateCommentView, GetCommentsView, EditCommentView, DeleteCommentView, ReplyCommentView, LikePostView, UnlikePostView, DislikePostView, UndislikePostView, getLikeDislikeView 
+from .views import CreatePostView, GetPostView, EditPostView, DeletePostView, CreateCommentView, GetCommentsView, EditCommentView, DeleteCommentView, ReplyCommentView, LikePostView, UnlikePostView, DislikePostView, UndislikePostView, getLikeDislikeView, getPostsByClubView
 from .views import *
 
 urlpatterns = [
@@ -9,6 +9,7 @@ urlpatterns = [
     path("post/edit", EditPostView.as_view()),
     path("post/<int:id>/delete", DeletePostView.as_view()),
     path("post/<int:id>", GetPostView.as_view()),
+    path("get/posts/<str:id>", getPostsByClubView.as_view()),
     
     path("post/<int:id>/comment/new", CreateCommentView.as_view()),
     path("post/<int:id>/comments", GetCommentsView.as_view()), # this id has to be the post id to get all the comments of that post
@@ -26,4 +27,5 @@ urlpatterns = [
     path("post/<int:id>/dislike", DislikePostView.as_view()), # this id has to be the post id
     path("post/<int:id>/undislike", UndislikePostView.as_view()), # this id has to be the post id
     path("post/like-dislike/<int:id>", getLikeDislikeView.as_view()),
+    
 ]

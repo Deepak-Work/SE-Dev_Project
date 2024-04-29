@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Cookies from "js-cookie";
 import {
   Typography,
   Box,
@@ -10,7 +11,48 @@ import {
 
 const Newsletter = () => {
   const [club, setClub] = useState("");
+  // const [show, setShow] = useState(false);
+  const [followedClubs, setFollowedClubs] = useState("");
+  const [posts, setPosts] = useState("");
+  const getFollowedClubs = async() => {
+    console.log("Getting followed clubs");
+    const response = await fetch(
+      `/api/clubs/my-clubs`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      }
+    );
+    if (response.ok) {
+      response.json().then((value) => {
+        const clubIds = value.map((x) => x[0]); // Assuming the club ID is the first element in the tuple
+        setFollowedClubs(clubIds.join(','));
+      });
+    }    
+  };
 
+  const getPosts = async() => {
+    console.log("Getting posts");
+    const response = await fetch(
+      `/api/posts/get/posts/${followedClubs}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      }
+    );
+    if (response.ok) {
+      response.json().then((value) => {
+        setPosts(value);
+        console.log(posts);
+      });
+    }
+  }
   return (
     <Paper
       elevation={3}
