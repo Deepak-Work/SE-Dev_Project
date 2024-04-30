@@ -140,9 +140,10 @@ const Calendar = () => {
     >
       <Box
         sx={{
-          borderRadius: "10px",
+          borderRadius: "10px 10px 0 0",
           border: "3px solid #000000",
-          height: "50px",
+          borderBottom:"5px solid",
+          height: "70px",
           background:
             "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
           display: "flex",
@@ -155,6 +156,7 @@ const Calendar = () => {
           variant="h5"
           color="white"
           fontWeight="bold"
+          fontFamily="Lobster"
           sx={{ pt: 1, pl: 3 }}
         >
           My Club Events

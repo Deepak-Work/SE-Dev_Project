@@ -143,7 +143,10 @@ class getClubsByUserView(APIView):
     def get(self, request):
         # TODO: Eventually, we'll also have to include events and members associated with this club
         user = request.user
-        clubs = Follow.objects.filter(user=user).values_list('club')
+        clubs = Follow.objects.filter(user=user).values()
+        for club in clubs:
+            club["club_name"] = Club.objects.get(id=club['club_id']).name
+
         if clubs:
             return Response({'clubs_data': clubs}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)

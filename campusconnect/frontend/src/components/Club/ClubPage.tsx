@@ -329,7 +329,7 @@ const ClubPage = (props: Props) => {
             <Paper
               elevation={3}
               sx={{
-                mt: 15,
+                mt: 2,
                 borderRadius: "20px",
                 textAlign: "left",
                 // width: "1000px",

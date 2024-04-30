@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import { ThemeProvider, Typography, createTheme } from "@mui/material";
 import CustomPaletteOptions from "../UI/CustomPaletteOptions";
 
-const LoadingCommentsIndicator = () => {
+const LoadingComponentIndicator = () => {
   const theme = createTheme({
     palette: {
       primary: {
@@ -54,4 +54,4 @@ const LoadingCommentsIndicator = () => {
   }
 };
 
-export default LoadingCommentsIndicator;
+export default LoadingComponentIndicator;

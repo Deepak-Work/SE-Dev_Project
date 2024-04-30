@@ -13,7 +13,7 @@ urlpatterns = [
     path("explore-clubs", GetExploreClubsView.as_view()),
     path("followed-clubs", GetFollowedClubsView.as_view()),
     path("followers/<int:id>", GetFollowersView.as_view()),
-    path("followed-clubs", GetFollowedClubsView.as_view()),\
+    path("followed-clubs", GetFollowedClubsView.as_view()),
     path("my-events", GetMyEventsView.as_view()),
     path("my-clubs", getClubsByUserView.as_view()),
 ]

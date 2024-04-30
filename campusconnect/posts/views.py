@@ -4,7 +4,7 @@ from .models import Post, Comment, React, CommentReact
 from rest_framework import status
 from django.contrib.auth.models import User
 
-from clubs.models import Club, AuditLog
+from clubs.models import Club, AuditLog, Follow
 
 from .serializers import PostSerializer, CommentSerializer
 
@@ -60,19 +60,33 @@ class GetPostView(APIView):
     
 
 # this is the new function
+# class getPostsByClubView(APIView):
+#     def get(self, request, id):
+#         id = id.split(",")
+#         print(id, type(id))
+#         if id is None:
+#             posts = Post.objects.order_by('-time_posted').values()
+#         elif type(id) is list:
+#             posts = Post.objects.filter(club__in=id).order_by('-time_posted').values()
+#         else:
+#             posts = Post.objects.filter(club=id).order_by('-time_posted').values()
+#         if posts:
+#             return Response({'posts_data': posts}, status=status.HTTP_200_OK)
+#         return Response(status=status.HTTP_404_NOT_FOUND)
+
 class getPostsByClubView(APIView):
-    def get(self, request, id):
-        id = id.split(",")
-        print(id, type(id))
-        if id is None:
-            posts = Post.objects.order_by('-time_posted').values()
-        elif type(id) is list:
-            posts = Post.objects.filter(club__in=id).order_by('-time_posted').values()
-        else:
-            posts = Post.objects.filter(club=id).order_by('-time_posted').values()
-        if posts:
-            return Response({'posts_data': posts}, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    def get(self, request):
+        # clubs = Follow.objects.filter(user=request.user)
+        clubs = Club.objects.filter(follow__user = request.user)
+        posts_by_club = []
+        for club in clubs:
+            posts = Post.objects.filter(club=club).order_by('-time_posted').values()
+            for post in posts:
+                post['author'] = User.objects.get(id=post['author_id']).username
+            posts_by_club.append({"club_posts" : posts, "club_id": club.id, "club_name" : club.name, "club_image" : club.image.url})
+        if clubs:
+            return Response({'posts_by_club' :  posts_by_club}, status= status.HTTP_200_OK) 
+        return Response(status= status.HTTP_404_NOT_FOUND); 
 
 
 class EditPostView(APIView):        

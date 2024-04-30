@@ -190,6 +190,7 @@ const CommentElement = (props: CommentProps) => {
 
     if (response.ok) {
       setCurrentReplyId(null);
+      setEditCommentId(null);
       fetchComments(Number(id));
     }
   };

@@ -17,6 +17,7 @@ import {
   MenuItem,
   TextField,
   Button,
+  CssBaseline,
 } from "@mui/material";
 
 // import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -32,7 +33,7 @@ import EditPost from "./EditPost";
 import DeletePost from "./DeletePost";
 import CommentElement from "../Comments/CommentElement";
 import LoadingIndicator from "../Utils/LoadingIndicator";
-import LoadingCommentsIndicator from "../Utils/LoadingCommentsIndicator";
+import LoadingComponentIndicator from "../Utils/LoadingComponentIndicator";
 
 interface Props {
   username: string;
@@ -393,19 +394,29 @@ const PostPage = (props: Props) => {
         <LoadingIndicator />
       ) : (
         <ThemeProvider theme={theme}>
+          <CssBaseline />
           <Box
             sx={{
               width: "100%",
               display: "flex",
               overflow: "auto",
               minHeight: "100vh",
-              alignItems: "flex-start",
+              alignItems: "center",
               justifyContent: "center",
               flexFlow: "column nowrap",
               backgroundColor: "#1e1e1e",
             }}
           >
+            <Box sx={{               width: "100%",
+              display: "flex",
+              overflow: "auto",
+              alignItems: "center",
+              justifyContent: "center",
+              flexFlow: "column nowrap",
+              mt: -10 }}>
+
             <NavBar username={username} />
+            </Box>
 
             <Box
               sx={{
@@ -1015,7 +1026,7 @@ const PostPage = (props: Props) => {
                         border: "2px solid black",
                       }}
                     >
-                      {loadingComments ? <LoadingCommentsIndicator /> :comments.length > 0 ? (
+                      {loadingComments ? <LoadingComponentIndicator /> :comments.length > 0 ? (
                         comments.map((comment) => (
                           <CommentElement
                             replyStatus={Boolean(comment.parent_id)}

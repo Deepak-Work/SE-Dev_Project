@@ -106,7 +106,7 @@ const Profile = (props: Props) => {
             <NavBar username={user.username}/>
             <Box
               sx={{
-                mt: 15,
+                mt: 2,
                 width: "600px",
                 height: "700px",
                 // display: "flex",

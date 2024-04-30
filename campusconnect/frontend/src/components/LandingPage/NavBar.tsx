@@ -149,6 +149,7 @@ const NavBar = ( { username }: Props) => {
           bgcolor: "transparent",
           backgroundImage: "none",
           mt: 2,
+          position:"relative",
         }}
       >
         <Container maxWidth="lg">

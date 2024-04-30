@@ -33,7 +33,7 @@ import EditEvent from "./EditEvent";
 import DeleteEvent from "./DeleteEvent";
 import CommentElement from "../Comments/CommentElement";
 import LoadingIndicator from "../Utils/LoadingIndicator";
-import LoadingCommentsIndicator from "../Utils/LoadingCommentsIndicator";
+import LoadingCommentsIndicator from "../Utils/LoadingComponentIndicator";
 import standardTime from "../Functions/standardTime";
 
 interface Props {
@@ -462,8 +462,16 @@ const isUserAttending: () => Promise<void> = async () => {
               backgroundColor: "#1e1e1e",
             }}
           >
-            <NavBar username={username} />
+            <Box sx={{               width: "100%",
+              display: "flex",
+              overflow: "auto",
+              alignItems: "center",
+              justifyContent: "center",
+              flexFlow: "column nowrap",
+              mt: -10 }}>
 
+            <NavBar username={username} />
+            </Box>
             <Box
               sx={{
                 width: "100%",

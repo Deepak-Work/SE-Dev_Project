@@ -9,7 +9,8 @@ urlpatterns = [
     path("post/edit", EditPostView.as_view()),
     path("post/<int:id>/delete", DeletePostView.as_view()),
     path("post/<int:id>", GetPostView.as_view()),
-    path("get/posts/<str:id>", getPostsByClubView.as_view()),
+    # path("get/posts/<str:id>", getPostsByClubView.as_view()),
+    path("newsletter-posts", getPostsByClubView.as_view()),
     
     path("post/<int:id>/comment/new", CreateCommentView.as_view()),
     path("post/<int:id>/comments", GetCommentsView.as_view()), # this id has to be the post id to get all the comments of that post
