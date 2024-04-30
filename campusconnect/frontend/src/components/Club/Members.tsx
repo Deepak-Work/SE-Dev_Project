@@ -179,7 +179,7 @@ const Members = (props: MembersProps) => {
                 variant="h5"
                 onClick={() => {
                   navigate(`/profile/${member.username}`)
-                  location.reload();
+                  window.location.reload();
                 }
                   
                 }

@@ -18,6 +18,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import logo from "../../assets/CampusConnectLogo.svg";
 import NavBar from "../LandingPage/NavBar";
 import LoadingIndicator from "../Utils/LoadingIndicator";
+import NotAuthorized from "../Utils/NotAuthorized";
 
 // Club Name
 // Club Description
@@ -203,7 +204,7 @@ const CreateClub = (props: Props) => {
   };
 
   if (!props.isAuth && !props.loading) {
-    return <p>You are not authorized to view this page.</p>;
+    return <NotAuthorized />;
   }
 
   return (

@@ -8,6 +8,31 @@ from clubs.models import Club, AuditLog, Follow
 
 from .serializers import PostSerializer, CommentSerializer
 
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.summarizers.lsa import LsaSummarizer
+import nltk
+nltk.download('punkt')
+
+
+def generate_summary(input_text):
+    if len(input_text) < 255:
+        return input_text
+    
+    # Parse the input text
+    parser = PlaintextParser.from_string(input_text, Tokenizer("english"))
+
+    # Create an LSA summarizer
+    summarizer = LsaSummarizer()
+
+    # Generate the summary
+    summary = summarizer(parser.document, sentences_count=4)  # You can adjust the number of sentences in the summary
+
+    # Output the summary
+    result = ''
+    for sentence in summary:
+        result += str(sentence) + " "
+    return result
 
 # Post Views Functions here
 class CreatePostView(APIView):
@@ -21,10 +46,11 @@ class CreatePostView(APIView):
             body = serializer.data.get('body')
             image = request.data.get("image")
             club = Club.objects.get(id=request.data['id'])
-            post = Post.objects.create(title=title, author=author, body=body, club=club, image=image)
-            
-            # TODO: Add post image and summary of post            
+            summary = generate_summary(body)
+
+            post = Post.objects.create(title=title, author=author, body=body, club=club, image=image, summary=summary)         
             post.save()
+
             log = AuditLog.objects.create(club=club, action="Created", item="Post: " + title, user=request.user)
             log.save()
             return Response(status=status.HTTP_201_CREATED)
@@ -99,12 +125,7 @@ class EditPostView(APIView):
             post.title = serializer.data.get('title')
             post.body = serializer.data.get('body')
             post.image = request.data.get('image')
-            # if serializer.data.get('title'):
-            #     post.title = serializer.data.get('title')
-            # if serializer.data.get('body'):
-            #     post.body = serializer.data.get('body')
-            # if serializer.data.get('image'):
-            #     post.image = serializer.data.get('image')
+            post.summary = generate_summary(serializer.data.get('body'))
             post.save()
         else:
             print("Serializer invalid - Edit")

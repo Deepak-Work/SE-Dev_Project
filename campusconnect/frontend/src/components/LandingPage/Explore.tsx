@@ -41,6 +41,8 @@ interface ExploreProps {
   setClubs: (club: Club[] | null) => void;
   followedClubs: Map<number, number>;
   setFollowedClubs: (club: Map<number, number>) => void;
+  followButtonPressed: boolean;
+  setFollowButtonPressed: (value: boolean) => void;
 }
 
 const slideTransition = React.forwardRef(function Transition(
@@ -80,6 +82,8 @@ const Explore = (props: ExploreProps) => {
     setClubs,
     followedClubs,
     setFollowedClubs,
+    followButtonPressed,
+    setFollowButtonPressed,
   } = props;
 
   const[memberUpdated, setMemberUpdated] = useState<Object>({});
@@ -154,6 +158,7 @@ const Explore = (props: ExploreProps) => {
           }
         }
       });
+      setFollowButtonPressed(true);
     }
   };
 
@@ -218,11 +223,18 @@ const Explore = (props: ExploreProps) => {
           <Box
             sx={{
               mt: "3%",
+              display:"flex",
+              justifyContent:"center",
+              alignItems:"start",
               backgroundColor: "primary.main",
-              border: "2px solid",
-              borderColor: "back.dark",
+              border:"2px solid",
+              borderColor:"back.dark",
               borderRadius: "20px",
-              minHeight: "95%",
+              height: "95%",
+              overflow:"auto",
+              "&::-webkit-scrollbar": {
+                display: "none",
+              },
             }}
           >
             <Box
@@ -232,7 +244,7 @@ const Explore = (props: ExploreProps) => {
                 alignItems: "center",
               }}
             >
-              {clubs && clubs.length != 0 ? (
+              {clubs && clubs.length !== 0 ? (
                 <Grid
                   container
                   spacing={0}
@@ -343,17 +355,19 @@ const Explore = (props: ExploreProps) => {
                 </Grid>
               ) : (
                 <Box
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexFlow: "column nowrap",
-                    alignItems: "center",
-                  }}
+                sx={{
+                  minHeight: "75vh",
+                  display: "flex",
+                  flexFlow: "column nowrap",
+                  justifyContent:"center",
+                  alignItems: "center",
+                }}
                 >
                   <Typography
                     component="h2"
                     variant="h2"
                     sx={{
+                      alignSelf:"center",
                       color: "back.light",
                       fontFamily: "RampartOne",
                       fontSize: "2rem",

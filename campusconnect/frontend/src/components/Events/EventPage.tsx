@@ -35,6 +35,7 @@ import CommentElement from "../Comments/CommentElement";
 import LoadingIndicator from "../Utils/LoadingIndicator";
 import LoadingCommentsIndicator from "../Utils/LoadingComponentIndicator";
 import standardTime from "../Functions/standardTime";
+import NotAuthorized from "../Utils/NotAuthorized";
 
 interface Props {
   username: string;
@@ -441,7 +442,7 @@ const isUserAttending: () => Promise<void> = async () => {
   }, []);
 
   if (!props.isAuth && !props.loading) {
-    return <p>You are not authorized to view this page.</p>;
+    return <NotAuthorized />;
   }
 
   return (

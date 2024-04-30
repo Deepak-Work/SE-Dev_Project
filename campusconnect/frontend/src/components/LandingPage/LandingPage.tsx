@@ -8,6 +8,7 @@ import Calendar from "./Calendar";
 import Newsletter from "./Newsletter";
 import LoadingIndicator from "../Utils/LoadingIndicator";
 import CustomPaletteOptions from "../UI/CustomPaletteOptions";
+import NotAuthorized from "../Utils/NotAuthorized";
 
 interface Props {
   username: string;
@@ -34,7 +35,7 @@ const LandingPage = (props: Props) => {
   });
 
   if (!props.isAuth && !props.loading) {
-    return <p>You are not authorized to view this page.</p>;
+    return <NotAuthorized />;
   }
 
   return (

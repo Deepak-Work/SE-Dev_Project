@@ -34,6 +34,7 @@ import DeletePost from "./DeletePost";
 import CommentElement from "../Comments/CommentElement";
 import LoadingIndicator from "../Utils/LoadingIndicator";
 import LoadingComponentIndicator from "../Utils/LoadingComponentIndicator";
+import NotAuthorized from "../Utils/NotAuthorized";
 
 interface Props {
   username: string;
@@ -385,7 +386,7 @@ const PostPage = (props: Props) => {
 
 
   if (!props.isAuth && !props.loading) {
-    return <p>You are not authorized to view this page.</p>;
+    return <NotAuthorized />;
   }
 
   return (

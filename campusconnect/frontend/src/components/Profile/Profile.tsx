@@ -18,10 +18,14 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import NavBar from "../LandingPage/NavBar";
 import ProfileSettings from "./ProfileSettings";
 import LoadingIndicator from "../Utils/LoadingIndicator";
+import NotAuthorized from "../Utils/NotAuthorized";
+import UserDoesNotExist from "../Utils/UserDoesNotExist";
+import CustomPaletteOptions from "../UI/CustomPaletteOptions";
 
 interface Props {
   isAuth: boolean;
   loading: boolean;
+  username: string;
 }
 
 interface User {
@@ -40,7 +44,7 @@ const Profile = (props: Props) => {
   const handleSettingsClose: () => void = () => setSettingsOpen(false);
   
   const [user, setUser] = useState<User>({} as User);
-  const [userExists, setUserExists] = useState<boolean>(false);
+  const [userExists, setUserExists] = useState<boolean>(true);
 
   const theme = createTheme({
     palette: {
@@ -50,7 +54,13 @@ const Profile = (props: Props) => {
       secondary: {
         main: "#8B139C",
       },
-    },
+      back: {
+        main: "#ced4da",
+        light: "#fff",
+        dark: "#000",
+        contrastText: "purple",
+      },
+    } as CustomPaletteOptions,
   });
 
   useEffect(() => {
@@ -74,12 +84,12 @@ const Profile = (props: Props) => {
   }, []);
 
   if (!props.isAuth && !props.loading) {
-    return <p>You are not authorized to view this page.</p>;
+    return <NotAuthorized />
   }
 
   if(!userExists && !props.loading) {
     return (
-      <p>User does not exist.</p>
+      <UserDoesNotExist />
     )
   }
 
@@ -103,7 +113,7 @@ const Profile = (props: Props) => {
                 "linear-gradient(to right, #a68bf0, #8e63d5, #7d3ebd);",
             }}
           >
-            <NavBar username={user.username}/>
+            <NavBar username={props.username}/>
             <Box
               sx={{
                 mt: 2,

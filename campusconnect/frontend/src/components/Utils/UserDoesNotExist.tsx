@@ -1,10 +1,10 @@
-import * as React from "react";
-import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import { ThemeProvider, Typography, createTheme } from "@mui/material";
 import CustomPaletteOptions from "../UI/CustomPaletteOptions";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-const LoadingIndicator = () => {
+const UserDoesNotExist = () => {
   const theme = createTheme({
     palette: {
       primary: {
@@ -22,14 +22,20 @@ const LoadingIndicator = () => {
     } as CustomPaletteOptions,
   });
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setTimeout(() => navigate('/home'), 5000)
+  }, [])
+
   return (
     <ThemeProvider theme={theme}>
       <Box
         sx={{
           display: "flex",
           flexFlow: "column nowrap",
-          minHeight: "100vh",
-          minWidth: "100vw",
+          height: "100vh",
+          width: "100vw",
           justifyContent: "center",
           alignItems: "center",
           gap: 10,
@@ -37,31 +43,24 @@ const LoadingIndicator = () => {
             "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
         }}
       >
-        <Box         sx={{
-          display: "flex",
-          flexFlow: "column nowrap",
-          height: "100%",
-          width: "100%",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 10,
-        }}>
         <Typography
           variant="h1"
           color="back.light"
-          sx={{ml: "5px", fontFamily: "RampartOne", wordBreak:"break-all" }}
+          sx={{ml: "5px", fontFamily: "RampartOne" }}
         >
-          CampusConnect
+          User Does Not Exist
         </Typography>
-        <CircularProgress size={200} sx={{ color: "back.light" }} />
-        </Box>
+        <Typography
+          variant="h4"
+          color="back.light"
+          sx={{ml: "5px", fontFamily: "RampartOne" }}
+        >
+          Redirecting in 5 Seconds...
+        </Typography>
       </Box>
     </ThemeProvider>
   );
 
-  {
-    /* You can add additional styling or animation for the loading indicator */
-  }
 };
 
-export default LoadingIndicator;
+export default UserDoesNotExist;

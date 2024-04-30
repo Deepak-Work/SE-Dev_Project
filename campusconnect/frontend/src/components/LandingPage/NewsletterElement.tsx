@@ -184,7 +184,7 @@ const NewsletterElement: React.FC<NewsletterProps> = ({
           sx={{
             borderRadius: "10px",
             border: "3px solid #000000",
-            height: "100px",
+            height: "90px",
             width: "80%",
             backgroundColor: "primary.main",
             // background:
@@ -197,13 +197,13 @@ const NewsletterElement: React.FC<NewsletterProps> = ({
             overflow: "auto",
           }}
         >
-          <Typography                       variant="h5"
+          <Typography                       variant="h6"
                       color="white"
                       fontWeight="bold"
                       fontFamily={"Lobster"}
                       onClick={() => navigate(`/post/${postId}`)}
                       sx={{ pt: 1, pl: 0, cursor:"pointer", "&:hover" : {color:"back.dark"} }}>{title}</Typography>
-          <Typography                       variant="h6"
+          <Typography                       variant="subtitle1"
                       color="white"
                       fontFamily={"Lobster"}
                       sx={{ pt: 1, pl: 0 }}>
@@ -215,25 +215,27 @@ const NewsletterElement: React.FC<NewsletterProps> = ({
           sx={{
             borderRadius: "10px",
             border: "3px solid #000000",
-            height: "70px",
+            height: "110px",
             width: "100%",
             backgroundColor: "primary.main",
             // background:
             //   "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
             display: "flex",
             flexFlow: "row nowrap",
-            alignItems: "center",
+            alignItems: "start",
             justifyContent: "center",
             overflow: "auto",
           }}
         >
           <Typography
+            fontFamily="serif"
+            fontWeight={500}
             sx={{
               display:"flex",
-              justifyContent:"center",
-              alignItems:"center",
+              alignSelf:"center",
               textAlign: "center",
               color: "back.light",
+              pt: 1,
             //   border: "2px solid",
             //   borderColor: "back.dark",
             //   borderRadius: "20px",
@@ -242,7 +244,7 @@ const NewsletterElement: React.FC<NewsletterProps> = ({
             }}
           >
             {" "}
-            {summary.length < 100 ? summary : summary.substring(0, 100) + "..."}
+            {summary.length > 0 ? summary : "No Summary..."}
           </Typography>
         </Box>
       </CardContent>

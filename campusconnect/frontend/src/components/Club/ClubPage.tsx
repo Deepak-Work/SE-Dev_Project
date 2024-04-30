@@ -32,6 +32,7 @@ import CreateEvent from "../Events/CreateEvent";
 import EventElement from "../Events/EventElement";
 import Members from "./Members";
 import LoadingIndicator from "../Utils/LoadingIndicator";
+import NotAuthorized from "../Utils/NotAuthorized";
 
 interface Props {
   username: string;
@@ -304,7 +305,7 @@ const ClubPage = (props: Props) => {
   }, [followed]);
 
   if (!props.isAuth && !props.loading) {
-    return <p>You are not authorized to view this page.</p>;
+    return <NotAuthorized />
   }
 
   return (
