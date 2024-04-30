@@ -148,7 +148,7 @@ const Newsletter = () => {
           My Newsletter
         </Typography>
         <FormControl>
-          <InputLabel id="followed-clubs-select-label" sx={{ color: "#000" }}>Clubs</InputLabel>
+          <InputLabel id="followed-clubs-select-label" sx={{ fontFamily: "Lobster", color: "#000" }}>Clubs</InputLabel>
           <Select
             variant="outlined"
             sx={{
