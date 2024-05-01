@@ -85,6 +85,15 @@ class GetClubView(APIView):
             return Response({'club_data': c_json, 'posts': posts, 'events': events}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
     
+class DisbandClubView(APIView):
+    def delete(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            club = Club.objects.get(id=id)
+            club.delete()
+            return Response(status=status.HTTP_200_OK)
+    
     
 class GetFollowStatus(APIView):
     def get(self, request, name, id):

@@ -125,17 +125,28 @@ const Members = (props: MembersProps) => {
         </DialogTitle>
         <DialogContent
           sx={{
-            mt: 2,
-            mb: 2,
-            ml: 2,
-            mr: 2,
-            bgcolor: "primary.main",
-            border:"2px solid",
-            borderColor: "back.dark",
-            borderRadius: "20px",
-            overflow:"auto", "&::-webkit-scrollbar" : { display:"none"}
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
           }}
         >
+                    <Box
+            sx={{
+              mt: "3%",
+              display:"flex",
+              justifyContent:"center",
+              alignItems:"start",
+              backgroundColor: "primary.main",
+              border:"2px solid",
+              borderColor:"back.dark",
+              borderRadius: "20px",
+              height: "95%",
+              overflow:"auto",
+              "&::-webkit-scrollbar": {
+                display: "none",
+              },
+            }}
+          >
   {members && members.length != 0 ? (
     <Grid
       container
@@ -203,9 +214,10 @@ const Members = (props: MembersProps) => {
   ) : (
     <Box
       sx={{
-        height: "100%",
+        minHeight: "49vh",
         display: "flex",
         flexFlow: "column nowrap",
+        justifyContent:"center",
         alignItems: "center",
       }}
     >
@@ -213,6 +225,7 @@ const Members = (props: MembersProps) => {
         component="h2"
         variant="h2"
         sx={{
+          alignSelf:"center",
           color: "back.light",
           fontFamily: "RampartOne",
           fontSize: "2rem",
@@ -222,7 +235,7 @@ const Members = (props: MembersProps) => {
       </Typography>
     </Box>
   )}
-
+</Box>
         </DialogContent>
       </Dialog>
     </ThemeProvider>

@@ -215,7 +215,7 @@ const CreateClub = (props: Props) => {
     <ThemeProvider theme={defaultTheme}>
       <Box
         sx={{
-          height: "100vh",
+          minHeight: "100vh",
           display: "flex",
           flexFlow: "column nowrap",
           // gap: 10,
@@ -301,14 +301,14 @@ const CreateClub = (props: Props) => {
                         : ""
                     }
                     inputProps={{ maxLength: 500 }}
-                    autoComplete="club-description"
+                    autoComplete="club-description "
                     multiline
                     fullWidth
                     rows={4}
                     required
                     name="description"
                     id="description"
-                    label="Club Description"
+                    label="Club Description (≤ 500 Characters)"
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -360,7 +360,7 @@ const CreateClub = (props: Props) => {
                     fullWidth
                     id="website"
                     name="website"
-                    label="Club Website (https://example.com)"
+                    label="Club Website (http(s)://example.com)"
                     type="url"
                     InputProps={{
                       startAdornment: (
