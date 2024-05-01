@@ -267,9 +267,10 @@ const MyClubs = (props: MyClubsProps) => {
                         >
                           <Link
                             variant="h5"
-                            onClick={() =>
+                            onClick={() => {
                               navigate(`/club/${club.name}/${club.id}`)
-                            }
+                              location.reload();
+                            }}
                             sx={{
                               wordBreak: "break-word",
                               color: "back.dark",
