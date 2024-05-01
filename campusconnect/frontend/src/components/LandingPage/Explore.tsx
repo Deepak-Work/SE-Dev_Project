@@ -223,9 +223,6 @@ const Explore = (props: ExploreProps) => {
           <Box
             sx={{
               mt: "3%",
-              display:"flex",
-              justifyContent:"center",
-              alignItems:"start",
               backgroundColor: "primary.main",
               border:"2px solid",
               borderColor:"back.dark",
@@ -244,11 +241,11 @@ const Explore = (props: ExploreProps) => {
                 alignItems: "center",
               }}
             >
-              {clubs && clubs.length !== 0 ? (
+              {clubs && clubs.length > 0 ? (
                 <Grid
                   container
                   spacing={0}
-                  sx={{ display: "flex", justifyContent: "center" }}
+                  sx={{ display: "flex", flexFlow:"column nowrap", justifyContent: "center" }}
                 >
                   {clubs.map((club) => (
                     <Grid
@@ -267,9 +264,9 @@ const Explore = (props: ExploreProps) => {
                       }}
                     >
                       <Box
-                       component="img"
-                       alt="Club Logo"
-                       src={"../../../../media/" + club.image}
+                        component="img"
+                        alt="Club Logo"
+                        src={"../../../../media/" + club.image}
                         sx={{
                           width: "50px",
                           height: "50px",
@@ -277,22 +274,24 @@ const Explore = (props: ExploreProps) => {
                           borderRadius: "10px",
                           display: { xs: "none", sm: "block", md: "block" },
                         }}
-                      >
-                      </Box>
+                      ></Box>
                       <Box
-                        sx={{ display: "flex", flexFlow: "column wrap", justifyContent:"flex-start", px: 2 }}
+                        sx={{ display: "flex", flexFlow: "column wrap", px: 2 }}
                       >
-                        <Box sx={{border:"0px black solid",  width: "13.5vw", maxWidth: "20vw"}}>
+                        <Box
+                          sx={{
+                            border: "0px black solid",
+                            width: "13.5vw",
+                            maxWidth: "20vw",
+                          }}
+                        >
                           <Link
                             variant="h5"
                             onClick={() => {
                               navigate(`/club/${club.name}/${club.id}`)
                               location.reload();
-                            }
-                              
-                            }
+                            }}
                             sx={{
-                              
                               wordBreak: "break-word",
                               color: "back.dark",
                               cursor: "pointer",
@@ -303,16 +302,15 @@ const Explore = (props: ExploreProps) => {
                           >
                             {club.name}
                           </Link>
-
                         </Box>
                         <Box>
                           {/* <Typography
-                          component="span"
-                          color="secondary.dark"
-                          sx={{ height:"20", fontStyle :"italic", wordBreak:"break-word"}}
-                        >
-                          {club.description}
-                        </Typography> */}
+                            component="span"
+                            color="secondary.dark"
+                            sx={{ height:"20", fontStyle :"italic", wordBreak:"break-word"}}
+                          >
+                            {club.description}
+                          </Typography> */}
                           <Typography
                             component="span"
                             sx={{
@@ -355,13 +353,13 @@ const Explore = (props: ExploreProps) => {
                 </Grid>
               ) : (
                 <Box
-                sx={{
-                  minHeight: "75vh",
-                  display: "flex",
-                  flexFlow: "column nowrap",
-                  justifyContent:"center",
-                  alignItems: "center",
-                }}
+                  sx={{
+                    minHeight: "75vh",
+                    display: "flex",
+                    flexFlow: "column nowrap",
+                    justifyContent:"center",
+                    alignItems: "center",
+                  }}
                 >
                   <Typography
                     component="h2"
