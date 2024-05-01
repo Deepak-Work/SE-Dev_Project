@@ -11,8 +11,8 @@ import { useParams } from "react-router-dom";
 type ImageFile = File | null;
 
 interface CreateEvent {
-    name: string;
-    description: string;
+    title: string;
+    body: string;
     event_date: string;
     event_time: string;
     image? : string;
@@ -49,8 +49,8 @@ const CreateEvent = (props: CreateEventProps) => {
     
         const data = new FormData(event.currentTarget);
         const eventForm: CreateEvent = {
-          name: data.get("create-event-title") as string,
-          description: data.get("create-event-body") as string,
+          title: data.get("create-event-title") as string,
+          body: data.get("create-event-body") as string,
           event_date: data.get("create-event-date") as string,
           event_time: data.get("create-event-time") as string,
         //   image: data.get('create-event-image') as string,

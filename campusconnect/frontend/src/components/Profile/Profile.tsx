@@ -17,9 +17,15 @@ import SettingsIcon from "@mui/icons-material/Settings";
 
 import NavBar from "../LandingPage/NavBar";
 import ProfileSettings from "./ProfileSettings";
+import LoadingIndicator from "../Utils/LoadingIndicator";
+import NotAuthorized from "../Utils/NotAuthorized";
+import UserDoesNotExist from "../Utils/UserDoesNotExist";
+import CustomPaletteOptions from "../UI/CustomPaletteOptions";
 
 interface Props {
   isAuth: boolean;
+  loading: boolean;
+  username: string;
 }
 
 interface User {
@@ -38,7 +44,7 @@ const Profile = (props: Props) => {
   const handleSettingsClose: () => void = () => setSettingsOpen(false);
   
   const [user, setUser] = useState<User>({} as User);
-  const [userExists, setUserExists] = useState<boolean>(false);
+  const [userExists, setUserExists] = useState<boolean>(true);
 
   const theme = createTheme({
     palette: {
@@ -48,7 +54,13 @@ const Profile = (props: Props) => {
       secondary: {
         main: "#8B139C",
       },
-    },
+      back: {
+        main: "#ced4da",
+        light: "#fff",
+        dark: "#000",
+        contrastText: "purple",
+      },
+    } as CustomPaletteOptions,
   });
 
   useEffect(() => {
@@ -71,12 +83,20 @@ const Profile = (props: Props) => {
     fetchUser();
   }, []);
 
+  if (!props.isAuth && !props.loading) {
+    return <NotAuthorized />
+  }
+
+  if(!userExists && !props.loading) {
+    return (
+      <UserDoesNotExist />
+    )
+  }
+
   return (
     <>
-      {!props.isAuth ? (
-        <p>You are not authorized to view this page.</p>
-      ) : !userExists ? (
-        <p>User does not exist.</p>
+      {!props.isAuth && !userExists? (
+        <LoadingIndicator />
       )
       : (
         <ThemeProvider theme={theme}>
@@ -93,10 +113,10 @@ const Profile = (props: Props) => {
                 "linear-gradient(to right, #a68bf0, #8e63d5, #7d3ebd);",
             }}
           >
-            <NavBar username={user.username}/>
+            <NavBar username={props.username}/>
             <Box
               sx={{
-                mt: 15,
+                mt: 2,
                 width: "600px",
                 height: "700px",
                 // display: "flex",
@@ -107,8 +127,8 @@ const Profile = (props: Props) => {
                 bgcolor: "primary.main",
               }}
             >
-              <div
-                style={{
+              <Box
+                sx={{
                   display: "flex",
                   flexDirection: "row",
                   marginLeft: "20px",
@@ -126,12 +146,12 @@ const Profile = (props: Props) => {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    paddingRight: "10px",
+                    // paddingRight: "10px",
                   }}
                   src={user.image}
-                ></Box>
-                <div
-                  style={{
+                />
+                <Box
+                  sx={{
                     display: "flex",
                     flexDirection: "column",
                     marginLeft: "20px",
@@ -160,22 +180,22 @@ const Profile = (props: Props) => {
                     </Typography>
                   </Link>
                   {/* <Typography variant="h5">{us}</Typography> */}
-                </div>
+                </Box>
 
                 {user.is_self ? (
-                        <div style={{ marginLeft: "200px" }}>
+                        <Box sx={{ marginLeft: "200px" }}>
                         <Tooltip title="Profile Settings">
                           <IconButton onClick={handleSettingsOpen} sx={{ color: "white" }}>
                             <SettingsIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
-                      </div>          
+                      </Box>          
                 ) : (
                   <></>
                 )}
 
 
-              </div>
+              </Box>
             </Box>
           </Box>
           <ProfileSettings user={user} settingsOpen={settingsOpen} handleSettingsOpen={handleSettingsOpen} handleSettingsClose={handleSettingsClose} />

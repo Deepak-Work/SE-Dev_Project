@@ -10,6 +10,7 @@ import { DayCalendarSkeleton } from "@mui/x-date-pickers/DayCalendarSkeleton";
 import { Badge, Box, Tooltip } from "@mui/material";
 import { Typography } from "@mui/material";
 import { Paper } from "@mui/material";
+import standardTime from "../Functions/standardTime";
 
 interface Event {
   author: string;
@@ -70,9 +71,9 @@ const Calendar = () => {
             isSelected && tooltip ? (
               <div>
                 {tooltip.name} hosted by {tooltip.club} on {tooltip.event_date}{" "}
-                at {tooltip.event_time}
+                @ {standardTime(tooltip.event_time)}
                 <br />
-                {tooltip.description}
+                {tooltip.description.length < 128 ? tooltip.description : tooltip.description.substring(0,128) + "..."}
               </div>
             ) : (
               ""
@@ -140,9 +141,10 @@ const Calendar = () => {
     >
       <Box
         sx={{
-          borderRadius: "10px",
+          borderRadius: "10px 10px 0 0",
           border: "3px solid #000000",
-          height: "50px",
+          borderBottom:"5px solid",
+          height: "70px",
           background:
             "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
           display: "flex",
@@ -155,6 +157,7 @@ const Calendar = () => {
           variant="h5"
           color="white"
           fontWeight="bold"
+          fontFamily="Lobster"
           sx={{ pt: 1, pl: 3 }}
         >
           My Club Events

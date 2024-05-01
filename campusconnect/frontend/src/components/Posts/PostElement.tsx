@@ -12,15 +12,16 @@ import {
   IconButton,
   Tooltip,
   Box,
+  Avatar,
 } from "@mui/material";
-
 
 // import Menu from '@mui/material/Menu';
 // import MenuItem from '@mui/material/MenuItem';
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
-import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
-import MoreIcon from '@mui/icons-material/More';
+import CommentOutlinedIcon from "@mui/icons-material/CommentOutlined";
+import MoreIcon from "@mui/icons-material/More";
+import logo from "../../assets/CampusConnectLogo.svg";
 
 interface PostProps {
   username: string;
@@ -36,15 +37,11 @@ interface PostProps {
   // caption: string;
 }
 
-
-
 /**
  * Post Component
  *
  * This component renders a single post on the posts page
  */
-
-
 
 const PostElement: React.FC<PostProps> = ({
   username,
@@ -54,13 +51,36 @@ const PostElement: React.FC<PostProps> = ({
   post_id,
   likes,
   dislikes,
-  totalComments
+  totalComments,
 }) => {
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [isDisliked, setIsDisliked] = useState<boolean>(false);
+  const [postInfo, setPostInfo] = useState<PostProps>({} as PostProps);
+  const fetchPost = async () => {
+    let response = await fetch(`/api/posts/post/${post_id}`, {
+      method: "GET",
+    });
+    if (response.ok) {
+      response.json().then((value) => {
+        const posts = value.post_data;
+        const postInfo: PostProps = {
+          username: posts.author,
+          body: posts.body,
+          title: posts.title,
+          likes: posts.likes,
+          dislikes: posts.dislikes,
+          totalComments: posts.total_comments,
+          time_posted: posts.time_posted,
+          post_id: posts.id,
+        };
+        setPostInfo(postInfo);
+      });
+    } else {
+      console.log("Post cannot be loaded");
+    }
+  };
 
   const getLikeDislikeStatus = async () => {
     console.log("Checking Like Status");
@@ -79,8 +99,9 @@ const PostElement: React.FC<PostProps> = ({
       });
     }
     console.log(isLiked, isDisliked);
-  }
-  
+    // fetchPost();
+  };
+
   const handleLike = async () => {
     if (!isLiked) {
       const response = await fetch(`/api/posts/post/${post_id}/like`, {
@@ -94,8 +115,7 @@ const PostElement: React.FC<PostProps> = ({
         setIsLiked(true);
         console.log("Liked");
       }
-    }
-    else {
+    } else {
       const response = await fetch(`/api/posts/post/${post_id}/unlike`, {
         method: "GET",
         headers: {
@@ -108,7 +128,8 @@ const PostElement: React.FC<PostProps> = ({
         console.log("Unliked");
       }
     }
-  }
+    fetchPost();
+  };
 
   const handleDislike = async () => {
     if (!isDisliked) {
@@ -123,8 +144,7 @@ const PostElement: React.FC<PostProps> = ({
         setIsDisliked(true);
         console.log("Disliked");
       }
-    }
-    else {
+    } else {
       const response = await fetch(`/api/posts/post/${post_id}/undislike`, {
         method: "GET",
         headers: {
@@ -136,46 +156,50 @@ const PostElement: React.FC<PostProps> = ({
         setIsDisliked(false);
         console.log("Undisliked");
       }
-  }
-}
+    }
+    fetchPost();
+  };
   useEffect(() => {
+    fetchPost();
     getLikeDislikeStatus();
-  })
+  }, []);
 
-  const handlePostClick = async(event: React.MouseEvent<HTMLDivElement>) =>{
+  const handlePostClick = async (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
 
-    console.log("Direct to post page")
+    console.log("Direct to post page");
 
-    console.log(post_id)
+    console.log(post_id);
 
-    navigate(`/post/${post_id}`)
-    
-  }
+    navigate(`/post/${post_id}`);
+  };
 
   // Render the post
   return (
     <Card
       sx={{
-          border: "3px solid",
-          borderColor:"back.dark",
+        //  display:"flex",
+        border: "3px solid",
+        borderColor: "back.dark",
         borderRadius: "35px",
         // width: "450px",
         // maxWidth: "450px",
         textWrap: "balance",
       }}
     >
-        {/* Post Header */}
-        <CardHeader
-          // The avatar of the user who posted the post
-          // avatar={
-          //   <Avatar
-          //     src={userAvatar}
-          //     alt={username} // The alt text is the username of the user
-          //   />
-          // }
-          color="white"
-          title={title} // The title is the username of the user
+      {/* Post Header */}
+      <CardHeader
+        // The avatar of the user who posted the post
+        // avatar={
+        //   <Avatar
+        //     src={logo}
+        //     alt={username} // The alt text is the username of the user
+        //     sx={{border:"1px solid", borderColor:"back.dark", borderRadius:"20px", backgroundColor: "back.light",}}
+        //   />
+        // }
+        
+        color="white"
+        title={title} // The title is the username of the user
         titleTypographyProps={{
           onClick: () => navigate(`/post/${post_id}`),
           sx: {
@@ -189,11 +213,21 @@ const PostElement: React.FC<PostProps> = ({
           },
         }}
         subheader={`${username} - ${time_posted}`} // The subheader is the post date
-        subheaderTypographyProps={{ sx: { color:"back.light", fontFamily: "Lobster" } }}
-        sx={{ backgroundColor: "secondary.main" }}
-        />
+        subheaderTypographyProps={{
+          sx: { color: "back.light", fontFamily: "Lobster" },
+        }}
+        sx={{
+          // minWidth: "30%",maxWidth:"35%",
+          backgroundColor: "secondary.main",
+        }}
+      />
 
-      <CardContent sx={{ backgroundColor: "back.main", color: "back.dark" }}>
+      <CardContent
+        sx={{
+          backgroundColor: "back.main",
+          color: "back.dark",
+        }}
+      >
         <Typography
           variant="body2"
           fontFamily={"Lobster"}
@@ -203,29 +237,30 @@ const PostElement: React.FC<PostProps> = ({
             border: "2px solid",
             borderColor: "back.dark",
             borderRadius: "20px",
-            backgroundColor:"back.light",
+            backgroundColor: "back.light",
             padding: 2,
             overflowWrap: "break-word",
           }}
         >
-            {body.length < 50 ? body : body.substring(0, 60) + "..."}
-          </Typography>
+          {body.length < 50 ? body : body.substring(0, 50) + "..."}
+        </Typography>
 
-          {/* Reactions */}
+        {/* Reactions */}
         <CardActions
           sx={{
+            width: "100%",
             display: "flex",
             flexFlow: "row wrap",
             justifyContent: "space-between",
             mt: 2,
             mb: -2,
             ml: 0,
-            border:"2px solid",
-            borderRadius:"20px",
-            backgroundColor:"back.light",
+            border: "2px solid",
+            borderRadius: "20px",
+            backgroundColor: "back.light",
           }}
         >
-          <Box sx={{ display: "flex", flexFlow: "row wrap", columnGap:1}}>
+          <Box sx={{ display: "flex", flexFlow: "row nowrap", columnGap: 1 }}>
             <Box
               sx={{
                 display: "flex",
@@ -240,13 +275,13 @@ const PostElement: React.FC<PostProps> = ({
                 fontFamily={"Lobster"}
                 sx={{ color: "primary.main", userSelect: "none", py: 1 }}
               >
-                {likes}
+                {postInfo.likes}
               </Typography>
-            <Tooltip title="Like">
-              <IconButton onClick={handleLike} aria-label="like post">
-                  <ThumbUpAltIcon sx={{ color: "back.dark" }} />
-              </IconButton>
-            </Tooltip>
+              <Tooltip title="Like">
+                <IconButton onClick={handleLike} aria-label="like post">
+                  {isLiked ? <ThumbUpAltIcon sx={{ color: "primary.main" }} /> : <ThumbUpAltIcon sx={{ color: "back.dark" }} /> }
+                </IconButton>
+              </Tooltip>
             </Box>
 
             <Box
@@ -263,21 +298,25 @@ const PostElement: React.FC<PostProps> = ({
                 fontFamily={"Lobster"}
                 sx={{ color: "primary.main", userSelect: "none", py: 1 }}
               >
-                {dislikes}
+                {postInfo.dislikes}
               </Typography>
-            <Tooltip title="Dislike">
-              <IconButton onClick={handleDislike} aria-label="dislike post">
-                  <ThumbDownIcon sx={{ color: "back.dark" }} />
+              <Tooltip title="Dislike">
+                <IconButton onClick={handleDislike} aria-label="dislike post">
+                {isDisliked ? <ThumbDownIcon sx={{ color: "primary.main" }} /> : <ThumbDownIcon sx={{ color: "back.dark" }} /> }
                 </IconButton>
               </Tooltip>
             </Box>
-            <Box               sx={{
-                display: "flex",
-                flexFlow: "row nowrap",
-                alignContent: "center",
-                justifyContent: "center",
-              }}>
-            <Typography
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexFlow: "row nowrap",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Box sx={{ display: "flex", flexFlow: "row nowrap", columnGap: 1 }}>
+              <Typography
                 component="h6"
                 variant="h6"
                 fontFamily={"Lobster"}
@@ -291,21 +330,20 @@ const PostElement: React.FC<PostProps> = ({
                 </IconButton>
               </Tooltip>
             </Box>
-          </Box>
-          <Box>
-          <Tooltip title="More">
+            <Box>
+              <Tooltip title="More">
                 <IconButton aria-label="more">
                   <MoreIcon sx={{ color: "back.dark" }} />
-              </IconButton>
-            </Tooltip>            
+                </IconButton>
+              </Tooltip>
+            </Box>
           </Box>
-          </CardActions>
+        </CardActions>
 
-          {/* Additional Options */}
-            
+        {/* Additional Options */}
 
-          {/* Comments */}
-          {/* <CardContent sx={{ mt: 2 }}>
+        {/* Comments */}
+        {/* <CardContent sx={{ mt: 2 }}>
           <Typography variant="h6">Comments</Typography>
           <TextField
             fullWidth
@@ -314,8 +352,8 @@ const PostElement: React.FC<PostProps> = ({
             placeholder="Add a comment"
           /> */}
 
-          {/* Comments List */}
-          {/* <List>
+        {/* Comments List */}
+        {/* <List>
             <ListItem>
               <ListItemAvatar>
                 <Avatar src={userAvatar} alt={username} />
@@ -323,8 +361,8 @@ const PostElement: React.FC<PostProps> = ({
               <ListItemText primary={username} secondary="This is a test comment" />
             </ListItem>
           </List> */}
-          {/* </CardContent> */}
-        </CardContent>
+        {/* </CardContent> */}
+      </CardContent>
     </Card>
   );
 };

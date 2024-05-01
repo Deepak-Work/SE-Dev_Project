@@ -2,6 +2,7 @@ import { useState, useEffect, FormEvent, ChangeEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import convertDate from "../Functions/convertDate";
+import formatCount from "../Functions/formatCount";
 import Cookies from "js-cookie";
 
 import {
@@ -14,14 +15,9 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Dialog,
-  DialogTitle,
-  Fab,
   TextField,
   Button,
-  Container,
-  FilledInput,
-  InputAdornment,
+  CssBaseline,
 } from "@mui/material";
 
 // import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -36,10 +32,14 @@ import CommentIcon from "@mui/icons-material/Comment";
 import EditPost from "./EditPost";
 import DeletePost from "./DeletePost";
 import CommentElement from "../Comments/CommentElement";
+import LoadingIndicator from "../Utils/LoadingIndicator";
+import LoadingComponentIndicator from "../Utils/LoadingComponentIndicator";
+import NotAuthorized from "../Utils/NotAuthorized";
 
 interface Props {
   username: string;
   isAuth: boolean;
+  loading: boolean;
 }
 
 interface PostProps {
@@ -104,16 +104,22 @@ const PostPage = (props: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const [loadingComments, setLoadingComments] = useState<boolean>(false);
   const [showComments, setShowComments] = useState<boolean>(false);
   const [comments, setComments] = useState<Comment[]>([]);
 
-  const [newCommentBody, setNewCommentBody] = useState<string>("")
+  const [commentBody, setCommentBody] = useState<string>("")
   const [currentReplyId, setCurrentReplyId] = useState<number | null>(null);
-  
+  const [editCommentId, setEditCommentId] = useState<number | null>(null);
+
   const [postInfo, setPostInfo] = useState<PostProps>({} as PostProps);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const [editPostOpen, setEditPostOpen] = useState(false);
+  const [deletePostOpen, setDeletePostOpen] = useState(false);
+
+  const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [isDisliked, setIsDisliked] = useState<boolean>(false);
 
   const fetchPost = async () => {
     let response = await fetch(`/api/posts/post/${id}`, {
@@ -138,7 +144,7 @@ const PostPage = (props: Props) => {
         setPostInfo(postInfo);
       });
     } else {
-      console.log("Post cannot be loaded");
+      console.log("Post Cannot be Loaded");
     }
   };
   
@@ -151,11 +157,7 @@ const PostPage = (props: Props) => {
     setEditPostOpen(false);
   };
 
-  const [isLiked, setIsLiked] = useState<boolean>(false);
-  const [isDisliked, setIsDisliked] = useState<boolean>(false);
-
   const getLikeDislikeStatus = async () => {
-    console.log("Checking Like Status");
     const response = await fetch(`/api/posts/post/like-dislike/${id}`, {
       method: "GET",
       headers: {
@@ -165,12 +167,12 @@ const PostPage = (props: Props) => {
     });
     if (response.ok) {
       response.json().then((value) => {
-        console.log(value);
         setIsLiked(value.like_status);
         setIsDisliked(value.dislike_status);
       });
     }
-    console.log(isLiked, isDisliked);
+    console.log("Liked:" +  isLiked + " Disliked:" +isDisliked);
+    // fetchPost();
   }
   
   const handleLike = async () => {
@@ -233,43 +235,12 @@ const PostPage = (props: Props) => {
   fetchPost();
 }
 
-  const [deletePostOpen, setDeletePostOpen] = useState(false);
   const handleDeletePostOpen = () => {
     setDeletePostOpen(true);
     setAnchorEl(null);
   };
   const handleDeletePostClose = () => {
     setDeletePostOpen(false);
-  };
-
-  const handleEditSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    const data = new FormData(event.currentTarget);
-    const image = data.get("edit-post-image") as File;
-    const form = new FormData();
-
-    form.append("title", data.get("edit-post-title") as string);
-    form.append("body", data.get("edit-post-body") as string);
-    form.append("id", id as string)
-    if (data.get("edit-post-image")) form.append("image", image);
-
-    const headers = {
-      // "Content-Type": "application/json",
-      "X-CSRFToken": Cookies.get("csrftoken") || "",
-    };
-
-    const response: Response = await fetch(`/api/posts/post/edit`, {
-      method: "PUT",
-      headers: headers,
-      body: form,
-    });
-
-    if (response.ok) {
-      handleEditPostClose();
-      // window.location.reload();
-      console.log("New Post Edited Successfully");
-    } else {
-      console.log("Edit Post failed");
-    }
   };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -283,8 +254,6 @@ const PostPage = (props: Props) => {
     };
 
     if (action === "delete") {
-      // Perform deletion logic here
-      console.log("Deleting post start");
       let response = await fetch(`/api/posts/post/${id}/delete`, {
         method: "DELETE",
         headers: headers,
@@ -293,26 +262,15 @@ const PostPage = (props: Props) => {
       if (response.ok) {
         const data = await response.json();
         const { club_name, club_id } = data;
-
         navigate(`/club/${club_name}/${club_id}`);
       } else {
-        console.log("Could not delete post");
+        console.log("Post Could Not Be Deleted");
       }
     }
     setAnchorEl(null);
   };
 
-  const toggleComments = () => {
-    // Fetch comments from server when toggling comments
-    if (!showComments) {
-      fetchComments(Number(id));
-    }
-    setShowComments(!showComments);
-  };
-
   const fetchComments = async (postId: number) => {
-    // Simulating fetching comments from server
-    // Replace this with your actual API call
     const headers = {
       // "Content-Type":"application/json",
       "X-CSRFToken": Cookies.get("csrftoken") || "",
@@ -330,14 +288,11 @@ const PostPage = (props: Props) => {
   };
 
 
-  
-
-  const handleCommentLike = () => {
-    // Implement like functionality
-  };
-
-  const handleCommentDislike = () => {
-    // Implement dislike functionality
+  const toggleComments = () => {
+    if (!showComments) {
+      fetchComments(Number(id));
+    }
+    setShowComments(!showComments);
   };
 
 
@@ -345,12 +300,14 @@ const PostPage = (props: Props) => {
     event: FormEvent<HTMLFormElement>
   ) => void = async (event) => {
     event.preventDefault();
+    
+    setLoadingComments(true);
 
-    const data = new FormData(event.currentTarget);
+    // const data = new FormData(event.currentTarget);
 
     const form = new FormData();
-    // form.append("body", data.get("new-comment-body") as string);
-    form.append("body", newCommentBody as string);
+
+    form.append("body", commentBody as string);
     form.append("reply_id", currentReplyId?.toString() as string);
 
     const headers = {
@@ -367,7 +324,55 @@ const PostPage = (props: Props) => {
     );
 
     if (response.ok) {
-      setNewCommentBody("");
+      setCommentBody("");
+      setCurrentReplyId(null);
+      setEditCommentId(null);
+
+      setComments([]);
+      fetchComments(Number(id));
+    }
+
+    setTimeout(() => {setLoadingComments(false)}, 400);
+  };
+
+  const handleNewComment: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=> void  =
+  (event) => {
+    setCommentBody(event.currentTarget.value);
+  }
+
+  const handleEditComment: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=> void  =
+  (event) => {
+    setCommentBody(event.currentTarget.value);
+  }
+
+  const handleEditCommentSubmit: (
+    event: FormEvent<HTMLFormElement>,
+  ) => void = async (event) => {
+    event.preventDefault();
+
+    // const data = new FormData(event.currentTarget);
+
+    const form = new FormData();
+    // form.append("body", data.get("new-comment-body") as string);
+    form.append("body", commentBody as string);
+    // form.append("reply_id", currentReplyId?.toString() as string);
+
+    const headers = {
+      "X-CSRFToken": Cookies.get("csrftoken") || "",
+    };
+
+    const response: Response = await fetch(
+      `/api/posts/comment/${editCommentId}/edit`,
+      {
+        method: "PUT",
+        headers: headers,
+        body: form,
+      }
+    );
+
+    if (response.ok) {
+      setEditCommentId(null);
+      setCommentBody("");
       setCurrentReplyId(null);
       fetchComments(Number(id));
     }
@@ -375,36 +380,44 @@ const PostPage = (props: Props) => {
 
   useEffect(() => {
     fetchPost();
-    fetchComments(Number(id));
     getLikeDislikeStatus();
+    fetchComments(Number(id));
   }, []);
 
-  const handleNewComment: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=> void  =
-  (event) => {
-    setNewCommentBody(event.currentTarget.value);
+
+  if (!props.isAuth && !props.loading) {
+    return <NotAuthorized />;
   }
 
   return (
     <>
       {!props.isAuth ? (
-        <p>
-          The club does not exist or you are not authorized to view this page.
-        </p>
+        <LoadingIndicator />
       ) : (
         <ThemeProvider theme={theme}>
+          <CssBaseline />
           <Box
             sx={{
               width: "100%",
               display: "flex",
               overflow: "auto",
               minHeight: "100vh",
-              alignItems: "flex-start",
+              alignItems: "center",
               justifyContent: "center",
               flexFlow: "column nowrap",
               backgroundColor: "#1e1e1e",
             }}
           >
+            <Box sx={{               width: "100%",
+              display: "flex",
+              overflow: "auto",
+              alignItems: "center",
+              justifyContent: "center",
+              flexFlow: "column nowrap",
+              mt: -10 }}>
+
             <NavBar username={username} />
+            </Box>
 
             <Box
               sx={{
@@ -484,7 +497,7 @@ const PostPage = (props: Props) => {
                     }
                     sx={{
                       color: "back.light",
-                      textDecoration: "underline dashed",
+                      textDecoration: "underline solid",
                       textDecorationColor: "back.dark",
                       wordBreak: "break-word",
                       cursor: "pointer",
@@ -633,7 +646,7 @@ const PostPage = (props: Props) => {
                         }}
                       >
                         <IconButton aria-label="Like post">
-                          <ThumbUpAltIcon />
+                          {isLiked? <ThumbUpAltIcon sx={{color: "primary.main"}} /> : <ThumbUpAltIcon />}
                         </IconButton>
                         <Typography
                           color="primary.main"
@@ -660,7 +673,7 @@ const PostPage = (props: Props) => {
                             fontFamily={"Lobster"}
                             sx={{ color: "back.light" }}
                           >
-                            {postInfo.likes}
+                            {formatCount(postInfo.likes)}
                           </Typography>
                         </Box>
                       </Button>
@@ -680,7 +693,7 @@ const PostPage = (props: Props) => {
                         <IconButton
                           aria-label="dislike post"
                         >
-                          <ThumbDownIcon />
+                          {isDisliked ? <ThumbDownIcon sx={{color: "primary.main"}} /> : <ThumbDownIcon />}
                         </IconButton>
                         <Typography
                           color="primary.main"
@@ -707,7 +720,7 @@ const PostPage = (props: Props) => {
                             fontFamily={"Lobster"}
                             sx={{ color: "back.light" }}
                           >
-                            {postInfo.dislikes}
+                            {formatCount(postInfo.dislikes)}
                           </Typography>
                         </Box>
                       </Button>
@@ -751,7 +764,7 @@ const PostPage = (props: Props) => {
                             fontFamily={"Lobster"}
                             sx={{ color: "back.light" }}
                           >
-                            {comments.length}
+                            {formatCount(comments.length)}
                           </Typography>
                         </Box>
                       </Button>
@@ -814,6 +827,7 @@ const PostPage = (props: Props) => {
                       height: "100%",
                       width: "40%",
                       minWidth: "300px",
+                      minHeight: "60vh",
                       // minHeight: "400px",
                       maxHeight: "800px",
                       overflow: "auto",
@@ -864,7 +878,73 @@ const PostPage = (props: Props) => {
                         m: 0,
                       }}
                     >
-                      <Box
+                      {editCommentId ?                       <Box
+                        component="form"
+                        onSubmit={handleEditCommentSubmit}
+                        sx={{
+                          display: "flex",
+                          flexFlow: "column wrap",
+                          justifyContent: "center",
+                          width: "100%",
+                          height: "100%",
+                          overflow: "auto",
+                          "&::-webkit-scrollbar":{
+                            display:"none"
+                          },
+                        }}
+                      >
+                        <TextField
+                          sx={{ backgroundColor: "back.light",}}
+                          variant="filled"
+                          autoComplete="edit-comment-field"
+                          required
+                          fullWidth
+                          multiline
+                          maxRows={7}
+                          id="edit-comment-body"
+                          name="edit-comment-body"
+                          label="Edit Comment 📜"
+                          type="text"
+                          onChange={handleEditComment}
+                          value={commentBody}
+                          InputProps={{
+                            // startAdornment: (
+                            //   <InputAdornment position="start">
+                            //     📜
+                            //   </InputAdornment>
+                            // ),
+                            // endAdornment: (
+                            //   <Button
+                            //     type="submit"
+                            //     variant="contained"
+                            //     sx={{ mt: 3, mb: 2 }}
+                            //   >
+                            //     Send
+                            //   </Button>
+                            // ),
+                          }}
+                        />
+
+                          <Box sx={{display:"flex", flexFlow:"row nowrap", width:"100%"}}> 
+                          <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", width:"35%",}}>
+                            <Typography fontFamily={"Lobster"} fontSize="0.75rem" sx={{color:"back.main", border:"2px solid", borderColor:"back.dark", borderRadius: "20px",backgroundColor: "secondary.main", p:1, mt:1,}}>
+                            Edit: {editCommentId}
+                              </Typography>
+                          </Box>
+                          
+
+
+
+                          <Button
+                          type="submit"
+                          variant="contained"
+                          
+                          sx={{ width: "100%", my: 2, mx: 1 }}
+                        >
+                          Send
+                        </Button>
+                        </Box>
+                      </Box> :                       <Box
                         component="form"
                         onSubmit={handleCommentSubmit}
                         sx={{
@@ -892,7 +972,7 @@ const PostPage = (props: Props) => {
                           label="New Comment 📜"
                           type="text"
                           onChange={handleNewComment}
-                          value={newCommentBody}
+                          value={commentBody}
                           InputProps={{
                             // startAdornment: (
                             //   <InputAdornment position="start">
@@ -913,8 +993,8 @@ const PostPage = (props: Props) => {
 
                           <Box sx={{display:"flex", flexFlow:"row nowrap", width:"100%"}}>
                           {currentReplyId && 
-                          <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", width:"35%",}}>
-                            <Typography fontFamily={"Lobster"} fontSize="0.75rem" sx={{border:"2px solid", borderColor:"back.dark", borderRadius: "20px", p:1, mt:1,}}>
+                          <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", width:"35%", }}>
+                            <Typography fontFamily={"Lobster"} fontSize="0.75rem" sx={{color: "back.main", border:"2px solid", borderColor:"back.dark", backgroundColor: "secondary.main", borderRadius: "20px", p:1, mt:1,}}>
                             Reply: {currentReplyId}
                               </Typography>
                           </Box>
@@ -931,7 +1011,7 @@ const PostPage = (props: Props) => {
                           Send
                         </Button>
                         </Box>
-                      </Box>
+                      </Box>  }
                     </Box>
       
                     
@@ -941,12 +1021,13 @@ const PostPage = (props: Props) => {
                         flexFlow: "column nowrap",
                         alignItems: "center",
                         // justifyContent: "center",
+                        minHeight: "60vh",
                         height: "100%",
                         overflow: "auto",
                         border: "2px solid black",
                       }}
                     >
-                      {comments.length > 0 ? (
+                      {loadingComments ? <LoadingComponentIndicator /> :comments.length > 0 ? (
                         comments.map((comment) => (
                           <CommentElement
                             replyStatus={Boolean(comment.parent_id)}
@@ -961,10 +1042,12 @@ const PostPage = (props: Props) => {
                             timePosted={comment.time_posted}
                             currentReplyId={currentReplyId}
                             setCurrentReplyId={setCurrentReplyId}
+                            editCommentId={editCommentId}
+                            setEditCommentId={setEditCommentId}
                             fetchComments={fetchComments}
                           />
                         ))
-                      ) : (
+                      ) :  (
                         <Typography
                           variant="h3"
                           color="secondary.main"

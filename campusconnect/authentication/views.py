@@ -44,7 +44,7 @@ class LoginView(APIView):
                 login(request, user)
                 return JsonResponse({"message": "Login Successful"}, status = 200)
             else:
-                return JsonResponse({"error": "Username and Password combination is incorrect"}, status = 401)
+                return JsonResponse({"error": "Username/Password combination is incorrect"}, status = 401)
         return JsonResponse({"error": "Bad Request"}, status=400)
 
 

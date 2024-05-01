@@ -14,25 +14,61 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import logo from "../assets/CampusConnectLogo.svg";
+import backgroundImg from "../assets/black-and-white-7494005_1280_0Vh3CSJ.jpg";
+import { Link } from "@mui/material";
+import CustomPaletteOptions from "./UI/CustomPaletteOptions";
+
 
 interface Form {
   password: string;
   username: string;
 }
 
-const Login = () => {
+interface LoginProps {
+  setAuth : React.Dispatch<React.SetStateAction<boolean>>
+  setUsername : React.Dispatch<React.SetStateAction<string>>
+}
+
+const Login = (props: LoginProps) => {
+  const {setAuth, setUsername} = props;
   const theme = createTheme({
     palette: {
-      text: {
-        primary: "#e9ecef",
-        secondary: "#8B139C",
+      primary: {
+        main: "#7108d8",
       },
-    },
+      secondary: {
+        main: "#8B139C",
+      },
+      back: {
+        main: "#ced4da",
+        light: "#fff",
+        dark: "#000",
+        contrastText: "purple",
+      },
+    } as CustomPaletteOptions,
   });
 
   const navigate = useNavigate();
 
   const [errorMessage, setErrorMessage] = useState("");
+
+  const checkAuth = async () => {
+    try {
+      let response = await fetch("/api/authentication/isauth", {
+        method: "GET",
+      });
+      if (response.ok) {
+        setAuth(true);
+        response.json().then((value) => setUsername(value.username));
+      } else {
+        setAuth(false);
+      }
+    } catch (error) {
+      console.error("Error checking authentication:", error);
+      // Handle error (e.g., display error message)
+    }
+  };
+
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     // Prevent default behavior for forms. We need this other some browsers (like Firefox) blocks the request.
@@ -59,6 +95,7 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
+        checkAuth();
         navigate("/home");
         console.log("Login successful");
         // Redirect to home page or another action
@@ -79,7 +116,7 @@ const Login = () => {
       <Box
         sx={{
           background: "linear-gradient(to right, #000, #8B139C)",
-          height: "100vh",
+          minHeight: "100vh",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -87,48 +124,46 @@ const Login = () => {
       >
         <CssBaseline />
         <Box
-          component="div"
           sx={{
-            backgroundColor: "text.primary",
-            width: "75%",
-            height: "65%",
+            backgroundColor: "back.main",
+            // width: "65%",
+            minHeight: "95vh",
+            minWidth: "95vw",
             border: "#000 solid 2px",
             borderRadius: "20px",
             display: "flex",
+            mx: 1,
           }}
-        >
-          <Container
-            component="div"
+        > 
+          <Box
             maxWidth="md"
             sx={{
               display: { xs: "none", sm: "none", md: "block" },
-              backgroundImage:
-                "url(https://cdn.pixabay.com/photo/2022/10/02/17/12/black-and-white-7494005_1280.jpg)",
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "cover",
-              height: "100%",
-              border: "#000 solid 1px",
+              minHeight: "90vh",
+              minWidth: "50vw",
+              border: "1px solid #000",
               borderRadius: "10px",
             }}
-          ></Container>
+          >
+            <Box component="img" width="100%" height="100%" src={backgroundImg} sx={{border:"2px solid white", borderRadius:"10px", userSelect:"none",}} ></Box>
+
+          </Box>
                       
           <Container
             sx={{
-              marginTop: 8,
               display: "flex",
-              flexDirection: "column",
+              flexFlow: "column nowrap",
+              justifyContent:"center",
               alignItems: "center",
-              height: "30vh",
+              minHeight: "90vh",
             }}
           >
-            <img width="100" height="100" src={logo} alt="CampusConnect Logo" />
-            <Container
-              component="main"
-              maxWidth="xs"
+            <Box component="img" width="100" height="100" src={logo} alt="CampusConnect Logo" sx={{userSelect:"none",}}  />
+            <Box
               sx={{
                 display: "flex",
                 margin: "0%",
-                backgroundColor: "text.primary",
+                backgroundColor: "back.main",
                 border: "#000 solid 0px",
                 borderRadius: "20px",
                 justifyContent: "center",
@@ -138,11 +173,11 @@ const Login = () => {
               <Typography
                 component="h1"
                 variant="h5"
-                sx={{ fontSize: "2.5rem", color: "#8B139C", fontFamily:"RampartOne" }}
+                sx={{ fontSize: { xs: "2.0rem", sm: "2.0rem", md:"2.5rem"}, color: "secondary.main", fontFamily:"RampartOne", userSelect:"none", }}
               >
                 CampusConnect               
               </Typography>
-            </Container>
+            </Box>
 
             <Box component="main" sx={{ mt: 1, ml: 0 }}>
               {errorMessage && (
@@ -164,7 +199,7 @@ const Login = () => {
                       color="secondary"
                       sx={{
                         input: { color: "#000" },
-                        backgroundColor: "text.primary",
+                        backgroundColor: "back.light",
                         borderColor: "#000",
                         borderWidth: "10px",
                       }}
@@ -182,7 +217,7 @@ const Login = () => {
                       color="secondary"
                       sx={{
                         input: { color: "#000" },
-                        backgroundColor: "text.primary",
+                        backgroundColor: "back.light",
                       }}
                     />
                   </Grid>
@@ -200,7 +235,8 @@ const Login = () => {
                 component="div"
                 sx={{
                   backgroundColor: "#e9ecef",
-                  borderColor: "#8B139A solid 2px",
+                  border:"2px solid",
+                  borderColor: "secondary.main",
                   borderRadius: "20px",
                   width: "80%",
                   mt: "3%",
@@ -218,11 +254,11 @@ const Login = () => {
                   mt: "2%",
                 }}
               >
-                <Typography variant="body1" sx={{ color: "#000" }}>
+                <Typography variant="h6" fontFamily="Lobster" sx={{ color: "#000",}}>
                   Don't have an account?{" "}
-                  <a href="/register" style={{ color: "#8B139A", textDecoration: "underline" }}>
+                  <Link href="/register" sx={{ color: "#1976d2", textDecoration: "underline", "&:hover": {color: "secondary.main"}, }}>
                     Register!
-                  </a>
+                  </Link>
                 </Typography>
               </Container>
             </Box>

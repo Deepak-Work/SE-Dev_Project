@@ -35,6 +35,8 @@ interface MyClubsProps {
   setClubs: (club: Club[] | null) => void;
   followedClubs: Map<number, number>;
   setFollowedClubs: (club: Map<number, number>) => void;
+  followButtonPressed: boolean;
+  setFollowButtonPressed: (value: boolean) => void;
 }
 
 const slideTransition = React.forwardRef(function Transition(
@@ -75,6 +77,8 @@ const MyClubs = (props: MyClubsProps) => {
     setClubs,
     followedClubs,
     setFollowedClubs,
+    followButtonPressed,
+    setFollowButtonPressed,
   } = props;
 
   const fetchFollowedClubs: () => Promise<void> = async () => {
@@ -137,6 +141,7 @@ const MyClubs = (props: MyClubsProps) => {
           }
         }
       });
+      setFollowButtonPressed(true);
     }
   };
 
@@ -199,8 +204,14 @@ const MyClubs = (props: MyClubsProps) => {
             sx={{
               mt: "3%",
               backgroundColor: "primary.main",
+              border:"2px solid",
+              borderColor:"back.dark",
               borderRadius: "20px",
-              minHeight: "95%",
+              height: "95%",
+              overflow:"auto",
+              "&::-webkit-scrollbar": {
+                display: "none",
+              },
             }}
           >
             <Box
@@ -214,7 +225,7 @@ const MyClubs = (props: MyClubsProps) => {
                 <Grid
                   container
                   spacing={0}
-                  sx={{ display: "flex", justifyContent: "center" }}
+                  sx={{ display: "flex", flexFlow:"column nowrap", justifyContent: "center" }}
                 >
                   {clubs.map((club) => (
                     <Grid
@@ -225,7 +236,8 @@ const MyClubs = (props: MyClubsProps) => {
                         margin: 2,
                         display: "flex",
                         backgroundColor: "back.main",
-                        border: "2px back.dark solid",
+                        border: "2px solid",
+                        borderColor:"back.dark",
                         borderRadius: "20px",
                         justifyContent: "space-around",
                         alignItems: "center",
@@ -310,7 +322,9 @@ const MyClubs = (props: MyClubsProps) => {
                           }}
                           onClick={() => ToggleFollow(club.name, club.id)}
                         >
+                          <Typography fontFamily={"cursive"} sx={{color:"back.light"}}>
                           {followedClubs.has(club.id) ? "Unfollow" : "Follow"}
+                          </Typography>
                         </Button>
                       </Box>
                     </Grid>
@@ -319,9 +333,10 @@ const MyClubs = (props: MyClubsProps) => {
               ) : (
                 <Box
                   sx={{
-                    height: "100%",
+                    minHeight: "75vh",
                     display: "flex",
                     flexFlow: "column nowrap",
+                    justifyContent:"center",
                     alignItems: "center",
                   }}
                 >
@@ -329,6 +344,7 @@ const MyClubs = (props: MyClubsProps) => {
                     component="h2"
                     variant="h2"
                     sx={{
+                      alignSelf:"center",
                       color: "back.light",
                       fontFamily: "RampartOne",
                       fontSize: "2rem",

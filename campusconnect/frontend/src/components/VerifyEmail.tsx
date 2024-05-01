@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import VerifyEmailSuccess from "./Utils/VerifyEmailSuccess";
+import VerifyEmailFailure from "./Utils/VerifyEmailFailure";
 
 const VerifyEmail = () => {
   const { uid, token } = useParams();
@@ -25,7 +27,7 @@ const VerifyEmail = () => {
 
   return (
     <div>
-        {isVerified ? <h1>Email verified successfully</h1> : <h1>Email verification failed</h1>}
+        {isVerified ? <VerifyEmailSuccess /> : <VerifyEmailFailure />}
     </div>
   )
 };

@@ -10,6 +10,7 @@ import {
   MenuItem,
   IconButton,
   Tooltip,
+  Menu,
 } from "@mui/material";
 
 import MenuIcon from "@mui/icons-material/Menu";
@@ -36,12 +37,43 @@ interface Club {
 }
 
 const NavBar = ( { username }: Props) => {
+  const settings = ['My Clubs', 'Explore', 'Create a Club', 'Profile Page', 'Logout'];
+  
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = (setting : string) => {
+    setAnchorElUser(null);
+    if(setting === 'My Clubs') {
+      handleMyClubsOpen();
+    }
+    else if(setting === "Explore") {
+      handleExploreOpen();
+    }
+    else if(setting === "Create a Club") {
+      navigate("/club/application");
+    }
+    else if(setting === "Profile Page") {
+      navigate(`/profile/${username}`);
+      window.location.reload()
+    }
+    else if(setting === "Logout") {
+      handleLogout();
+    }
+
+  };
+    
   const navigate = useNavigate();
 
   const [clubs, setClubs] = useState<Club[] | null>([]);
   const [followedClubs, setFollowedClubs] = useState<Map<number, number>>(
     new Map()
   );
+  const [followButtonPressed, setFollowButtonPressed] = useState<boolean>(false);
+  
 
   const fetchFollowedClubs: () => Promise<void> = async () => {
     let response = await fetch(`/api/clubs/followed-clubs`, {
@@ -100,8 +132,11 @@ const NavBar = ( { username }: Props) => {
     fetchFollowedClubsID();
     setExploreOpen(true);
   };
-  const handleExploreClose: () => void = () => setExploreOpen(false);
-
+  const handleExploreClose: () => void = () => {
+    setExploreOpen(false);
+    if(followButtonPressed)
+      window.location.reload();
+  }
 
   const [myClubsOpen, setMyClubsOpen] = useState<boolean>(false);
 
@@ -110,7 +145,11 @@ const NavBar = ( { username }: Props) => {
     fetchFollowedClubs();
     setMyClubsOpen(true);
   };
-  const handleMyClubsClose: () => void = () => setMyClubsOpen(false);
+  const handleMyClubsClose: () => void = () => {
+    setMyClubsOpen(false);
+    if(followButtonPressed)
+      window.location.reload();
+  }
 
   const theme = createTheme({
     palette: {
@@ -149,6 +188,7 @@ const NavBar = ( { username }: Props) => {
           bgcolor: "transparent",
           backgroundImage: "none",
           mt: 2,
+          position:"relative",
         }}
       >
         <Container maxWidth="lg">
@@ -228,7 +268,9 @@ const NavBar = ( { username }: Props) => {
             >
               <Tooltip title="Profile Page">
                 <IconButton
-                  onClick={() => navigate(`/profile/${username}`)}
+                  onClick={() => {
+                    navigate(`/profile/${username}`)
+                    window.location.reload()}}
                   sx={{ color: "white", mr: "5px" }}
                 >
                   <AccountBoxIcon fontSize="large" />
@@ -244,14 +286,43 @@ const NavBar = ( { username }: Props) => {
               </Tooltip>
             </Box>
             <Box sx={{ display: { sm: "", md: "none" } }}>
-              <Button
+              {/* <Button
                 variant="text"
                 color="primary"
                 aria-label="menu"
                 sx={{ minWidth: "30px", p: "4px" }}
               >
+                <MenuIcon /> */}
+                {/* <Box sx={{ flexGrow: 0 }}> */}
+            <Tooltip title="Open settings">
+              <IconButton onClick={handleOpenUserMenu} sx={{ minWidth: "30px", p: "4px" }}>
                 <MenuIcon />
-              </Button>
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((setting) => (
+                <MenuItem key={setting} onClick={() => handleCloseUserMenu(setting)}>
+                  <Typography fontFamily="Lobster" textAlign="center">{setting}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          {/* </Box> */}
+              {/* </Button> */}
             </Box>
           </Toolbar>
         </Container>
@@ -265,6 +336,8 @@ const NavBar = ( { username }: Props) => {
         setClubs={setClubs}
         followedClubs={followedClubs}
         setFollowedClubs={setFollowedClubs}
+        followButtonPressed={followButtonPressed}
+        setFollowButtonPressed={setFollowButtonPressed}
       />
       <MyClubs
         myClubsOpen={myClubsOpen}
@@ -274,6 +347,8 @@ const NavBar = ( { username }: Props) => {
         setClubs={setClubs}
         followedClubs={followedClubs}
         setFollowedClubs={setFollowedClubs}
+        followButtonPressed={followButtonPressed}
+        setFollowButtonPressed={setFollowButtonPressed}
       />
     </ThemeProvider>
   );

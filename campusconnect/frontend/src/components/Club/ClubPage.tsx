@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import {
   Box,
@@ -24,6 +24,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import PeopleIcon from "@mui/icons-material/People";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import NavBar from "../LandingPage/NavBar";
 import PostElement from "../Posts/PostElement";
@@ -31,10 +32,14 @@ import CreatePost from "../Posts/CreatePost";
 import CreateEvent from "../Events/CreateEvent";
 import EventElement from "../Events/EventElement";
 import Members from "./Members";
+import LoadingIndicator from "../Utils/LoadingIndicator";
+import NotAuthorized from "../Utils/NotAuthorized";
+import DisbandClub from "./DisbandClub";
 
 interface Props {
   username: string;
   isAuth: boolean;
+  loading: boolean;
 }
 interface ClubInfo {
   name: string;
@@ -61,18 +66,21 @@ interface Post {
   author: string;
   likes: number;
   dislikes: number;
+  total_comments: number;
 }
 
 interface Event {
   id: number;
-  name: string;
-  description: string;
+  title: string;
+  body: string;
   event_date: string;
   event_time: string;
   time_posted: string;
   author: string;
   likes: number;
   dislikes: number;
+  attendees: number;
+  // total_RSVP: number;
 }
 
 interface CustomPaletteOptions extends PaletteOptions {
@@ -117,6 +125,7 @@ const ClubPage = (props: Props) => {
   });
 
   const { name, id } = useParams();
+  const navigate = useNavigate();
 
   const [clubExists, setClubExists] = useState(false);
   const [clubInfo, setClubInfo] = useState<ClubInfo>({} as ClubInfo);
@@ -147,49 +156,32 @@ const ClubPage = (props: Props) => {
   const handleMembersOpen: () => void = () => setMembersOpen(true);
   const handleMembersClose: () => void = () => setMembersOpen(false);
 
-  // // Explore Modal
-  // const [exploreOpen, setExploreOpen] = useState<boolean>(false);
+// Disband Club Modal
 
-  // const handleExploreOpen: () => void = () => setExploreOpen(true);
-  // const handleExploreClose: () => void = () => setExploreOpen(false);
+const [disbandClubOpen, setDisbandClubOpen] = useState<boolean>(false);
+const handleDisbandClubOpen: () => void = () => setDisbandClubOpen(true);
+const handleDisbandClubClose: () => void = () => setDisbandClubOpen(false);
 
-  // CreatePostsDisplay
-  // const createPostsDisplay = (posts_data: any) => {
-  //   const PostsComponent = posts_data.map((post: any) => (
-  //     <ListItem key={post.id}>
-  //       <PostElement
-  //         username={post.author}
-  //         title={post.title}
-  //         body={post.body}
-  //         time_posted={convertDate(new Date(post.time_posted))}
-  //         likes={post.likes}
-  //         dislikes={post.dislikes}
-  //       />
-  //     </ListItem>
-  //   ));
-  //   const final = <List sx={{ ml: 0 }}>{PostsComponent}</List>;
-  //   setPosts(final);
-  // };
+const handleDisband = async (action: string) => {
+  const headers = {
+    "Content-Type": "application/json",
+    "X-CSRFToken": Cookies.get("csrftoken") || "",
+  };
 
-  // CreatePostsDisplay
-  //  const createEventsDisplay = (events_data: any) => {
-  //   const EventsComponent = events_data.map((event: any) => (
-  //     <ListItem key={event.id}>
-  //       <EventElement
-  //         id={event.id}
-  //         username={event.author}
-  //         name={event.name}
-  //         description={event.description}
-  //         event_time={event.event_time}
-  //         event_date={event.event_date}
-  //         // likes={event.likes}
-  //         // dislikes={event.dislikes}
-  //       />
-  //     </ListItem>
-  //   ));
-  //   const final = <List sx={{ ml: 0 }}>{EventsComponent}</List>;
-  //   setEvents(final);
-  // };
+  if (action === "disband") {
+    let response = await fetch(`/api/clubs/club/${id}/disband`, {
+      method: "DELETE",
+      headers: headers,
+    });
+
+    if (response.ok) {
+      // const data = await response.json();
+      navigate(`/home`);
+    } else {
+      console.log("Club Could Not Be Disbanded");
+    }
+  }
+};
 
   const getFollowStatus = async () => {
     console.log("Checking Follow Status");
@@ -280,6 +272,8 @@ const ClubPage = (props: Props) => {
             image: club_data.image,
             members: club_data.followers,
           };
+          console.log(posts);
+          console.log("events" + events);
           console.log(clubInfo);
           setPosts(posts);
           setEvents(events);
@@ -296,12 +290,14 @@ const ClubPage = (props: Props) => {
     console.log("auth: " + props.isAuth);
   }, [followed]);
 
+  if (!props.isAuth && !props.loading) {
+    return <NotAuthorized />
+  }
+
   return (
     <>
-      {!clubExists || !props.isAuth ? (
-        <p>
-          The club does not exist or you are not authorized to view this page.
-        </p>
+      {!props.isAuth ? (
+        <LoadingIndicator />
       ) : (
         <ThemeProvider theme={theme}>
           <Box
@@ -320,7 +316,7 @@ const ClubPage = (props: Props) => {
             <Paper
               elevation={3}
               sx={{
-                mt: 15,
+                mt: 2,
                 borderRadius: "20px",
                 textAlign: "left",
                 // width: "1000px",
@@ -447,6 +443,12 @@ const ClubPage = (props: Props) => {
                         <SettingsIcon />
                       </IconButton>
                     </Tooltip>
+                    <DisbandClub disbandClubOpen={disbandClubOpen} handleDisbandClubClose={handleDisbandClubClose} handleDisband={handleDisband} />
+                    <Tooltip title="Disband Club">
+                      <IconButton onClick={handleDisbandClubOpen} sx={{ color: "white" }}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
                   </Box>
                 </Box>
               </Box>
@@ -516,7 +518,7 @@ const ClubPage = (props: Props) => {
                             )}
                             likes={post.likes}
                             dislikes={post.dislikes}
-                            totalComments={1}
+                            totalComments={post.total_comments}
                           />
                         </Box>
                       )): (                <Box
@@ -592,12 +594,13 @@ const ClubPage = (props: Props) => {
                           <EventElement
                             id={event.id}
                             username={event.author}
-                            name={event.name}
-                            description={event.description}
+                            title={event.title}
+                            body={event.body}
                             event_time={event.event_time}
                             event_date={event.event_date}
                             likes={event.likes}
                             dislikes={event.dislikes}
+                            total_RSVP={event.attendees}
                           />
                         </Box>
                       )) : (                <Box

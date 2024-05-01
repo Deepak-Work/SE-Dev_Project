@@ -43,3 +43,9 @@ class React(models.Model):
     like = models.BooleanField(default=False)
     dislike = models.BooleanField(default=False)
 
+class CommentReact(models.Model):
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    like = models.BooleanField(default=False)
+    dislike = models.BooleanField(default=False)
+

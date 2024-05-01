@@ -9,8 +9,8 @@ from rest_framework.views import APIView
 from .models import Club, Follow, Role, Membership, AuditLog
 from rest_framework import status
 
-from posts.models import Post
-from event.models import Event
+from posts.models import Post, Comment
+from event.models import Event, EventAttending
 
 from .serializers import ClubSerializer, RoleSerializer, MembershipSerializer
 
@@ -69,18 +69,30 @@ class GetClubView(APIView):
 
         posts = Post.objects.filter(club=id).order_by('-time_posted').values()
         for post in posts:
+            post_obj = Post.objects.get(id=post['id'])
             post['author'] = User.objects.get(id=post['author_id']).username
             post['clubname'] = name
+            post['total_comments'] = Comment.objects.filter(post=post_obj).count()
             del post['author_id']
         
         events = Event.objects.filter(club=id).order_by('-time_posted').values()
         for event in events:
+            event['total_RSVP'] = EventAttending.objects.filter(event=event['id']).count()
             event['author'] = User.objects.get(id=event['author_id']).username
             del event['author_id']
 
         if c:
             return Response({'club_data': c_json, 'posts': posts, 'events': events}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
+    
+class DisbandClubView(APIView):
+    def delete(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            club = Club.objects.get(id=id)
+            club.delete()
+            return Response(status=status.HTTP_200_OK)
     
     
 class GetFollowStatus(APIView):
@@ -134,6 +146,22 @@ class GetClubsView(APIView):
             return Response({'clubs_data': clubs}, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+
+# this is the new function here
+class getClubsByUserView(APIView):
+    def get(self, request):
+        # TODO: Eventually, we'll also have to include events and members associated with this club
+        user = request.user
+        clubs = Follow.objects.filter(user=user).values()
+        for club in clubs:
+            club["club_name"] = Club.objects.get(id=club['club_id']).name
+
+        if clubs:
+            return Response({'clubs_data': clubs}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+        
+
+
 class GetFollowedClubsView(APIView):
     def get(self, request):
         follows = Follow.objects.filter(user=request.user).values("club_id")
@@ -169,7 +197,7 @@ class GetMyEventsView(APIView):
         events_res = []
 
         for e in events:
-            events_res.append({'club': e.club.name, 'name': e.name, 'description': e.description, 'event_date': e.event_date, \
+            events_res.append({'club': e.club.name, 'name': e.title, 'description': e.body, 'event_date': e.event_date, \
                                'event_time': e.event_time, 'author': e.author.username, 'club': e.club.name, 'likes': e.likes, 'dislikes': e.dislikes, 'time_posted': e.time_posted})
 
 

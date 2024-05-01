@@ -23,6 +23,7 @@ import Cookies from "js-cookie";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import CustomPaletteOptions from "../UI/CustomPaletteOptions";
 
 interface User {
   name: string;
@@ -191,6 +192,7 @@ const ProfileSettings = (props: SettingsProps) => {
         usernameErrorMessage: "Username found",
       });
     } else {
+      navigate(`/profile/${username}`)
       window.location.reload();
     }
   };
@@ -244,7 +246,13 @@ const ProfileSettings = (props: SettingsProps) => {
       secondary: {
         main: "#8B139C",
       },
-    },
+      back: {
+        main: "#ced4da",
+        light: "#fff",
+        dark: "#000",
+        contrastText: "purple",
+      },
+    } as CustomPaletteOptions,
   });
 
   return (
@@ -268,7 +276,8 @@ const ProfileSettings = (props: SettingsProps) => {
             background:
               "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
             border: "2px #000 solid",
-            borderRadius: "15px",
+            borderBottom: "3px solid",
+            borderRadius: "15px 15px 0 0",
           }}
         >
           <Container
@@ -285,7 +294,7 @@ const ProfileSettings = (props: SettingsProps) => {
               fontFamily="RampartOne"
               color="white"
             >
-              Edit profile
+              Edit Profile
             </Typography>
           </Container>
         </DialogTitle>
@@ -296,6 +305,8 @@ const ProfileSettings = (props: SettingsProps) => {
             ml: 2,
             mr: 2,
             bgcolor: "primary.main",
+            border: "2px solid",
+            borderColor: "back.dark",
             borderRadius: "20px",
           }}
         >
