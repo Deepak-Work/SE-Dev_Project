@@ -28,6 +28,7 @@ interface Form {
   last_name: string;
 }
 
+
 interface Errors {
   email: boolean;
   password: boolean;

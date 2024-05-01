@@ -18,7 +18,6 @@ import backgroundImg from "../assets/black-and-white-7494005_1280_0Vh3CSJ.jpg";
 import { Link } from "@mui/material";
 import CustomPaletteOptions from "./UI/CustomPaletteOptions";
 
-
 interface Form {
   password: string;
   username: string;

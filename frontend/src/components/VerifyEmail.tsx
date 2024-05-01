@@ -30,6 +30,7 @@ const VerifyEmail = () => {
         {isVerified ? <VerifyEmailSuccess /> : <VerifyEmailFailure />}
     </div>
   )
+  
 };
 
 export default VerifyEmail;

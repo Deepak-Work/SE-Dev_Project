@@ -15,7 +15,6 @@ import LoadingIndicator from "./Utils/LoadingIndicator";
 import EventPage from "./Events/EventPage";
 import PageNotFound from "./Utils/PageNotFound";
 
-
 function App() {
   // Used to keep track of whether the user is currently logged in or not
   const [isAuth, setAuth] = useState(false);
