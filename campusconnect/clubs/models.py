@@ -22,7 +22,7 @@ class Club(models.Model):
     description = models.TextField()
     location = models.CharField(max_length=100)
     email = models.EmailField(max_length=100, unique=True)
-    contact = models.CharField(max_length=10, unique=True)
+    contact = models.CharField(max_length=12, unique=True)
     website = models.URLField()
     # image = models.ImageField(upload_to='clubs', default="/clubs/CampusConnectLogo.svg")
     image = models.ImageField(upload_to='clubs')

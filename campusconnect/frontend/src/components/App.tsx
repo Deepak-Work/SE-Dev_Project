@@ -12,6 +12,8 @@ import Profile from "./Profile/Profile";
 import VerifyEmail from "./VerifyEmail";
 
 import LoadingIndicator from "./Utils/LoadingIndicator";
+import EventPage from "./Events/EventPage";
+import PageNotFound from "./Utils/PageNotFound";
 
 
 function App() {
@@ -37,15 +39,16 @@ function App() {
         } else {
           setAuth(false);
         }
+        setTimeout(() => {
+          setLoading(false);
+      }, 500);
       } catch (error) {
         console.error("Error checking authentication:", error);
         // Handle error (e.g., display error message)
       }
     };
     checkAuth();
-    setTimeout(() => {
-      setLoading(false);
-  }, 500);
+    console.log(isAuth);
   }, []);
 
   if(loading) {
@@ -56,15 +59,17 @@ function App() {
     <div id="root">
       <Router>
         <Routes>
-          <Route path="/" element={<Register /> } />
+          <Route path="/" element={!isAuth? <Login setAuth={setAuth} setUsername={setUsername} /> : <LandingPage username={username} isAuth={isAuth} loading={loading} />  } />
           <Route path="/login" element={<Login setAuth={setAuth} setUsername={setUsername} />} />
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={!isAuth? <LoadingIndicator /> : <LandingPage username={username} isAuth={isAuth} loading={loading} />} />
           <Route path="/club/application" element={<ClubApplication username={username} isAuth={isAuth} loading={loading} />} />
-          <Route path="/club/:name/:id" element={!isAuth? <LoadingIndicator /> : <ClubPage username={username} isAuth={isAuth} loading={loading}/>} />
-          <Route path="/profile/:name" element={!isAuth? <LoadingIndicator /> : <Profile isAuth={isAuth} loading={loading}/>} />
+          <Route path="/club/:name/:id" element={!isAuth? <LoadingIndicator /> : <ClubPage username={username} isAuth={isAuth} loading={loading} />} />
+          <Route path="/profile/:name" element={!isAuth? <LoadingIndicator /> : <Profile username={username} isAuth={isAuth} loading={loading}/>} />
           <Route path="/post/:id" element={!isAuth? <LoadingIndicator /> : <PostPage isAuth={isAuth} username={username} loading={loading}/>} />
+          <Route path="/event/:id" element={!isAuth? <LoadingIndicator /> : <EventPage isAuth={isAuth} username={username} loading={loading}/>} />
           <Route path="/verify-email/:uid/:token" element={<VerifyEmail />} />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Router>
     </div>

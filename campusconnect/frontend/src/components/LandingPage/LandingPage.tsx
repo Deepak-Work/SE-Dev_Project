@@ -7,6 +7,8 @@ import NavBar from "./NavBar";
 import Calendar from "./Calendar";
 import Newsletter from "./Newsletter";
 import LoadingIndicator from "../Utils/LoadingIndicator";
+import CustomPaletteOptions from "../UI/CustomPaletteOptions";
+import NotAuthorized from "../Utils/NotAuthorized";
 
 interface Props {
   username: string;
@@ -15,10 +17,25 @@ interface Props {
 }
 
 const LandingPage = (props: Props) => {
-  const theme = createTheme();
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: "#7108d8",
+      },
+      secondary: {
+        main: "#8B139C",
+      },
+      back: {
+        main: "#ced4da",
+        light: "#fff",
+        dark: "#000",
+        contrastText: "purple",
+      },
+    } as CustomPaletteOptions,
+  });
 
   if (!props.isAuth && !props.loading) {
-    return <p>You are not authorized to view this page.</p>;
+    return <NotAuthorized />;
   }
 
   return (
@@ -43,7 +60,7 @@ const LandingPage = (props: Props) => {
             <NavBar username={props.username} />
 
             <Grid
-              mt={15}
+              mt={0}
               container
               direction="row"
               spacing={2}

@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import { ThemeProvider, Typography, createTheme } from "@mui/material";
 import CustomPaletteOptions from "../UI/CustomPaletteOptions";
 
-const LoadingIndicator = () => {
+const LoadingComponentIndicator = () => {
   const theme = createTheme({
     palette: {
       primary: {
@@ -28,33 +28,23 @@ const LoadingIndicator = () => {
         sx={{
           display: "flex",
           flexFlow: "column nowrap",
-          minHeight: "100vh",
-          minWidth: "100vw",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 10,
-          background:
-            "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
-        }}
-      >
-        <Box         sx={{
-          display: "flex",
-          flexFlow: "column nowrap",
           height: "100%",
           width: "100%",
           justifyContent: "center",
           alignItems: "center",
-          gap: 10,
-        }}>
+          rowGap: 10,
+          background:
+            "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
+        }}
+      >
         <Typography
-          variant="h1"
+          variant="h4"
           color="back.light"
-          sx={{ml: "5px", fontFamily: "RampartOne", wordBreak:"break-all" }}
+          sx={{ml: "5px", mt:-10, fontFamily: "RampartOne" }}
         >
           CampusConnect
         </Typography>
-        <CircularProgress size={200} sx={{ color: "back.light" }} />
-        </Box>
+        <CircularProgress size={100} sx={{ color: "back.light" }} />
       </Box>
     </ThemeProvider>
   );
@@ -64,4 +54,4 @@ const LoadingIndicator = () => {
   }
 };
 
-export default LoadingIndicator;
+export default LoadingComponentIndicator;

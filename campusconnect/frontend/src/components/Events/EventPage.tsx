@@ -17,7 +17,6 @@ import {
   MenuItem,
   TextField,
   Button,
-  CssBaseline,
 } from "@mui/material";
 
 // import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -29,11 +28,13 @@ import NavBar from "../LandingPage/NavBar";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import CommentIcon from "@mui/icons-material/Comment";
-import EditPost from "./EditPost";
-import DeletePost from "./DeletePost";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import EditEvent from "./EditEvent";
+import DeleteEvent from "./DeleteEvent";
 import CommentElement from "../Comments/CommentElement";
 import LoadingIndicator from "../Utils/LoadingIndicator";
-import LoadingComponentIndicator from "../Utils/LoadingComponentIndicator";
+import LoadingCommentsIndicator from "../Utils/LoadingComponentIndicator";
+import standardTime from "../Functions/standardTime";
 import NotAuthorized from "../Utils/NotAuthorized";
 
 interface Props {
@@ -42,35 +43,37 @@ interface Props {
   loading: boolean;
 }
 
-interface PostProps {
+interface EventProps {
   title: string;
   body: string;
-  timePosted: string;
+  eventDate: string;
+  eventTime: string;
+  author: string;
+  clubId: string;
+  clubName: string;
+  clubImage: string;
   likes: number;
   dislikes: number;
-  author: string;
-  summary: string;
-  clubName: string;
-  clubId: string;
-  clubImage: string;
+  timePosted: string;
+  totalRSVP : number;
   // userAvatar: string;
-  postImage: string;
+//   postImage: string;
   // caption: string;
 }
 
-interface Comment {
-  replyStatus: boolean;
-  id: number;
-  parent_id?: number;
-  author: string;
-  reply_author?: string;
-  body: string;
-  reply_body?: string;
-  likes: number;
-  dislikes: number;
-  time_posted: string;
-  author_id: number;
-}
+// interface Comment {
+//   replyStatus: boolean;
+//   id: number;
+//   parent_id?: number;
+//   author: string;
+//   reply_author?: string;
+//   body: string;
+//   reply_body?: string;
+//   likes: number;
+//   dislikes: number;
+//   time_posted: string;
+//   author_id: number;
+// }
 
 interface CustomPaletteOptions extends PaletteOptions {
   back?: {
@@ -81,7 +84,7 @@ interface CustomPaletteOptions extends PaletteOptions {
   };
 }
 
-const PostPage = (props: Props) => {
+const EventPage = (props: Props) => {
   const theme = createTheme({
     palette: {
       primary: {
@@ -104,61 +107,65 @@ const PostPage = (props: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [loadingComments, setLoadingComments] = useState<boolean>(false);
-  const [showComments, setShowComments] = useState<boolean>(false);
-  const [comments, setComments] = useState<Comment[]>([]);
+//   const [loadingComments, setLoadingComments] = useState<boolean>(false);
+//   const [showComments, setShowComments] = useState<boolean>(false);
+//   const [comments, setComments] = useState<Comment[]>([]);
 
-  const [commentBody, setCommentBody] = useState<string>("")
-  const [currentReplyId, setCurrentReplyId] = useState<number | null>(null);
-  const [editCommentId, setEditCommentId] = useState<number | null>(null);
+//   const [commentBody, setCommentBody] = useState<string>("")
+//   const [currentReplyId, setCurrentReplyId] = useState<number | null>(null);
+//   const [editCommentId, setEditCommentId] = useState<number | null>(null);
 
-  const [postInfo, setPostInfo] = useState<PostProps>({} as PostProps);
+  const [eventInfo, setEventInfo] = useState<EventProps>({} as EventProps);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const [editPostOpen, setEditPostOpen] = useState(false);
-  const [deletePostOpen, setDeletePostOpen] = useState(false);
+  const [editEventOpen, setEditEventOpen] = useState(false);
+  const [deleteEventOpen, setDeleteEventOpen] = useState(false);
 
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [isDisliked, setIsDisliked] = useState<boolean>(false);
+  const [isAttending, setIsAttending] = useState<boolean>(false);
 
-  const fetchPost = async () => {
-    let response = await fetch(`/api/posts/post/${id}`, {
+
+  const fetchEvent = async () => {
+    let response = await fetch(`/api/events/event/${id}`, {
       method: "GET",
     });
     if (response.ok) {
       response.json().then((value) => {
-        const posts = value.post_data;
-        const postInfo: PostProps = {
-          body: posts.body,
-          title: posts.title,
-          likes: posts.likes,
-          dislikes: posts.dislikes,
-          author: posts.author,
-          summary: posts.summary,
-          postImage: posts.image,
-          clubName: posts.club_name,
-          clubId: posts.club_id,
-          clubImage: posts.club_image,
-          timePosted: posts.time_posted,
+        const event = value.event_data;
+        console.log(event);
+        const eventInfo: EventProps = {
+          title: event.title,
+          body: event.body,
+          likes: event.likes,
+          dislikes: event.dislikes,
+          author: event.author,
+          clubName: event.club_name,
+          clubId: event.club_id,
+          clubImage: event.club_image,
+          timePosted: event.time_posted,
+          eventDate: event.event_date,
+          eventTime: event.event_time,
+          totalRSVP: event.attendees,
         };
-        setPostInfo(postInfo);
+        setEventInfo(eventInfo);
       });
     } else {
-      console.log("Post Cannot be Loaded");
+      console.log("Event Cannot be Loaded");
     }
   };
   
-  const handleEditPostOpen = () => {
+  const handleEditEventOpen = () => {
     setAnchorEl(null);
-    setEditPostOpen(true);
+    setEditEventOpen(true);
   };
-  const handleEditPostClose = (event?: object, reason?: string) => {
+  const handleEditEventClose = (event?: object, reason?: string) => {
     if (reason == "backdropClick") return;
-    setEditPostOpen(false);
+    setEditEventOpen(false);
   };
 
   const getLikeDislikeStatus = async () => {
-    const response = await fetch(`/api/posts/post/like-dislike/${id}`, {
+    const response = await fetch(`/api/events/event/${id}/like-dislike`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -172,12 +179,12 @@ const PostPage = (props: Props) => {
       });
     }
     console.log("Liked:" +  isLiked + " Disliked:" +isDisliked);
-    // fetchPost();
+    // fetchEvent();
   }
   
   const handleLike = async () => {
     if (!isLiked) {
-      const response = await fetch(`/api/posts/post/${id}/like`, {
+      const response = await fetch(`/api/events/event/${id}/like`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -190,7 +197,7 @@ const PostPage = (props: Props) => {
       }
     }
     else {
-      const response = await fetch(`/api/posts/post/${id}/unlike`, {
+      const response = await fetch(`/api/events/event/${id}/unlike`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -202,12 +209,12 @@ const PostPage = (props: Props) => {
         console.log("Unliked");
       }
     }
-    fetchPost();
+    fetchEvent();
   }
 
   const handleDislike = async () => {
     if (!isDisliked) {
-      const response = await fetch(`/api/posts/post/${id}/dislike`, {
+      const response = await fetch(`/api/events/event/${id}/dislike`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -220,7 +227,7 @@ const PostPage = (props: Props) => {
       }
     }
     else {
-      const response = await fetch(`/api/posts/post/${id}/undislike`, {
+      const response = await fetch(`/api/events/event/${id}/undislike`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -232,29 +239,78 @@ const PostPage = (props: Props) => {
         console.log("Undisliked");
       }
   }
-  fetchPost();
+  fetchEvent();
 }
 
-  const handleDeletePostOpen = () => {
-    setDeletePostOpen(true);
+const isUserAttending: () => Promise<void> = async () => {
+    //TODO : Check if current user is attending the event specified in this card...
+
+    // return true;
+    console.log("Checking Attending Status");
+    const response = await fetch(`/api/events/event/${id}/attending-status`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorzation: `Bearer ${Cookies.get("token")}`,
+      },
+    });
+    if (response.ok) {
+      response.json().then((value) => {
+        console.log(value);
+        setIsAttending(value.attending_status);
+      });
+    }
+  };
+
+  const handleAttending = async () => {
+    if (!isAttending) {
+      const response = await fetch(`/api/events/event/${id}/attend`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsAttending(true);
+        console.log("Attending");
+      }
+    } else {
+      const response = await fetch(`/api/events/event/${id}/unattend`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorzation: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      if (response.ok) {
+        setIsAttending(false);
+        console.log("Unattending");
+      }
+    }
+    fetchEvent();
+  }
+
+  const handleDeleteEventOpen = () => {
+    setDeleteEventOpen(true);
     setAnchorEl(null);
   };
-  const handleDeletePostClose = () => {
-    setDeletePostOpen(false);
+  const handleDeleteEventClose = () => {
+    setDeleteEventOpen(false);
   };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = async (action: string) => {
+  const handleEventClose = async (action: string) => {
     const headers = {
       "Content-Type": "application/json",
       "X-CSRFToken": Cookies.get("csrftoken") || "",
     };
 
     if (action === "delete") {
-      let response = await fetch(`/api/posts/post/${id}/delete`, {
+      let response = await fetch(`/api/events/event/${id}/delete`, {
         method: "DELETE",
         headers: headers,
       });
@@ -264,126 +320,126 @@ const PostPage = (props: Props) => {
         const { club_name, club_id } = data;
         navigate(`/club/${club_name}/${club_id}`);
       } else {
-        console.log("Post Could Not Be Deleted");
+        console.log("Event Could Not Be Deleted");
       }
     }
     setAnchorEl(null);
   };
 
-  const fetchComments = async (postId: number) => {
-    const headers = {
-      // "Content-Type":"application/json",
-      "X-CSRFToken": Cookies.get("csrftoken") || "",
-    };
+//   const fetchComments = async (postId: number) => {
+//     const headers = {
+//       // "Content-Type":"application/json",
+//       "X-CSRFToken": Cookies.get("csrftoken") || "",
+//     };
 
-    let response = await fetch(`/api/posts/post/${postId}/comments`, {
-      method: "GET",
-      headers: headers,
-    });
+//     let response = await fetch(`/api/event/post/${postId}/comments`, {
+//       method: "GET",
+//       headers: headers,
+//     });
 
-    if (response.ok) {
-      const data = await response.json();
-      setComments(data.comments_data);
-    }
-  };
-
-
-  const toggleComments = () => {
-    if (!showComments) {
-      fetchComments(Number(id));
-    }
-    setShowComments(!showComments);
-  };
+//     if (response.ok) {
+//       const data = await response.json();
+//       setComments(data.comments_data);
+//     }
+//   };
 
 
-  const handleCommentSubmit: (
-    event: FormEvent<HTMLFormElement>
-  ) => void = async (event) => {
-    event.preventDefault();
+//   const toggleComments = () => {
+//     if (!showComments) {
+//       fetchComments(Number(id));
+//     }
+//     setShowComments(!showComments);
+//   };
+
+
+//   const handleCommentSubmit: (
+//     event: FormEvent<HTMLFormElement>
+//   ) => void = async (event) => {
+//     event.preventDefault();
     
-    setLoadingComments(true);
+//     setLoadingComments(true);
 
-    // const data = new FormData(event.currentTarget);
+//     // const data = new FormData(event.currentTarget);
 
-    const form = new FormData();
+//     const form = new FormData();
 
-    form.append("body", commentBody as string);
-    form.append("reply_id", currentReplyId?.toString() as string);
+//     form.append("body", commentBody as string);
+//     form.append("reply_id", currentReplyId?.toString() as string);
 
-    const headers = {
-      "X-CSRFToken": Cookies.get("csrftoken") || "",
-    };
+//     const headers = {
+//       "X-CSRFToken": Cookies.get("csrftoken") || "",
+//     };
 
-    const response: Response = await fetch(
-      `/api/posts/post/${id}/comment/new`,
-      {
-        method: "POST",
-        headers: headers,
-        body: form,
-      }
-    );
+//     const response: Response = await fetch(
+//       `/api/event/post/${id}/comment/new`,
+//       {
+//         method: "POST",
+//         headers: headers,
+//         body: form,
+//       }
+//     );
 
-    if (response.ok) {
-      setCommentBody("");
-      setCurrentReplyId(null);
-      setEditCommentId(null);
+//     if (response.ok) {
+//       setCommentBody("");
+//       setCurrentReplyId(null);
+//       setEditCommentId(null);
 
-      setComments([]);
-      fetchComments(Number(id));
-    }
+//       setComments([]);
+//       fetchComments(Number(id));
+//     }
 
-    setTimeout(() => {setLoadingComments(false)}, 400);
-  };
+//     setTimeout(() => {setLoadingComments(false)}, 400);
+//   };
 
-  const handleNewComment: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=> void  =
-  (event) => {
-    setCommentBody(event.currentTarget.value);
-  }
+//   const handleNewComment: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=> void  =
+//   (event) => {
+//     setCommentBody(event.currentTarget.value);
+//   }
 
-  const handleEditComment: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=> void  =
-  (event) => {
-    setCommentBody(event.currentTarget.value);
-  }
+//   const handleEditComment: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=> void  =
+//   (event) => {
+//     setCommentBody(event.currentTarget.value);
+//   }
 
-  const handleEditCommentSubmit: (
-    event: FormEvent<HTMLFormElement>,
-  ) => void = async (event) => {
-    event.preventDefault();
+//   const handleEditCommentSubmit: (
+//     event: FormEvent<HTMLFormElement>,
+//   ) => void = async (event) => {
+//     event.preventDefault();
 
-    // const data = new FormData(event.currentTarget);
+//     // const data = new FormData(event.currentTarget);
 
-    const form = new FormData();
-    // form.append("body", data.get("new-comment-body") as string);
-    form.append("body", commentBody as string);
-    // form.append("reply_id", currentReplyId?.toString() as string);
+//     const form = new FormData();
+//     // form.append("body", data.get("new-comment-body") as string);
+//     form.append("body", commentBody as string);
+//     // form.append("reply_id", currentReplyId?.toString() as string);
 
-    const headers = {
-      "X-CSRFToken": Cookies.get("csrftoken") || "",
-    };
+//     const headers = {
+//       "X-CSRFToken": Cookies.get("csrftoken") || "",
+//     };
 
-    const response: Response = await fetch(
-      `/api/posts/comment/${editCommentId}/edit`,
-      {
-        method: "PUT",
-        headers: headers,
-        body: form,
-      }
-    );
+//     const response: Response = await fetch(
+//       `/api/event/comment/${editCommentId}/edit`,
+//       {
+//         method: "PUT",
+//         headers: headers,
+//         body: form,
+//       }
+//     );
 
-    if (response.ok) {
-      setEditCommentId(null);
-      setCommentBody("");
-      setCurrentReplyId(null);
-      fetchComments(Number(id));
-    }
-  };
+//     if (response.ok) {
+//       setEditCommentId(null);
+//       setCommentBody("");
+//       setCurrentReplyId(null);
+//       fetchComments(Number(id));
+//     }
+//   };
 
   useEffect(() => {
-    fetchPost();
+    fetchEvent();
     getLikeDislikeStatus();
-    fetchComments(Number(id));
+    isUserAttending();
+    // fetchComments(Number(id));
   }, []);
-
 
   if (!props.isAuth && !props.loading) {
     return <NotAuthorized />;
@@ -395,14 +451,13 @@ const PostPage = (props: Props) => {
         <LoadingIndicator />
       ) : (
         <ThemeProvider theme={theme}>
-          <CssBaseline />
           <Box
             sx={{
               width: "100%",
               display: "flex",
               overflow: "auto",
               minHeight: "100vh",
-              alignItems: "center",
+              alignItems: "flex-start",
               justifyContent: "center",
               flexFlow: "column nowrap",
               backgroundColor: "#1e1e1e",
@@ -418,7 +473,6 @@ const PostPage = (props: Props) => {
 
             <NavBar username={username} />
             </Box>
-
             <Box
               sx={{
                 width: "100%",
@@ -484,7 +538,7 @@ const PostPage = (props: Props) => {
                       my: 1,
                     }}
                     // alt="Club image"
-                    src={postInfo.clubImage}
+                    src={eventInfo.clubImage}
                   />
                   <Typography
                     ml={0}
@@ -493,7 +547,7 @@ const PostPage = (props: Props) => {
                     color="white"
                     fontFamily={"RampartOne"}
                     onClick={() =>
-                      navigate(`/club/${postInfo.clubName}/${postInfo.clubId}`)
+                      navigate(`/club/${eventInfo.clubName}/${eventInfo.clubId}`)
                     }
                     sx={{
                       color: "back.light",
@@ -504,7 +558,7 @@ const PostPage = (props: Props) => {
                       "&:hover": { color: "back.main" },
                     }}
                   >
-                    {postInfo.clubName}
+                    {eventInfo.clubName}
                   </Typography>
                 </Box>
               </Paper>
@@ -565,7 +619,7 @@ const PostPage = (props: Props) => {
                       fontFamily={"Lobster"}
                       sx={{ pt: 1, pl: 3 }}
                     >
-                      {postInfo.title}
+                      {eventInfo.title}
                     </Typography>
 
                     <Typography
@@ -575,8 +629,8 @@ const PostPage = (props: Props) => {
                       fontFamily={"Lobster"}
                       sx={{ pt: 1, pl: 3 }}
                     >
-                      {postInfo.author} -{" "}
-                      {convertDate(new Date(postInfo.timePosted))}
+                      {eventInfo.author} -{" Event Time: "} {eventInfo.eventDate} @ {standardTime(eventInfo.eventTime)}
+                      {/* {convertDate(new Date(eventInfo.timePosted))} */}
                     </Typography>
                   </Box>
                   <Box
@@ -604,16 +658,16 @@ const PostPage = (props: Props) => {
                         whiteSpace: "pre-line",
                       }}
                     >
-                      {postInfo.body}
+                      {eventInfo.body}
                     </Typography>
-                    {postInfo.postImage && (
+                    {/* {eventInfo.postImage && (
                       <Box
                         component="img"
                         width={300}
                         height={300}
-                        src={postInfo.postImage}
+                        src={eventInfo.postImage}
                       ></Box>
-                    )}
+                    )} */}
                   </Box>
                   <Box
                     sx={{
@@ -673,7 +727,7 @@ const PostPage = (props: Props) => {
                             fontFamily={"Lobster"}
                             sx={{ color: "back.light" }}
                           >
-                            {formatCount(postInfo.likes)}
+                            {formatCount(eventInfo.likes)}
                           </Typography>
                         </Box>
                       </Button>
@@ -720,12 +774,12 @@ const PostPage = (props: Props) => {
                             fontFamily={"Lobster"}
                             sx={{ color: "back.light" }}
                           >
-                            {formatCount(postInfo.dislikes)}
+                            {formatCount(eventInfo.dislikes)}
                           </Typography>
                         </Box>
                       </Button>
                       <Button
-                        onClick={() => toggleComments()}
+                        onClick={() => handleAttending()}
                         sx={{
                           display: "flex",
                           margin: 2,
@@ -737,7 +791,7 @@ const PostPage = (props: Props) => {
                         }}
                       >
                         <IconButton aria-label="dislike post">
-                          <CommentIcon />
+                          {isAttending ? <ReceiptLongIcon sx={{color: "primary.main"}} /> : <ReceiptLongIcon />}
                         </IconButton>
                         <Typography
                           color="primary.main"
@@ -745,7 +799,7 @@ const PostPage = (props: Props) => {
                           fontFamily={"Lobster"}
                           sx={{}}
                         >
-                          Comments{" "}
+                          RSVPs{" "}
                         </Typography>
 
                         <Box
@@ -764,7 +818,7 @@ const PostPage = (props: Props) => {
                             fontFamily={"Lobster"}
                             sx={{ color: "back.light" }}
                           >
-                            {formatCount(comments.length)}
+                            {formatCount(eventInfo.totalRSVP)}
                           </Typography>
                         </Box>
                       </Button>
@@ -797,27 +851,27 @@ const PostPage = (props: Props) => {
                       id="three-dotted-menu"
                       anchorEl={anchorEl}
                       open={Boolean(anchorEl)}
-                      onClose={() => handleClose("")}
+                      onClose={() => handleEventClose("")}
                     >
-                      <MenuItem onClick={() => handleEditPostOpen()}>
+                      <MenuItem onClick={() => handleEditEventOpen()}>
                         <Typography fontFamily={"Lobster"}>
-                          Edit Post
+                          Edit Event
                         </Typography>
                       </MenuItem>
                       {/* <MenuItem onClick={() => handleClose("delete")}> */}
                       <MenuItem
                         onClick={() => {
-                          handleDeletePostOpen();
+                          handleDeleteEventOpen();
                         }}
                       >
                         <Typography fontFamily={"Lobster"}>
-                          Delete Post
+                          Delete Event
                         </Typography>
                       </MenuItem>
                     </Menu>
                   </Box>
                 </Paper>
-                {showComments && (
+                {/* {showComments && (
                   <Paper
                     elevation={0}
                     sx={{
@@ -1027,7 +1081,7 @@ const PostPage = (props: Props) => {
                         border: "2px solid black",
                       }}
                     >
-                      {loadingComments ? <LoadingComponentIndicator /> :comments.length > 0 ? (
+                      {loadingComments ? <LoadingCommentsIndicator /> :comments.length > 0 ? (
                         comments.map((comment) => (
                           <CommentElement
                             replyStatus={Boolean(comment.parent_id)}
@@ -1039,7 +1093,7 @@ const PostPage = (props: Props) => {
                             replyBody={comment.reply_body}
                             likes={comment.likes}
                             dislikes={comment.dislikes}
-                            timePosted={comment.time_posted}
+                            timeEvented={comment.time_posted}
                             currentReplyId={currentReplyId}
                             setCurrentReplyId={setCurrentReplyId}
                             editCommentId={editCommentId}
@@ -1060,17 +1114,17 @@ const PostPage = (props: Props) => {
                       )}
                     </Box>
                   </Paper>
-                )}
+                )} */}
               </Box>
 
-              <EditPost
-                editPostOpen={editPostOpen}
-                handleEditPostClose={handleEditPostClose}
+              <EditEvent
+                editEventOpen={editEventOpen}
+                handleEditEventClose={handleEditEventClose}
               />
-              <DeletePost
-                deletePostOpen={deletePostOpen}
-                handleDeletePostClose={handleDeletePostClose}
-                handleClose={handleClose}
+              <DeleteEvent
+                deleteEventOpen={deleteEventOpen}
+                handleDeleteEventClose={handleDeleteEventClose}
+                handleEventClose={handleEventClose}
               />
               <Grid item></Grid>
             </Box>
@@ -1082,4 +1136,4 @@ const PostPage = (props: Props) => {
 };
 
 
-export default PostPage;
+export default EventPage;

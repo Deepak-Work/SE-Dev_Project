@@ -99,7 +99,10 @@ const Members = (props: MembersProps) => {
             background:
               "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
             border: "2px #000 solid",
-            borderRadius: "15px",
+            borderBottom:"4px solid",
+            borderRadius: "15px 15px 0 0",
+            // borderBottomLeftRadius:"0px",
+            // borderBottomRightRadius:"0px",
           }}
         >
           <Container
@@ -122,19 +125,33 @@ const Members = (props: MembersProps) => {
         </DialogTitle>
         <DialogContent
           sx={{
-            mt: 2,
-            mb: 2,
-            ml: 2,
-            mr: 2,
-            bgcolor: "primary.main",
-            borderRadius: "20px",
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
           }}
         >
+                    <Box
+            sx={{
+              mt: "3%",
+              display:"flex",
+              justifyContent:"center",
+              alignItems:"start",
+              backgroundColor: "primary.main",
+              border:"2px solid",
+              borderColor:"back.dark",
+              borderRadius: "20px",
+              height: "95%",
+              overflow:"auto",
+              "&::-webkit-scrollbar": {
+                display: "none",
+              },
+            }}
+          >
   {members && members.length != 0 ? (
     <Grid
       container
       spacing={0}
-      sx={{ display: "flex", justifyContent: "center" }}
+      sx={{ display: "flex", justifyContent: "center",  }}
     >
       {members.map((member) => (
         <Grid
@@ -145,7 +162,8 @@ const Members = (props: MembersProps) => {
             margin: 2,
             display: "flex",
             backgroundColor: "back.main",
-            border: "2px back.dark solid",
+            border: "2px solid",
+            borderColor:"back.dark",
             borderRadius: "20px",
             justifyContent: "space-around",
             alignItems: "center",
@@ -172,7 +190,7 @@ const Members = (props: MembersProps) => {
                 variant="h5"
                 onClick={() => {
                   navigate(`/profile/${member.username}`)
-                  location.reload();
+                  window.location.reload();
                 }
                   
                 }
@@ -196,9 +214,10 @@ const Members = (props: MembersProps) => {
   ) : (
     <Box
       sx={{
-        height: "100%",
+        minHeight: "49vh",
         display: "flex",
         flexFlow: "column nowrap",
+        justifyContent:"center",
         alignItems: "center",
       }}
     >
@@ -206,6 +225,7 @@ const Members = (props: MembersProps) => {
         component="h2"
         variant="h2"
         sx={{
+          alignSelf:"center",
           color: "back.light",
           fontFamily: "RampartOne",
           fontSize: "2rem",
@@ -215,7 +235,7 @@ const Members = (props: MembersProps) => {
       </Typography>
     </Box>
   )}
-
+</Box>
         </DialogContent>
       </Dialog>
     </ThemeProvider>

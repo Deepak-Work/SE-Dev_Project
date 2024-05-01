@@ -18,6 +18,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import logo from "../../assets/CampusConnectLogo.svg";
 import NavBar from "../LandingPage/NavBar";
 import LoadingIndicator from "../Utils/LoadingIndicator";
+import NotAuthorized from "../Utils/NotAuthorized";
 
 // Club Name
 // Club Description
@@ -203,7 +204,7 @@ const CreateClub = (props: Props) => {
   };
 
   if (!props.isAuth && !props.loading) {
-    return <p>You are not authorized to view this page.</p>;
+    return <NotAuthorized />;
   }
 
   return (
@@ -214,7 +215,7 @@ const CreateClub = (props: Props) => {
     <ThemeProvider theme={defaultTheme}>
       <Box
         sx={{
-          height: "100vh",
+          minHeight: "100vh",
           display: "flex",
           flexFlow: "column nowrap",
           // gap: 10,
@@ -284,7 +285,7 @@ const CreateClub = (props: Props) => {
                     required
                     fullWidth
                     id="name"
-                    label="Club Name"
+                    label="Club Name (≤ 100 Characters)"
                     autoFocus
                   />
                 </Grid>
@@ -300,14 +301,14 @@ const CreateClub = (props: Props) => {
                         : ""
                     }
                     inputProps={{ maxLength: 500 }}
-                    autoComplete="club-description"
+                    autoComplete="club-description "
                     multiline
                     fullWidth
                     rows={4}
                     required
                     name="description"
                     id="description"
-                    label="Club Description"
+                    label="Club Description (≤ 500 Characters)"
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -319,7 +320,7 @@ const CreateClub = (props: Props) => {
                     fullWidth
                     id="location"
                     name="location"
-                    label="Club Location"
+                    label="Club Location (≤ 100 Characters)"
                     type="text"
                     InputProps={{
                       startAdornment: (
@@ -342,7 +343,7 @@ const CreateClub = (props: Props) => {
                     fullWidth
                     id="email"
                     name="email"
-                    label="Club Email"
+                    label="Club Email (≤ 100 Characters)"
                     type="email"
                     InputProps={{
                       startAdornment: (
@@ -359,7 +360,7 @@ const CreateClub = (props: Props) => {
                     fullWidth
                     id="website"
                     name="website"
-                    label="Club Website"
+                    label="Club Website (http(s)://example.com)"
                     type="url"
                     InputProps={{
                       startAdornment: (
@@ -379,6 +380,10 @@ const CreateClub = (props: Props) => {
                     name="contact"
                     label="Club Contact"
                     type="tel"
+                    placeholder="XXX-XXX-XXXX"
+                    inputProps={{
+                      pattern:"[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                    }}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">📞</InputAdornment>

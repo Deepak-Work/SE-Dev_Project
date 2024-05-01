@@ -1,13 +1,38 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Post, Comment, React
+from .models import Post, Comment, React, CommentReact
 from rest_framework import status
 from django.contrib.auth.models import User
 
-from clubs.models import Club, AuditLog
+from clubs.models import Club, AuditLog, Follow
 
 from .serializers import PostSerializer, CommentSerializer
 
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.summarizers.lsa import LsaSummarizer
+import nltk
+nltk.download('punkt')
+
+
+def generate_summary(input_text):
+    if len(input_text) < 255:
+        return input_text
+    
+    # Parse the input text
+    parser = PlaintextParser.from_string(input_text, Tokenizer("english"))
+
+    # Create an LSA summarizer
+    summarizer = LsaSummarizer()
+
+    # Generate the summary
+    summary = summarizer(parser.document, sentences_count=4)  # You can adjust the number of sentences in the summary
+
+    # Output the summary
+    result = ''
+    for sentence in summary:
+        result += str(sentence) + " "
+    return result
 
 # Post Views Functions here
 class CreatePostView(APIView):
@@ -21,10 +46,11 @@ class CreatePostView(APIView):
             body = serializer.data.get('body')
             image = request.data.get("image")
             club = Club.objects.get(id=request.data['id'])
-            post = Post.objects.create(title=title, author=author, body=body, club=club, image=image)
-            
-            # TODO: Add post image and summary of post            
+            summary = generate_summary(body)
+
+            post = Post.objects.create(title=title, author=author, body=body, club=club, image=image, summary=summary)         
             post.save()
+
             log = AuditLog.objects.create(club=club, action="Created", item="Post: " + title, user=request.user)
             log.save()
             return Response(status=status.HTTP_201_CREATED)
@@ -59,6 +85,34 @@ class GetPostView(APIView):
         return Response(status=status.HTTP_404_NOT_FOUND)
     
 
+# this is the new function
+# class getPostsByClubView(APIView):
+#     def get(self, request, id):
+#         id = id.split(",")
+#         print(id, type(id))
+#         if id is None:
+#             posts = Post.objects.order_by('-time_posted').values()
+#         elif type(id) is list:
+#             posts = Post.objects.filter(club__in=id).order_by('-time_posted').values()
+#         else:
+#             posts = Post.objects.filter(club=id).order_by('-time_posted').values()
+#         if posts:
+#             return Response({'posts_data': posts}, status=status.HTTP_200_OK)
+#         return Response(status=status.HTTP_404_NOT_FOUND)
+
+class getPostsByClubView(APIView):
+    def get(self, request):
+        # clubs = Follow.objects.filter(user=request.user)
+        clubs = Club.objects.filter(follow__user = request.user)
+        posts_by_club = []
+        for club in clubs:
+            posts = Post.objects.filter(club=club).order_by('-time_posted').values()
+            for post in posts:
+                post['author'] = User.objects.get(id=post['author_id']).username
+            posts_by_club.append({"club_posts" : posts, "club_id": club.id, "club_name" : club.name, "club_image" : club.image.url})
+        if clubs:
+            return Response({'posts_by_club' :  posts_by_club}, status= status.HTTP_200_OK) 
+        return Response(status= status.HTTP_404_NOT_FOUND); 
 
 
 class EditPostView(APIView):        
@@ -71,12 +125,7 @@ class EditPostView(APIView):
             post.title = serializer.data.get('title')
             post.body = serializer.data.get('body')
             post.image = request.data.get('image')
-            # if serializer.data.get('title'):
-            #     post.title = serializer.data.get('title')
-            # if serializer.data.get('body'):
-            #     post.body = serializer.data.get('body')
-            # if serializer.data.get('image'):
-            #     post.image = serializer.data.get('image')
+            post.summary = generate_summary(serializer.data.get('body'))
             post.save()
         else:
             print("Serializer invalid - Edit")
@@ -220,14 +269,20 @@ class GetCommentsView(APIView):
             return Response({'comments_data': comments}, status=status.HTTP_200_OK)
 
 class EditCommentView(APIView):
-    def put(self, request, instance_id, validated_data):
-        instance = Comment.objects.get(id=instance_id)
+    serializer_class = CommentSerializer
+
+    def put(self, request, id):
+        serializer_class = self.serializer_class(data=request.data)
+        instance = Comment.objects.get(id=id)
         if id is None:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         else:
-            instance.body = validated_data.get('body', instance.body)
-            instance.save()
-            return Response(status=status.HTTP_200_OK)
+            if serializer_class.is_valid():
+                # instance.body = validated_data.get('body', instance.body)
+                instance.body = serializer_class.data.get("body")
+                instance.save()
+                return Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class DeleteCommentView(APIView):
     def delete(self, request, id):
@@ -252,7 +307,90 @@ class ReplyCommentView(APIView):
             return Response(status=status.HTTP_201_CREATED)
         
         return Response(status=status.HTTP_400_BAD_REQUEST)
-           
+
+class LikeDislikeCommentView(APIView):
+    def get(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            comment = Comment.objects.get(id=id)
+            print(CommentReact.objects.filter(user=request.user, comment=comment).exists())
+            if CommentReact.objects.filter(user=request.user, comment=comment).exists():
+                reaction = CommentReact.objects.get(user=request.user, comment=comment)
+                return Response({'like_status':reaction.like, 'dislike_status':reaction.dislike}, status=status.HTTP_200_OK)
+            else:
+                return Response({'like_status':False, 'dislike_status':False}, status=status.HTTP_200_OK)
+
+class LikeCommentView(APIView):
+    def get(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            comment = Comment.objects.get(id=id)
+            comment.likes += 1
+            comment.save()
+            if CommentReact.objects.filter(user=request.user, comment=comment).exists():
+                reaction = CommentReact.objects.get(user=request.user, comment=comment)
+                reaction.like = True
+                reaction.save()
+            else:
+                reaction = CommentReact.objects.create(user=request.user, comment=comment, like=True)
+                reaction.save()                
+            return Response(status=status.HTTP_200_OK)
+
+class UnlikeCommentView(APIView):
+    def get(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            comment = Comment.objects.get(id=id)
+            comment.likes -= 1
+            comment.save()
+            if CommentReact.objects.filter(user=request.user, comment=comment).exists():
+                reaction = CommentReact.objects.get(user=request.user, comment=comment)
+                reaction.like = False
+                reaction.save()
+            else:
+                reaction = CommentReact.objects.create(user=request.user, comment=comment, like=False)
+                reaction.save()
+            return Response(status=status.HTTP_200_OK)
+
+class DislikeCommentView(APIView):
+    def get(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            comment = Comment.objects.get(id=id)
+            comment.dislikes += 1
+            comment.save()
+            if CommentReact.objects.filter(user=request.user, comment=comment).exists():
+                reaction = CommentReact.objects.get(user=request.user, comment=comment)
+                reaction.dislike = True
+                reaction.save()
+            else:
+                reaction = CommentReact.objects.create(user=request.user, comment=comment, dislike=True)
+                reaction.save()
+            return Response(status=status.HTTP_200_OK)
+        
+class UndislikeCommentView(APIView):
+    def get(self, request, id):
+        if id is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            comment = Comment.objects.get(id=id)
+            comment.dislikes -= 1
+            comment.save()
+            if CommentReact.objects.filter(user=request.user, comment=comment).exists():
+                reaction = CommentReact.objects.get(user=request.user, comment=comment)
+                reaction.dislike = False
+                reaction.save()
+            else:
+                reaction = CommentReact.objects.create(user=request.user, comment=comment, dislike=False)
+                reaction.save()
+            return Response(status=status.HTTP_200_OK)
+
+
+
         
 # this is a potential way to get comment threads
 class GetCommentThreadsView(APIView):
