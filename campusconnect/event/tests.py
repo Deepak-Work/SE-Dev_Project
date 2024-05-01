@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
-from events.models import Event
-from events.serializers import EventSerializer
+from event.models import Event
+from event.serializers import EventSerializer
 from django.contrib.auth.models import User
 
 class EventTests(TestCase):

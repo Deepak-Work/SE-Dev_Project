@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
-from profile.models import Profile
-from profile.serializers import UsernameSerializer, PasswordSerializer
+from prof.models import Profile
+from prof.serializers import UsernameSerializer, PasswordSerializer
 from django.contrib.auth.models import User
 
 class ProfileTests(TestCase):
