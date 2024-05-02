@@ -306,6 +306,7 @@ const handleDisband = async (action: string) => {
               display: "flex",
               overflow: "auto",
               minHeight: "100vh",
+              minWidth: "60vw",
               alignItems: "center",
               flexDirection: "column",
               background:
