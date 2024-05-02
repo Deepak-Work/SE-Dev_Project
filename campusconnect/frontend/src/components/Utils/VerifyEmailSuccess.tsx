@@ -4,7 +4,7 @@ import CustomPaletteOptions from "../UI/CustomPaletteOptions";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const VerifyEmailFailure = () => {
+const VerifyEmailSuccess = () => {
   const theme = createTheme({
     palette: {
       primary: {
@@ -66,4 +66,4 @@ const VerifyEmailFailure = () => {
   }
 };
 
-export default VerifyEmailFailure;
+export default VerifyEmailSuccess;

@@ -1021,8 +1021,9 @@ const PostPage = (props: Props) => {
                         flexFlow: "column nowrap",
                         alignItems: "center",
                         // justifyContent: "center",
-                        minHeight: "60vh",
-                        height: "100%",
+                        minHeight: "47.5vh",
+                        // maxHeight: "47.5vh",
+                        // height: "100%",
                         overflow: "auto",
                         border: "2px solid black",
                       }}
