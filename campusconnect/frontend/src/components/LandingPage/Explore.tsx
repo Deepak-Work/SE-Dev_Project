@@ -7,18 +7,15 @@ import {
   Button,
   Box,
   Grid,
-  createTheme,
   ThemeProvider,
-  Slide,
   Link,
-  useMediaQuery,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 
-import CustomPaletteOptions from "../UI/CustomPaletteOptions";
-import { TransitionProps } from "@mui/material/transitions";
-import React from "react";
 import { useNavigate } from "react-router-dom";
+
+import theme from "../UI/theme";
+import slideTransition from "../UI/slideTransition";
 
 interface Club {
   id: number;
@@ -26,12 +23,6 @@ interface Club {
   member_count: number;
   image: string | null;
 }
-
-// interface ClubInfo {
-//   name: string;
-//   member_count: number;
-//   image:
-// }
 
 interface ExploreProps {
   exploreOpen: boolean;
@@ -45,48 +36,20 @@ interface ExploreProps {
   setFollowButtonPressed: (value: boolean) => void;
 }
 
-const slideTransition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>;
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="down" ref={ref} {...props} />;
-});
-
 const Explore = (props: ExploreProps) => {
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#7108d8",
-      },
-      secondary: {
-        main: "#8B139C",
-      },
-      back: {
-        main: "#ced4da",
-        light: "#fff",
-        dark: "#000",
-        contrastText: "purple",
-      },
-    } as CustomPaletteOptions,
-  });
-
   const navigate = useNavigate();
 
   const {
     exploreOpen,
-    handleExploreOpen,
     handleExploreClose,
     clubs,
     setClubs,
     followedClubs,
     setFollowedClubs,
-    followButtonPressed,
     setFollowButtonPressed,
   } = props;
 
-  const[memberUpdated, setMemberUpdated] = useState<Object>({});
+  const [memberUpdated, setMemberUpdated] = useState<Object>({});
 
   const fetchFollowedClubsID: () => Promise<void> = async () => {
     let response = await fetch(`/api/clubs/followed-clubs`, {
@@ -162,8 +125,6 @@ const Explore = (props: ExploreProps) => {
     }
   };
 
-
-
   useEffect(() => {
     fetchClubs();
     fetchFollowedClubsID();
@@ -205,7 +166,7 @@ const Explore = (props: ExploreProps) => {
             <Typography
               component="h2"
               variant="h2"
-              fontFamily="RampartOne"
+              fontFamily="Rampart One"
               sx={{ color: "back.light" }}
             >
               Explore
@@ -224,11 +185,11 @@ const Explore = (props: ExploreProps) => {
             sx={{
               mt: "3%",
               backgroundColor: "primary.main",
-              border:"2px solid",
-              borderColor:"back.dark",
+              border: "2px solid",
+              borderColor: "back.dark",
               borderRadius: "20px",
               height: "95%",
-              overflow:"auto",
+              overflow: "auto",
               "&::-webkit-scrollbar": {
                 display: "none",
               },
@@ -245,7 +206,11 @@ const Explore = (props: ExploreProps) => {
                 <Grid
                   container
                   spacing={0}
-                  sx={{ display: "flex", flexFlow:"column nowrap", justifyContent: "center" }}
+                  sx={{
+                    display: "flex",
+                    flexFlow: "column nowrap",
+                    justifyContent: "center",
+                  }}
                 >
                   {clubs.map((club) => (
                     <Grid
@@ -257,7 +222,7 @@ const Explore = (props: ExploreProps) => {
                         display: "flex",
                         backgroundColor: "back.main",
                         border: "2px solid",
-                        borderColor:"back.dark",
+                        borderColor: "back.dark",
                         borderRadius: "20px",
                         justifyContent: "space-around",
                         alignItems: "center",
@@ -288,7 +253,7 @@ const Explore = (props: ExploreProps) => {
                           <Link
                             variant="h5"
                             onClick={() => {
-                              navigate(`/club/${club.name}/${club.id}`)
+                              navigate(`/club/${club.name}/${club.id}`);
                               location.reload();
                             }}
                             sx={{
@@ -304,13 +269,6 @@ const Explore = (props: ExploreProps) => {
                           </Link>
                         </Box>
                         <Box>
-                          {/* <Typography
-                            component="span"
-                            color="secondary.dark"
-                            sx={{ height:"20", fontStyle :"italic", wordBreak:"break-word"}}
-                          >
-                            {club.description}
-                          </Typography> */}
                           <Typography
                             component="span"
                             sx={{
@@ -343,8 +301,11 @@ const Explore = (props: ExploreProps) => {
                           }}
                           onClick={() => ToggleFollow(club.name, club.id)}
                         >
-                          <Typography fontFamily={"cursive"} sx={{color:"back.light"}}>
-                          {followedClubs.has(club.id) ? "Unfollow" : "Follow"}
+                          <Typography
+                            fontFamily={"cursive"}
+                            sx={{ color: "back.light" }}
+                          >
+                            {followedClubs.has(club.id) ? "Unfollow" : "Follow"}
                           </Typography>
                         </Button>
                       </Box>
@@ -357,7 +318,7 @@ const Explore = (props: ExploreProps) => {
                     minHeight: "75vh",
                     display: "flex",
                     flexFlow: "column nowrap",
-                    justifyContent:"center",
+                    justifyContent: "center",
                     alignItems: "center",
                   }}
                 >
@@ -365,9 +326,9 @@ const Explore = (props: ExploreProps) => {
                     component="h2"
                     variant="h2"
                     sx={{
-                      alignSelf:"center",
+                      alignSelf: "center",
                       color: "back.light",
-                      fontFamily: "RampartOne",
+                      fontFamily: "Rampart One",
                       fontSize: "2rem",
                     }}
                   >

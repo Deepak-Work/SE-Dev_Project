@@ -1,13 +1,11 @@
-import { useState, useEffect, FormEvent, ChangeEvent } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-import convertDate from "../Functions/convertDate";
 import formatCount from "../Functions/formatCount";
 import Cookies from "js-cookie";
 
 import {
   Box,
-  PaletteOptions,
   Paper,
   Typography,
   Grid,
@@ -15,25 +13,22 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  TextField,
   Button,
 } from "@mui/material";
 
-// import MoreVertIcon from '@mui/icons-material/MoreVert';
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import theme from "../UI/theme";
 
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
+
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 
 import NavBar from "../LandingPage/NavBar";
-import ThumbDownIcon from "@mui/icons-material/ThumbDown";
-import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
-import CommentIcon from "@mui/icons-material/Comment";
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import EditEvent from "./EditEvent";
 import DeleteEvent from "./DeleteEvent";
-import CommentElement from "../Comments/CommentElement";
 import LoadingIndicator from "../Utils/LoadingIndicator";
-import LoadingCommentsIndicator from "../Utils/LoadingComponentIndicator";
 import standardTime from "../Functions/standardTime";
 import NotAuthorized from "../Utils/NotAuthorized";
 
@@ -55,65 +50,13 @@ interface EventProps {
   likes: number;
   dislikes: number;
   timePosted: string;
-  totalRSVP : number;
-  // userAvatar: string;
-//   postImage: string;
-  // caption: string;
-}
-
-// interface Comment {
-//   replyStatus: boolean;
-//   id: number;
-//   parent_id?: number;
-//   author: string;
-//   reply_author?: string;
-//   body: string;
-//   reply_body?: string;
-//   likes: number;
-//   dislikes: number;
-//   time_posted: string;
-//   author_id: number;
-// }
-
-interface CustomPaletteOptions extends PaletteOptions {
-  back?: {
-    main: string;
-    light?: string;
-    dark?: string;
-    contrastText?: string;
-  };
+  totalRSVP: number;
 }
 
 const EventPage = (props: Props) => {
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#7108d8",
-      },
-      secondary: {
-        main: "#8B139C",
-      },
-      back: {
-        main: "#ced4da",
-        light: "#fff",
-        dark: "#000",
-        contrastText: "purple",
-      },
-    } as CustomPaletteOptions,
-  });
-
-
   const { username } = props;
   const { id } = useParams();
   const navigate = useNavigate();
-
-//   const [loadingComments, setLoadingComments] = useState<boolean>(false);
-//   const [showComments, setShowComments] = useState<boolean>(false);
-//   const [comments, setComments] = useState<Comment[]>([]);
-
-//   const [commentBody, setCommentBody] = useState<string>("")
-//   const [currentReplyId, setCurrentReplyId] = useState<number | null>(null);
-//   const [editCommentId, setEditCommentId] = useState<number | null>(null);
 
   const [eventInfo, setEventInfo] = useState<EventProps>({} as EventProps);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -125,7 +68,6 @@ const EventPage = (props: Props) => {
   const [isDisliked, setIsDisliked] = useState<boolean>(false);
   const [isAttending, setIsAttending] = useState<boolean>(false);
 
-
   const fetchEvent = async () => {
     let response = await fetch(`/api/events/event/${id}`, {
       method: "GET",
@@ -133,7 +75,6 @@ const EventPage = (props: Props) => {
     if (response.ok) {
       response.json().then((value) => {
         const event = value.event_data;
-        console.log(event);
         const eventInfo: EventProps = {
           title: event.title,
           body: event.body,
@@ -154,12 +95,13 @@ const EventPage = (props: Props) => {
       console.log("Event Cannot be Loaded");
     }
   };
-  
+
   const handleEditEventOpen = () => {
     setAnchorEl(null);
     setEditEventOpen(true);
   };
-  const handleEditEventClose = (event?: object, reason?: string) => {
+  const handleEditEventClose = (event? : object, reason?: string) => {
+    console.log(event);
     if (reason == "backdropClick") return;
     setEditEventOpen(false);
   };
@@ -169,7 +111,7 @@ const EventPage = (props: Props) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorzation: `Bearer ${Cookies.get("token")}`,
+        Authorization: `Bearer ${Cookies.get("token")}`,
       },
     });
     if (response.ok) {
@@ -178,30 +120,27 @@ const EventPage = (props: Props) => {
         setIsDisliked(value.dislike_status);
       });
     }
-    console.log("Liked:" +  isLiked + " Disliked:" +isDisliked);
-    // fetchEvent();
-  }
-  
+  };
+
   const handleLike = async () => {
     if (!isLiked) {
       const response = await fetch(`/api/events/event/${id}/like`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorzation: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
       if (response.ok) {
         setIsLiked(true);
         console.log("Liked");
       }
-    }
-    else {
+    } else {
       const response = await fetch(`/api/events/event/${id}/unlike`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorzation: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
       if (response.ok) {
@@ -210,7 +149,7 @@ const EventPage = (props: Props) => {
       }
     }
     fetchEvent();
-  }
+  };
 
   const handleDislike = async () => {
     if (!isDisliked) {
@@ -218,45 +157,39 @@ const EventPage = (props: Props) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorzation: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
       if (response.ok) {
         setIsDisliked(true);
         console.log("Disliked");
       }
-    }
-    else {
+    } else {
       const response = await fetch(`/api/events/event/${id}/undislike`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorzation: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
       if (response.ok) {
         setIsDisliked(false);
         console.log("Undisliked");
       }
-  }
-  fetchEvent();
-}
+    }
+    fetchEvent();
+  };
 
-const isUserAttending: () => Promise<void> = async () => {
-    //TODO : Check if current user is attending the event specified in this card...
-
-    // return true;
-    console.log("Checking Attending Status");
+  const isUserAttending: () => Promise<void> = async () => {
     const response = await fetch(`/api/events/event/${id}/attending-status`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorzation: `Bearer ${Cookies.get("token")}`,
+        Authorization: `Bearer ${Cookies.get("token")}`,
       },
     });
     if (response.ok) {
       response.json().then((value) => {
-        console.log(value);
         setIsAttending(value.attending_status);
       });
     }
@@ -268,7 +201,7 @@ const isUserAttending: () => Promise<void> = async () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorzation: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
       if (response.ok) {
@@ -289,7 +222,7 @@ const isUserAttending: () => Promise<void> = async () => {
       }
     }
     fetchEvent();
-  }
+  };
 
   const handleDeleteEventOpen = () => {
     setDeleteEventOpen(true);
@@ -326,119 +259,10 @@ const isUserAttending: () => Promise<void> = async () => {
     setAnchorEl(null);
   };
 
-//   const fetchComments = async (postId: number) => {
-//     const headers = {
-//       // "Content-Type":"application/json",
-//       "X-CSRFToken": Cookies.get("csrftoken") || "",
-//     };
-
-//     let response = await fetch(`/api/event/post/${postId}/comments`, {
-//       method: "GET",
-//       headers: headers,
-//     });
-
-//     if (response.ok) {
-//       const data = await response.json();
-//       setComments(data.comments_data);
-//     }
-//   };
-
-
-//   const toggleComments = () => {
-//     if (!showComments) {
-//       fetchComments(Number(id));
-//     }
-//     setShowComments(!showComments);
-//   };
-
-
-//   const handleCommentSubmit: (
-//     event: FormEvent<HTMLFormElement>
-//   ) => void = async (event) => {
-//     event.preventDefault();
-    
-//     setLoadingComments(true);
-
-//     // const data = new FormData(event.currentTarget);
-
-//     const form = new FormData();
-
-//     form.append("body", commentBody as string);
-//     form.append("reply_id", currentReplyId?.toString() as string);
-
-//     const headers = {
-//       "X-CSRFToken": Cookies.get("csrftoken") || "",
-//     };
-
-//     const response: Response = await fetch(
-//       `/api/event/post/${id}/comment/new`,
-//       {
-//         method: "POST",
-//         headers: headers,
-//         body: form,
-//       }
-//     );
-
-//     if (response.ok) {
-//       setCommentBody("");
-//       setCurrentReplyId(null);
-//       setEditCommentId(null);
-
-//       setComments([]);
-//       fetchComments(Number(id));
-//     }
-
-//     setTimeout(() => {setLoadingComments(false)}, 400);
-//   };
-
-//   const handleNewComment: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=> void  =
-//   (event) => {
-//     setCommentBody(event.currentTarget.value);
-//   }
-
-//   const handleEditComment: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=> void  =
-//   (event) => {
-//     setCommentBody(event.currentTarget.value);
-//   }
-
-//   const handleEditCommentSubmit: (
-//     event: FormEvent<HTMLFormElement>,
-//   ) => void = async (event) => {
-//     event.preventDefault();
-
-//     // const data = new FormData(event.currentTarget);
-
-//     const form = new FormData();
-//     // form.append("body", data.get("new-comment-body") as string);
-//     form.append("body", commentBody as string);
-//     // form.append("reply_id", currentReplyId?.toString() as string);
-
-//     const headers = {
-//       "X-CSRFToken": Cookies.get("csrftoken") || "",
-//     };
-
-//     const response: Response = await fetch(
-//       `/api/event/comment/${editCommentId}/edit`,
-//       {
-//         method: "PUT",
-//         headers: headers,
-//         body: form,
-//       }
-//     );
-
-//     if (response.ok) {
-//       setEditCommentId(null);
-//       setCommentBody("");
-//       setCurrentReplyId(null);
-//       fetchComments(Number(id));
-//     }
-//   };
-
   useEffect(() => {
     fetchEvent();
     getLikeDislikeStatus();
     isUserAttending();
-    // fetchComments(Number(id));
   }, []);
 
   if (!props.isAuth && !props.loading) {
@@ -463,15 +287,18 @@ const isUserAttending: () => Promise<void> = async () => {
               backgroundColor: "#1e1e1e",
             }}
           >
-            <Box sx={{               width: "100%",
-              display: "flex",
-              overflow: "auto",
-              alignItems: "center",
-              justifyContent: "center",
-              flexFlow: "column nowrap",
-              mt: -10 }}>
-
-            <NavBar username={username} />
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                overflow: "auto",
+                alignItems: "center",
+                justifyContent: "center",
+                flexFlow: "column nowrap",
+                mt: -10,
+              }}
+            >
+              <NavBar username={username} />
             </Box>
             <Box
               sx={{
@@ -491,15 +318,12 @@ const isUserAttending: () => Promise<void> = async () => {
                   ml: 10,
                   borderRadius: "20px",
                   textAlign: "left",
-                  // minWidth: "45%",
-                  // maxWidth: "80%",
                   minWidth: "350px",
                   width: "20%",
                   overflow: "auto",
                   display: "flex",
                   flexFlow: "row nowrap",
                   border: "5px solid #000000",
-                  // ml: 5,
                 }}
               >
                 <Box
@@ -509,20 +333,11 @@ const isUserAttending: () => Promise<void> = async () => {
                     height: "10%",
                     width: "100%",
                     backgroundColor: "primary.main",
-                    // background:
-                    //   "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
                     display: "flex",
                     flexFlow: "row nowrap",
                     alignItems: "center",
                     justifyContent: "left",
                     gap: 2,
-                    // paddingRight: "10px",
-                    // paddingleft: "10px",
-                    // px: 10,
-                    // mt: 16,
-                    // mr: 4,
-                    // ml: 2,
-                    // textAlign: "center",
                     overflow: "auto",
                   }}
                 >
@@ -537,7 +352,7 @@ const isUserAttending: () => Promise<void> = async () => {
                       mx: 1,
                       my: 1,
                     }}
-                    // alt="Club image"
+                    alt="Club image"
                     src={eventInfo.clubImage}
                   />
                   <Typography
@@ -545,9 +360,11 @@ const isUserAttending: () => Promise<void> = async () => {
                     mt={0}
                     variant="h5"
                     color="white"
-                    fontFamily={"RampartOne"}
+                    fontFamily={"Rampart One"}
                     onClick={() =>
-                      navigate(`/club/${eventInfo.clubName}/${eventInfo.clubId}`)
+                      navigate(
+                        `/club/${eventInfo.clubName}/${eventInfo.clubId}`
+                      )
                     }
                     sx={{
                       color: "back.light",
@@ -592,7 +409,6 @@ const isUserAttending: () => Promise<void> = async () => {
                     "&::-webkit-scrollbar": {
                       display: "none",
                     },
-                    // float: "top",
                   }}
                 >
                   <Box
@@ -629,8 +445,9 @@ const isUserAttending: () => Promise<void> = async () => {
                       fontFamily={"Lobster"}
                       sx={{ pt: 1, pl: 3 }}
                     >
-                      {eventInfo.author} -{" Event Time: "} {eventInfo.eventDate} @ {standardTime(eventInfo.eventTime)}
-                      {/* {convertDate(new Date(eventInfo.timePosted))} */}
+                      {eventInfo.author} -{" Event Time: "}{" "}
+                      {eventInfo.eventDate} @{" "}
+                      {standardTime(eventInfo.eventTime)}
                     </Typography>
                   </Box>
                   <Box
@@ -660,14 +477,6 @@ const isUserAttending: () => Promise<void> = async () => {
                     >
                       {eventInfo.body}
                     </Typography>
-                    {/* {eventInfo.postImage && (
-                      <Box
-                        component="img"
-                        width={300}
-                        height={300}
-                        src={eventInfo.postImage}
-                      ></Box>
-                    )} */}
                   </Box>
                   <Box
                     sx={{
@@ -700,7 +509,11 @@ const isUserAttending: () => Promise<void> = async () => {
                         }}
                       >
                         <IconButton aria-label="Like post">
-                          {isLiked? <ThumbUpAltIcon sx={{color: "primary.main"}} /> : <ThumbUpAltIcon />}
+                          {isLiked ? (
+                            <ThumbUpAltIcon sx={{ color: "primary.main" }} />
+                          ) : (
+                            <ThumbUpAltIcon />
+                          )}
                         </IconButton>
                         <Typography
                           color="primary.main"
@@ -744,10 +557,12 @@ const isUserAttending: () => Promise<void> = async () => {
                           "&:hover": { backgroundColor: "secondary.light" },
                         }}
                       >
-                        <IconButton
-                          aria-label="dislike post"
-                        >
-                          {isDisliked ? <ThumbDownIcon sx={{color: "primary.main"}} /> : <ThumbDownIcon />}
+                        <IconButton aria-label="dislike post">
+                          {isDisliked ? (
+                            <ThumbDownIcon sx={{ color: "primary.main" }} />
+                          ) : (
+                            <ThumbDownIcon />
+                          )}
                         </IconButton>
                         <Typography
                           color="primary.main"
@@ -791,7 +606,11 @@ const isUserAttending: () => Promise<void> = async () => {
                         }}
                       >
                         <IconButton aria-label="dislike post">
-                          {isAttending ? <ReceiptLongIcon sx={{color: "primary.main"}} /> : <ReceiptLongIcon />}
+                          {isAttending ? (
+                            <ReceiptLongIcon sx={{ color: "primary.main" }} />
+                          ) : (
+                            <ReceiptLongIcon />
+                          )}
                         </IconButton>
                         <Typography
                           color="primary.main"
@@ -858,7 +677,6 @@ const isUserAttending: () => Promise<void> = async () => {
                           Edit Event
                         </Typography>
                       </MenuItem>
-                      {/* <MenuItem onClick={() => handleClose("delete")}> */}
                       <MenuItem
                         onClick={() => {
                           handleDeleteEventOpen();
@@ -871,250 +689,6 @@ const isUserAttending: () => Promise<void> = async () => {
                     </Menu>
                   </Box>
                 </Paper>
-                {/* {showComments && (
-                  <Paper
-                    elevation={0}
-                    sx={{
-                      mt: 2,
-                      borderRadius: "15px",
-                      textAlign: "left",
-                      height: "100%",
-                      width: "40%",
-                      minWidth: "300px",
-                      minHeight: "60vh",
-                      // minHeight: "400px",
-                      maxHeight: "800px",
-                      overflow: "auto",
-                      display: "flex",
-                      flexDirection: "column",
-                      border: "5px solid #000000",
-                      float: "right",
-                      "&::-webkit-scrollbar": {
-                        display: "none",
-                      },
-                      // position:"absolute",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        borderRadius: "10px 10px 0 0",
-                        border: "0px solid #000",
-                        borderBottom: "5px solid #000",
-                        height: "fit",
-                        // background:
-                        //   "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
-                        backgroundColor: "secondary.main",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Typography
-                        variant="h3"
-                        color="white"
-                        fontWeight="bold"
-                        fontFamily={"Lobster"}
-                        sx={{ pt: 1, pl: 3, pr: 3, userSelect:"none" }}
-                      >
-                        Comments
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexFlow: "row nowrap",
-                        justifyContent: "center",
-                        width: "100%",
-                        border: "2px solid",
-                        borderRadius: "0px",
-                        // minHeight: "30%",
-                        maxHeight: "50%",
-                        m: 0,
-                      }}
-                    >
-                      {editCommentId ?                       <Box
-                        component="form"
-                        onSubmit={handleEditCommentSubmit}
-                        sx={{
-                          display: "flex",
-                          flexFlow: "column wrap",
-                          justifyContent: "center",
-                          width: "100%",
-                          height: "100%",
-                          overflow: "auto",
-                          "&::-webkit-scrollbar":{
-                            display:"none"
-                          },
-                        }}
-                      >
-                        <TextField
-                          sx={{ backgroundColor: "back.light",}}
-                          variant="filled"
-                          autoComplete="edit-comment-field"
-                          required
-                          fullWidth
-                          multiline
-                          maxRows={7}
-                          id="edit-comment-body"
-                          name="edit-comment-body"
-                          label="Edit Comment 📜"
-                          type="text"
-                          onChange={handleEditComment}
-                          value={commentBody}
-                          InputProps={{
-                            // startAdornment: (
-                            //   <InputAdornment position="start">
-                            //     📜
-                            //   </InputAdornment>
-                            // ),
-                            // endAdornment: (
-                            //   <Button
-                            //     type="submit"
-                            //     variant="contained"
-                            //     sx={{ mt: 3, mb: 2 }}
-                            //   >
-                            //     Send
-                            //   </Button>
-                            // ),
-                          }}
-                        />
-
-                          <Box sx={{display:"flex", flexFlow:"row nowrap", width:"100%"}}> 
-                          <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", width:"35%",}}>
-                            <Typography fontFamily={"Lobster"} fontSize="0.75rem" sx={{color:"back.main", border:"2px solid", borderColor:"back.dark", borderRadius: "20px",backgroundColor: "secondary.main", p:1, mt:1,}}>
-                            Edit: {editCommentId}
-                              </Typography>
-                          </Box>
-                          
-
-
-
-                          <Button
-                          type="submit"
-                          variant="contained"
-                          
-                          sx={{ width: "100%", my: 2, mx: 1 }}
-                        >
-                          Send
-                        </Button>
-                        </Box>
-                      </Box> :                       <Box
-                        component="form"
-                        onSubmit={handleCommentSubmit}
-                        sx={{
-                          display: "flex",
-                          flexFlow: "column wrap",
-                          justifyContent: "center",
-                          width: "100%",
-                          height: "100%",
-                          overflow: "auto",
-                          "&::-webkit-scrollbar":{
-                            display:"none"
-                          },
-                        }}
-                      >
-                        <TextField
-                          sx={{ backgroundColor: "back.light",}}
-                          variant="filled"
-                          autoComplete="comment-field"
-                          required
-                          fullWidth
-                          multiline
-                          maxRows={7}
-                          id="new-comment-body"
-                          name="new-comment-body"
-                          label="New Comment 📜"
-                          type="text"
-                          onChange={handleNewComment}
-                          value={commentBody}
-                          InputProps={{
-                            // startAdornment: (
-                            //   <InputAdornment position="start">
-                            //     📜
-                            //   </InputAdornment>
-                            // ),
-                            // endAdornment: (
-                            //   <Button
-                            //     type="submit"
-                            //     variant="contained"
-                            //     sx={{ mt: 3, mb: 2 }}
-                            //   >
-                            //     Send
-                            //   </Button>
-                            // ),
-                          }}
-                        />
-
-                          <Box sx={{display:"flex", flexFlow:"row nowrap", width:"100%"}}>
-                          {currentReplyId && 
-                          <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", width:"35%", }}>
-                            <Typography fontFamily={"Lobster"} fontSize="0.75rem" sx={{color: "back.main", border:"2px solid", borderColor:"back.dark", backgroundColor: "secondary.main", borderRadius: "20px", p:1, mt:1,}}>
-                            Reply: {currentReplyId}
-                              </Typography>
-                          </Box>
-                          }
-
-
-
-                          <Button
-                          type="submit"
-                          variant="contained"
-                          
-                          sx={{ width: "100%", my: 2, mx: 1 }}
-                        >
-                          Send
-                        </Button>
-                        </Box>
-                      </Box>  }
-                    </Box>
-      
-                    
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexFlow: "column nowrap",
-                        alignItems: "center",
-                        // justifyContent: "center",
-                        minHeight: "60vh",
-                        height: "100%",
-                        overflow: "auto",
-                        border: "2px solid black",
-                      }}
-                    >
-                      {loadingComments ? <LoadingCommentsIndicator /> :comments.length > 0 ? (
-                        comments.map((comment) => (
-                          <CommentElement
-                            replyStatus={Boolean(comment.parent_id)}
-                            commentId={comment.id}
-                            replyId={comment.parent_id}
-                            author={comment.author}
-                            replyAuthor={comment.reply_author}
-                            body={comment.body}
-                            replyBody={comment.reply_body}
-                            likes={comment.likes}
-                            dislikes={comment.dislikes}
-                            timeEvented={comment.time_posted}
-                            currentReplyId={currentReplyId}
-                            setCurrentReplyId={setCurrentReplyId}
-                            editCommentId={editCommentId}
-                            setEditCommentId={setEditCommentId}
-                            fetchComments={fetchComments}
-                          />
-                        ))
-                      ) :  (
-                        <Typography
-                          variant="h3"
-                          color="secondary.main"
-                          fontWeight="bold"
-                          fontFamily={"Lobster"}
-                          sx={{ pt: 1, pl: 3, pr: 3, userSelect:"none" }}
-                        >
-                          No Comments Yet
-                        </Typography>
-                      )}
-                    </Box>
-                  </Paper>
-                )} */}
               </Box>
 
               <EditEvent
@@ -1134,6 +708,5 @@ const isUserAttending: () => Promise<void> = async () => {
     </>
   );
 };
-
 
 export default EventPage;

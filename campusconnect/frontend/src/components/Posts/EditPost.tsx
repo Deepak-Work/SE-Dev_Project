@@ -6,7 +6,6 @@ import {
   DialogTitle,
   Fab,
   Grid,
-  Paper,
   TextField,
   Typography,
 } from "@mui/material";
@@ -79,7 +78,6 @@ const EditPost = (props: EditPostProps) => {
     if (response.ok) {
       handleEditPostClose();
       window.location.reload();
-      console.log("New Post Edited Successfully");
     } else {
       console.log("Edit Post failed");
     }
@@ -119,7 +117,7 @@ const EditPost = (props: EditPostProps) => {
             justifyContent: "space-between",
           }}
         >
-          <Typography component="h2" variant="h2" fontFamily={"RampartOne"}>
+          <Typography component="h2" variant="h2" fontFamily={"Rampart One"}>
             Edit Post
           </Typography>
           <Button
@@ -137,13 +135,11 @@ const EditPost = (props: EditPostProps) => {
         </Container>
       </DialogTitle>
 
-      {/* <DialogContent> */}
       <Container
         component="div"
         sx={{
           py: 3,
           backgroundColor: "back.main",
-          // border: "2px #000 solid",
           borderRadius: "0px",
         }}
       >
@@ -282,7 +278,6 @@ const EditPost = (props: EditPostProps) => {
           </Grid>
         </Box>
       </Container>
-      {/* </DialogContent> */}
     </Dialog>
   );
 };

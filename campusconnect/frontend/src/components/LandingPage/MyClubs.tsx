@@ -7,17 +7,13 @@ import {
   Button,
   Box,
   Grid,
-  createTheme,
   ThemeProvider,
-  Slide,
   Link,
-  useMediaQuery,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 
-import CustomPaletteOptions from "../UI/CustomPaletteOptions";
-import { TransitionProps } from "@mui/material/transitions";
-import React from "react";
+import theme from "../UI/theme";
+import slideTransition from "../UI/slideTransition";
 import { useNavigate } from "react-router-dom";
 
 interface Club {
@@ -39,45 +35,17 @@ interface MyClubsProps {
   setFollowButtonPressed: (value: boolean) => void;
 }
 
-const slideTransition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>;
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="down" ref={ref} {...props} />;
-});
-
 const MyClubs = (props: MyClubsProps) => {
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#7108d8",
-      },
-      secondary: {
-        main: "#8B139C",
-      },
-      back: {
-        main: "#ced4da",
-        light: "#fff",
-        dark: "#000",
-        contrastText: "purple",
-      },
-    } as CustomPaletteOptions,
-  });
-
   const navigate = useNavigate();
   const [memberUpdated, setMemberUpdated] = useState<Object>({});
 
   const {
     myClubsOpen,
-    handleMyClubsOpen,
     handleMyClubsClose,
     clubs,
     setClubs,
     followedClubs,
     setFollowedClubs,
-    followButtonPressed,
     setFollowButtonPressed,
   } = props;
 
@@ -185,7 +153,7 @@ const MyClubs = (props: MyClubsProps) => {
             <Typography
               component="h2"
               variant="h2"
-              fontFamily="RampartOne"
+              fontFamily="Rampart One"
               sx={{ color: "back.light" }}
             >
               My Clubs
@@ -204,11 +172,11 @@ const MyClubs = (props: MyClubsProps) => {
             sx={{
               mt: "3%",
               backgroundColor: "primary.main",
-              border:"2px solid",
-              borderColor:"back.dark",
+              border: "2px solid",
+              borderColor: "back.dark",
               borderRadius: "20px",
               height: "95%",
-              overflow:"auto",
+              overflow: "auto",
               "&::-webkit-scrollbar": {
                 display: "none",
               },
@@ -225,7 +193,11 @@ const MyClubs = (props: MyClubsProps) => {
                 <Grid
                   container
                   spacing={0}
-                  sx={{ display: "flex", flexFlow:"column nowrap", justifyContent: "center" }}
+                  sx={{
+                    display: "flex",
+                    flexFlow: "column nowrap",
+                    justifyContent: "center",
+                  }}
                 >
                   {clubs.map((club) => (
                     <Grid
@@ -237,7 +209,7 @@ const MyClubs = (props: MyClubsProps) => {
                         display: "flex",
                         backgroundColor: "back.main",
                         border: "2px solid",
-                        borderColor:"back.dark",
+                        borderColor: "back.dark",
                         borderRadius: "20px",
                         justifyContent: "space-around",
                         alignItems: "center",
@@ -268,7 +240,7 @@ const MyClubs = (props: MyClubsProps) => {
                           <Link
                             variant="h5"
                             onClick={() => {
-                              navigate(`/club/${club.name}/${club.id}`)
+                              navigate(`/club/${club.name}/${club.id}`);
                               location.reload();
                             }}
                             sx={{
@@ -284,13 +256,6 @@ const MyClubs = (props: MyClubsProps) => {
                           </Link>
                         </Box>
                         <Box>
-                          {/* <Typography
-                            component="span"
-                            color="secondary.dark"
-                            sx={{ height:"20", fontStyle :"italic", wordBreak:"break-word"}}
-                          >
-                            {club.description}
-                          </Typography> */}
                           <Typography
                             component="span"
                             sx={{
@@ -323,8 +288,11 @@ const MyClubs = (props: MyClubsProps) => {
                           }}
                           onClick={() => ToggleFollow(club.name, club.id)}
                         >
-                          <Typography fontFamily={"cursive"} sx={{color:"back.light"}}>
-                          {followedClubs.has(club.id) ? "Unfollow" : "Follow"}
+                          <Typography
+                            fontFamily={"cursive"}
+                            sx={{ color: "back.light" }}
+                          >
+                            {followedClubs.has(club.id) ? "Unfollow" : "Follow"}
                           </Typography>
                         </Button>
                       </Box>
@@ -337,7 +305,7 @@ const MyClubs = (props: MyClubsProps) => {
                     minHeight: "75vh",
                     display: "flex",
                     flexFlow: "column nowrap",
-                    justifyContent:"center",
+                    justifyContent: "center",
                     alignItems: "center",
                   }}
                 >
@@ -345,9 +313,9 @@ const MyClubs = (props: MyClubsProps) => {
                     component="h2"
                     variant="h2"
                     sx={{
-                      alignSelf:"center",
+                      alignSelf: "center",
                       color: "back.light",
-                      fontFamily: "RampartOne",
+                      fontFamily: "Rampart One",
                       fontSize: "2rem",
                     }}
                   >

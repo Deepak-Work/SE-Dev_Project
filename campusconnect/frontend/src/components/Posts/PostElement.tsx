@@ -12,16 +12,12 @@ import {
   IconButton,
   Tooltip,
   Box,
-  Avatar,
 } from "@mui/material";
 
-// import Menu from '@mui/material/Menu';
-// import MenuItem from '@mui/material/MenuItem';
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import CommentOutlinedIcon from "@mui/icons-material/CommentOutlined";
 import MoreIcon from "@mui/icons-material/More";
-import logo from "../../assets/CampusConnectLogo.svg";
 
 interface PostProps {
   username: string;
@@ -33,15 +29,7 @@ interface PostProps {
   totalComments: number;
   post_id: number;
   // userAvatar: string;
-  // postImage: string;
-  // caption: string;
 }
-
-/**
- * Post Component
- *
- * This component renders a single post on the posts page
- */
 
 const PostElement: React.FC<PostProps> = ({
   username,
@@ -49,8 +37,6 @@ const PostElement: React.FC<PostProps> = ({
   body,
   time_posted,
   post_id,
-  likes,
-  dislikes,
   totalComments,
 }) => {
   const navigate = useNavigate();
@@ -83,12 +69,11 @@ const PostElement: React.FC<PostProps> = ({
   };
 
   const getLikeDislikeStatus = async () => {
-    console.log("Checking Like Status");
     const response = await fetch(`/api/posts/post/like-dislike/${post_id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorzation: `Bearer ${Cookies.get("token")}`,
+        Authorization: `Bearer ${Cookies.get("token")}`,
       },
     });
     if (response.ok) {
@@ -98,8 +83,6 @@ const PostElement: React.FC<PostProps> = ({
         setIsDisliked(value.dislike_status);
       });
     }
-    console.log(isLiked, isDisliked);
-    // fetchPost();
   };
 
   const handleLike = async () => {
@@ -108,7 +91,7 @@ const PostElement: React.FC<PostProps> = ({
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorzation: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
       if (response.ok) {
@@ -120,7 +103,7 @@ const PostElement: React.FC<PostProps> = ({
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorzation: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
       if (response.ok) {
@@ -137,7 +120,7 @@ const PostElement: React.FC<PostProps> = ({
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorzation: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
       if (response.ok) {
@@ -149,7 +132,7 @@ const PostElement: React.FC<PostProps> = ({
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorzation: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
       if (response.ok) {
@@ -164,42 +147,18 @@ const PostElement: React.FC<PostProps> = ({
     getLikeDislikeStatus();
   }, []);
 
-  const handlePostClick = async (event: React.MouseEvent<HTMLDivElement>) => {
-    event.preventDefault();
-
-    console.log("Direct to post page");
-
-    console.log(post_id);
-
-    navigate(`/post/${post_id}`);
-  };
-
-  // Render the post
   return (
     <Card
       sx={{
-        //  display:"flex",
         border: "3px solid",
         borderColor: "back.dark",
         borderRadius: "35px",
-        // width: "450px",
-        // maxWidth: "450px",
         textWrap: "balance",
       }}
     >
-      {/* Post Header */}
       <CardHeader
-        // The avatar of the user who posted the post
-        // avatar={
-        //   <Avatar
-        //     src={logo}
-        //     alt={username} // The alt text is the username of the user
-        //     sx={{border:"1px solid", borderColor:"back.dark", borderRadius:"20px", backgroundColor: "back.light",}}
-        //   />
-        // }
-        
         color="white"
-        title={title} // The title is the username of the user
+        title={title} 
         titleTypographyProps={{
           onClick: () => navigate(`/post/${post_id}`),
           sx: {
@@ -212,12 +171,11 @@ const PostElement: React.FC<PostProps> = ({
             "&:hover": { color: "back.dark" },
           },
         }}
-        subheader={`${username} - ${time_posted}`} // The subheader is the post date
+        subheader={`${username} - ${time_posted}`} 
         subheaderTypographyProps={{
           sx: { color: "back.light", fontFamily: "Lobster" },
         }}
         sx={{
-          // minWidth: "30%",maxWidth:"35%",
           backgroundColor: "secondary.main",
         }}
       />
@@ -245,7 +203,6 @@ const PostElement: React.FC<PostProps> = ({
           {body.length < 50 ? body : body.substring(0, 50) + "..."}
         </Typography>
 
-        {/* Reactions */}
         <CardActions
           sx={{
             width: "100%",
@@ -339,29 +296,6 @@ const PostElement: React.FC<PostProps> = ({
             </Box>
           </Box>
         </CardActions>
-
-        {/* Additional Options */}
-
-        {/* Comments */}
-        {/* <CardContent sx={{ mt: 2 }}>
-          <Typography variant="h6">Comments</Typography>
-          <TextField
-            fullWidth
-            multiline
-            variant="outlined"
-            placeholder="Add a comment"
-          /> */}
-
-        {/* Comments List */}
-        {/* <List>
-            <ListItem>
-              <ListItemAvatar>
-                <Avatar src={userAvatar} alt={username} />
-              </ListItemAvatar>
-              <ListItemText primary={username} secondary="This is a test comment" />
-            </ListItem>
-          </List> */}
-        {/* </CardContent> */}
       </CardContent>
     </Card>
   );

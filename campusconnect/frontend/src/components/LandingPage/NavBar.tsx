@@ -3,7 +3,6 @@ import { useNavigate } from "react-router";
 import {
   AppBar,
   Box,
-  Button,
   Container,
   Toolbar,
   Typography,
@@ -19,11 +18,12 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import logo from "../../assets/CampusConnectLogo.svg";
 
 
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { useEffect, useState } from "react";
+import { ThemeProvider } from "@mui/material/styles";
+import { useState } from "react";
 import Explore from "./Explore";
 import MyClubs from "./MyClubs";
-import CustomPaletteOptions from "../UI/CustomPaletteOptions";
+
+import theme from "../UI/theme";
 
 interface Props {
   username: string;
@@ -123,8 +123,6 @@ const NavBar = ( { username }: Props) => {
     }
   };
 
-
-
   const [exploreOpen, setExploreOpen] = useState<boolean>(false);
 
   const handleExploreOpen: () => void = async () => {
@@ -141,7 +139,6 @@ const NavBar = ( { username }: Props) => {
   const [myClubsOpen, setMyClubsOpen] = useState<boolean>(false);
 
   const handleMyClubsOpen: () => void = () => {
-    // setFollowedClubs(new Map());
     fetchFollowedClubs();
     setMyClubsOpen(true);
   };
@@ -150,23 +147,6 @@ const NavBar = ( { username }: Props) => {
     if(followButtonPressed)
       window.location.reload();
   }
-
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#7108d8",
-      },
-      secondary: {
-        main: "#8B139C",
-      },
-      back: {
-        main: "#ced4da",
-        light: "#fff",
-        dark: "#000",
-        contrastText: "purple",
-      },
-    } as CustomPaletteOptions,
-  })
 
   const handleLogout = () => {
     let logout = async () => {
@@ -177,8 +157,6 @@ const NavBar = ( { username }: Props) => {
     logout();
     navigate("/login");
   };
-
-  // TODO: Add drawer/fix hamburger menu when zooming in
 
   return (
     <ThemeProvider theme={theme}>
@@ -225,7 +203,7 @@ const NavBar = ( { username }: Props) => {
                 <Typography
                   variant="h4"
                   color="back.light"
-                  sx={{ fontSize:"1.75rem", ml: "5px", fontFamily:"RampartOne", }}
+                  sx={{ fontSize:"1.75rem", ml: "5px", fontFamily:"Rampart One", }}
                 >
                   CampusConnect
                 </Typography>
@@ -286,14 +264,7 @@ const NavBar = ( { username }: Props) => {
               </Tooltip>
             </Box>
             <Box sx={{ display: { sm: "", md: "none" } }}>
-              {/* <Button
-                variant="text"
-                color="primary"
-                aria-label="menu"
-                sx={{ minWidth: "30px", p: "4px" }}
-              >
-                <MenuIcon /> */}
-                {/* <Box sx={{ flexGrow: 0 }}> */}
+
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ minWidth: "30px", p: "4px" }}>
                 <MenuIcon />
@@ -321,8 +292,7 @@ const NavBar = ( { username }: Props) => {
                 </MenuItem>
               ))}
             </Menu>
-          {/* </Box> */}
-              {/* </Button> */}
+
             </Box>
           </Toolbar>
         </Container>

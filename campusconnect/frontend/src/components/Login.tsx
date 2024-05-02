@@ -173,7 +173,7 @@ const Login = (props: LoginProps) => {
               <Typography
                 component="h1"
                 variant="h5"
-                sx={{ fontSize: { xs: "2.0rem", sm: "2.0rem", md:"2.5rem"}, color: "secondary.main", fontFamily:"RampartOne", userSelect:"none", }}
+                sx={{ fontSize: { xs: "2.0rem", sm: "2.0rem", md:"2.5rem"}, color: "secondary.main", fontFamily:"Rampart One", userSelect:"none", }}
               >
                 CampusConnect               
               </Typography>

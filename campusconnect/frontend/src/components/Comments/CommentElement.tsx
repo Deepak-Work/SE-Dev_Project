@@ -1,36 +1,14 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, } from "react-router-dom";
 
 import convertDate from "../Functions/convertDate";
 import formatCount from "../Functions/formatCount";
 import Cookies from "js-cookie";
 
-import {
-  Box,
-  PaletteOptions,
-  Paper,
-  Typography,
-  Grid,
-  Tooltip,
-  IconButton,
-  Menu,
-  MenuItem,
-  Dialog,
-  DialogTitle,
-  Fab,
-  TextField,
-  Button,
-  Container,
-} from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
 
-// import MoreVertIcon from '@mui/icons-material/MoreVert';
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-
-import NavBar from "../LandingPage/NavBar";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import ReplyIcon from "@mui/icons-material/Reply";
@@ -38,7 +16,6 @@ import ReplyIcon from "@mui/icons-material/Reply";
 interface CommentProps {
   replyStatus: boolean;
   commentId: number;
-  // postId: number;
   replyId?: number;
   author: string;
   replyAuthor?: string;
@@ -58,7 +35,6 @@ const CommentElement = (props: CommentProps) => {
   const {
     replyStatus,
     commentId,
-    replyId,
     author,
     replyAuthor,
     body,
@@ -72,51 +48,49 @@ const CommentElement = (props: CommentProps) => {
     setEditCommentId,
     fetchComments,
   } = props;
-  
-  const {id} = useParams();
+
+  const { id } = useParams();
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [isDisliked, setIsDisliked] = useState<boolean>(false);
 
-
   const CommentLikeDislikeStatus = async () => {
-    console.log("Checking Comment Like Status");
-    const response = await fetch(`/api/posts/comment/${commentId}/like-dislike`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorzation: `Bearer ${Cookies.get("token")}`,
-      },
-    });
+    const response = await fetch(
+      `/api/posts/comment/${commentId}/like-dislike`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      }
+    );
     if (response.ok) {
       response.json().then((value) => {
-        console.log(value);
         setIsLiked(value.like_status);
         setIsDisliked(value.dislike_status);
       });
     }
-    console.log(isLiked, isDisliked);
-  }
-  
+  };
+
   const handleCommentLike = async () => {
     if (!isLiked) {
       const response = await fetch(`/api/posts/comment/${commentId}/like`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorzation: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
       if (response.ok) {
         setIsLiked(true);
         console.log("Comment Liked");
       }
-    }
-    else {
+    } else {
       const response = await fetch(`/api/posts/comment/${commentId}/unlike`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorzation: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
       if (response.ok) {
@@ -125,7 +99,7 @@ const CommentElement = (props: CommentProps) => {
       }
     }
     fetchComments(Number(id));
-  }
+  };
 
   const handleCommentDislike = async () => {
     if (!isDisliked) {
@@ -133,29 +107,31 @@ const CommentElement = (props: CommentProps) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorzation: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
       if (response.ok) {
         setIsDisliked(true);
         console.log("Comment Disliked");
       }
-    }
-    else {
-      const response = await fetch(`/api/posts/comment/${commentId}/undislike`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorzation: `Bearer ${Cookies.get("token")}`,
-        },
-      });
+    } else {
+      const response = await fetch(
+        `/api/posts/comment/${commentId}/undislike`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorzation: `Bearer ${Cookies.get("token")}`,
+          },
+        }
+      );
       if (response.ok) {
         setIsDisliked(false);
         console.log("Comment Undisliked");
       }
-  }
-  fetchComments(Number(id));
-}
+    }
+    fetchComments(Number(id));
+  };
 
   const handleReply = () => {
     setEditCommentId(null);
@@ -216,15 +192,13 @@ const CommentElement = (props: CommentProps) => {
         my: 2,
       }}
     >
-      <Box
-        sx={{ width: "100%", display: "flex", justifyContent: "center", }}
-      >
+      <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
         <Typography
           component="h6"
           variant="h6"
           fontFamily={"Lobster"}
           fontSize="0.8rem"
-          sx={{ color: "back.main", wordBreak: "break-word", }}
+          sx={{ color: "back.main", wordBreak: "break-word" }}
         >
           {author} - {convertDate(new Date(timePosted))}
         </Typography>
@@ -234,7 +208,7 @@ const CommentElement = (props: CommentProps) => {
         <Box
           sx={{
             display: "flex",
-            alignItems:"center",
+            alignItems: "center",
             width: "75%",
             minHeight: "15%",
             backgroundColor: "back.light",
@@ -295,8 +269,7 @@ const CommentElement = (props: CommentProps) => {
           flexFlow: "row wrap",
           justifyContent: "space-between",
           width: "100%",
-          // height: "40%",
-          minHeight:"30%",
+          minHeight: "30%",
           backgroundColor: "back.light",
           border: "2px solid",
           borderColor: "back.dark",
@@ -305,7 +278,14 @@ const CommentElement = (props: CommentProps) => {
           borderTopRightRadius: "0px",
         }}
       >
-        <Box sx={{ display: "flex", flexFlow: "row nowrap", justifyContent:"space-around",ml:1, }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexFlow: "row nowrap",
+            justifyContent: "space-around",
+            ml: 1,
+          }}
+        >
           <Box
             sx={{
               display: "flex",
@@ -325,11 +305,20 @@ const CommentElement = (props: CommentProps) => {
               {formatCount(likes)}
             </Typography>
 
-            <IconButton onClick={handleCommentLike} aria-label="Like comment" sx={{              
-              "&:hover": {
-                backgroundColor: "back.main",
-              },}}>
-              {isLiked ? <ThumbUpAltIcon sx={{color:"primary.main"}} /> : <ThumbUpAltIcon /> }
+            <IconButton
+              onClick={handleCommentLike}
+              aria-label="Like comment"
+              sx={{
+                "&:hover": {
+                  backgroundColor: "back.main",
+                },
+              }}
+            >
+              {isLiked ? (
+                <ThumbUpAltIcon sx={{ color: "primary.main" }} />
+              ) : (
+                <ThumbUpAltIcon />
+              )}
             </IconButton>
           </Box>
 
@@ -355,12 +344,17 @@ const CommentElement = (props: CommentProps) => {
             <IconButton
               onClick={handleCommentDislike}
               aria-label="dislike comment"
-              sx={{              
+              sx={{
                 "&:hover": {
                   backgroundColor: "back.main",
-                },}}
+                },
+              }}
             >
-            {isDisliked ? <ThumbDownIcon sx={{color:"primary.main"}} /> : <ThumbDownIcon /> }
+              {isDisliked ? (
+                <ThumbDownIcon sx={{ color: "primary.main" }} />
+              ) : (
+                <ThumbDownIcon />
+              )}
             </IconButton>
           </Box>
 
@@ -374,11 +368,20 @@ const CommentElement = (props: CommentProps) => {
               backgroundColor: "back.light",
             }}
           >
-            <IconButton onClick={handleReply} aria-label="reply comment" sx={{              
-              "&:hover": {
-                backgroundColor: "back.main",
-              },}}>
-            {currentReplyId === commentId ? <ReplyIcon sx={{color:"primary.main"}} /> : <ReplyIcon /> }
+            <IconButton
+              onClick={handleReply}
+              aria-label="reply comment"
+              sx={{
+                "&:hover": {
+                  backgroundColor: "back.main",
+                },
+              }}
+            >
+              {currentReplyId === commentId ? (
+                <ReplyIcon sx={{ color: "primary.main" }} />
+              ) : (
+                <ReplyIcon />
+              )}
             </IconButton>
           </Box>
         </Box>
@@ -394,11 +397,20 @@ const CommentElement = (props: CommentProps) => {
               backgroundColor: "back.light",
             }}
           >
-            <IconButton onClick={handleCommentEdit} aria-label="Edit comment" sx={{              
-              "&:hover": {
-                backgroundColor: "back.main",
-              },}}>
-              {editCommentId === commentId ? <EditIcon sx={{color:"primary.main"}}/> : <EditIcon /> }
+            <IconButton
+              onClick={handleCommentEdit}
+              aria-label="Edit comment"
+              sx={{
+                "&:hover": {
+                  backgroundColor: "back.main",
+                },
+              }}
+            >
+              {editCommentId === commentId ? (
+                <EditIcon sx={{ color: "primary.main" }} />
+              ) : (
+                <EditIcon />
+              )}
             </IconButton>
           </Box>
 
@@ -412,10 +424,15 @@ const CommentElement = (props: CommentProps) => {
               backgroundColor: "back.light",
             }}
           >
-            <IconButton onClick={handleCommentDelete} aria-label="Delete comment" sx={{              
-              "&:hover": {
-                backgroundColor: "back.main",
-              },}}>
+            <IconButton
+              onClick={handleCommentDelete}
+              aria-label="Delete comment"
+              sx={{
+                "&:hover": {
+                  backgroundColor: "back.main",
+                },
+              }}
+            >
               <DeleteIcon />
             </IconButton>
           </Box>

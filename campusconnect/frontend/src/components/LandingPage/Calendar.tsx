@@ -73,7 +73,9 @@ const Calendar = () => {
                 {tooltip.name} hosted by {tooltip.club} on {tooltip.event_date}{" "}
                 @ {standardTime(tooltip.event_time)}
                 <br />
-                {tooltip.description.length < 128 ? tooltip.description : tooltip.description.substring(0,128) + "..."}
+                {tooltip.description.length < 128
+                  ? tooltip.description
+                  : tooltip.description.substring(0, 128) + "..."}
               </div>
             ) : (
               ""
@@ -116,11 +118,11 @@ const Calendar = () => {
   useEffect(() => {
     const days = events
       .filter((event) => {
-        const [year, month, day] = event.event_date.split("-").map(Number);
+        const [month] = event.event_date.split("-").map(Number);
         return month === selectedMonth.month() + 1;
       })
       .map((event) => {
-        const [year, month, day] = event.event_date.split("-").map(Number);
+        const [day] = event.event_date.split("-").map(Number);
         return day;
       });
     setHighlightedDays(days);
@@ -143,7 +145,7 @@ const Calendar = () => {
         sx={{
           borderRadius: "10px 10px 0 0",
           border: "3px solid #000000",
-          borderBottom:"5px solid",
+          borderBottom: "5px solid",
           height: "70px",
           background:
             "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",

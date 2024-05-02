@@ -11,14 +11,15 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import { ThemeProvider } from "@mui/material/styles";
 
 import logo from "../assets/CampusConnectLogo.svg";
 import backgroundImg from "../assets/black-and-white-7494005_1280_0Vh3CSJ.jpg";
-import CustomPaletteOptions from "./UI/CustomPaletteOptions";
+
 import { IconButton, InputAdornment, Link } from "@mui/material";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
+
+import theme from "./UI/theme";
 
 interface Form {
   email: string;
@@ -40,22 +41,7 @@ interface Errors {
 }
 
 const Register = () => {
-  const defaultTheme = createTheme({
-    palette: {
-      primary: {
-        main: "#7108d8",
-      },
-      secondary: {
-        main: "#8B139C",
-      },
-      back: {
-        main: "#ced4da",
-        light: "#fff",
-        dark: "#000",
-        contrastText: "purple",
-      },
-    } as CustomPaletteOptions,
-  });
+  const defaultTheme = theme;
 
   const navigate = useNavigate();
 
@@ -66,7 +52,7 @@ const Register = () => {
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
-  }
+  };
 
   const [errors, setErrors] = useState<Errors>({
     email: false,
@@ -104,7 +90,6 @@ const Register = () => {
   };
 
   const handlePasswordChange = (event: any) => {
-    //const validPassword = event.target.search(/[A-Z]/) != -1 && event.target.search(/[a-z]/) != -1 && event.target.search(/[0-9]/) ;
     setPassword(event.target.value);
     if (event.target.validity.valid) {
       setErrors({ ...errors, password: false });
@@ -164,11 +149,10 @@ const Register = () => {
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    // Prevent default behavior for forms. We need this other some browsers (like Firefox) blocks the request.
     event.preventDefault();
 
-    if(password !== verifyPassword) {
-      console.log("Passwords did not match")
+    if (password !== verifyPassword) {
+      console.log("Passwords did not match");
       return;
     }
 
@@ -196,7 +180,6 @@ const Register = () => {
       navigate("/login");
       setPassword("");
       setVerifyPassword("");
-      console.log("Registration successful");
     } else {
       console.log("Registration failed");
       setErrors({
@@ -224,11 +207,11 @@ const Register = () => {
           component="div"
           maxWidth="md"
           sx={{
-            minHeight:"80vh",
-            display:"flex",
+            minHeight: "80vh",
+            display: "flex",
             flexFlow: "column nowrap",
-            justifyContent:"center",
-            alignItems:"center",
+            justifyContent: "center",
+            alignItems: "center",
             background: "linear-gradient(to right, #111, #7A028B)",
             pb: 10,
             border: "2px #000 solid",
@@ -237,216 +220,231 @@ const Register = () => {
         >
           <CssBaseline />
 
-            
+          <Box
+            sx={{
+              display: "flex",
+              flexFlow: "column nowrap",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "transparent",
+              height: "20%",
+            }}
+          >
             <Box
+              component="img"
+              width={250}
+              height={150}
+              src={logo}
+              alt="CampusConnect Logo"
+              onClick={() => navigate("/login")}
+              style={{ cursor: "pointer", userSelect: "none" }}
+            />
+            <Typography
+              component="h1"
+              variant="h3"
               sx={{
-                display:"flex",
-                flexFlow:"column nowrap",
-                justifyContent:"center",
-                alignItems:"center",
-                backgroundColor: "transparent",
-                height:"20%",
+                color: "back.light",
+                fontFamily: "Rampart One",
+                textShadow: "1px 1px 3px secondary.main",
+                userSelect: "none",
               }}
             >
-              <Box component="img" width={250} height={150} src={logo} alt="CampusConnect Logo" onClick={() => navigate("/login")} style={{cursor: "pointer", userSelect: "none",}} />
-                <Typography
-                  component="h1"
-                  variant="h3"
+              Create an Account
+            </Typography>
+          </Box>
+
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  autoComplete="given-name"
+                  name="first_name"
+                  required
+                  fullWidth
+                  variant="filled"
+                  id="firstName"
+                  label="First Name"
+                  autoFocus
+                  color="secondary"
                   sx={{
-                    // fontSize: "2.5rem",
-                    color: "back.light",
-                    fontFamily: "RampartOne",
-                    textShadow: "1px 1px 3px secondary.main",
-                    userSelect: "none",
+                    input: { color: "back.dark" },
+                    backgroundColor: "back.light",
                   }}
-                >
-                  Create an Account
-                </Typography>
-            </Box>
-
-
-            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    autoComplete="given-name"
-                    name="first_name"
-                    required
-                    fullWidth
-                    variant="filled"
-                    id="firstName"
-                    label="First Name"
-                    autoFocus
-                    color="secondary"
-                    sx={{
-                      input: { color: "back.dark" },
-                      backgroundColor: "back.light",
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    autoComplete="family-name"
-                    required
-                    fullWidth
-                    variant="filled"
-                    name="last_name"
-                    id="lastName"
-                    label="Last Name"
-                    color="secondary"
-                    sx={{
-                      input: { color: "back.dark" },
-                      backgroundColor: "back.light",
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    variant="filled"
-                    onChange={handleUsernameChange}
-                    error={errors.username}
-                    helperText={
-                      errors.username ? errors.usernameErrorMessage : ""
-                    }
-                    inputProps={{ pattern: ".{10,}" }}
-                    autoComplete="username"
-                    required
-                    fullWidth
-                    id="username"
-                    name="username"
-                    label="Username"
-                    color="secondary"
-                    sx={{
-                      input: { color: "back.dark" },
-                      backgroundColor: "back.light",
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    variant="filled"
-                    onChange={handleEmailChange}
-                    error={errors.email}
-                    helperText={errors.email ? errors.emailErrorMessage : ""}
-                    // inputProps={{ pattern: ".*@nyu[.]edu$" }}
-                    inputProps={{
-                      pattern:
-                        "^([a-zA-Z0-9[.]_]-*)+@(([a-zA-Z0-9_]-*)+[.])+([a-zA-Z0-9_]-*){2,4}$",
-                    }}
-                    // inputProps={{ pattern: "^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" }}
-                    autoComplete="email"
-                    required
-                    fullWidth
-                    id="email"
-                    name="email"
-                    label="Email Address"
-                    color="secondary"
-                    sx={{
-                      input: { color: "back.dark" },
-                      backgroundColor: "back.light",
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField
-                    variant="filled"
-                    onChange={handlePasswordChange}
-                    value={password}
-                    error={errors.password}
-                    helperText={
-                      errors.password ? errors.passwordErrorMessage : ""
-                    }
-                    InputProps={{endAdornment: (
-                      <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        // onMouseDown={handleMouseDownPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <Visibility /> : <VisibilityOff />}
-                      </IconButton>
-                    </InputAdornment>
-                    ),}}
-                    inputProps={{
-                      pattern:
-                        "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*\\-]).{8,}$",
-                    }}
-                    autoComplete="new-password"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type= {showPassword ? "text" : "password"}
-                    id="password"
-                    color="secondary"
-                    sx={{
-                      input: { color: "back.dark" },
-                      backgroundColor: "back.light",
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField
-                    variant="filled"
-                    value={verifyPassword}
-                    onChange={handleVerifyPasswordChange}
-                    error={errors.verifyPassword}
-                    helperText={
-                      errors.verifyPassword
-                        ? errors.verifyPasswordErrorMessage
-                        : ""
-                    }
-                    InputProps={{endAdornment: (
-                      <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        // onMouseDown={handleMouseDownPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <Visibility /> : <VisibilityOff />}
-                      </IconButton>
-                    </InputAdornment>
-                    ),}}
-                    inputProps={{
-                      pattern:
-                        "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*\\-]).{8,}$",
-                    }}
-                    autoComplete="verify-new-password"
-                    required
-                    fullWidth
-                    name="verify-password"
-                    label="Verify Password"
-                    type= {showPassword ? "text" : "password"}
-                    id="verify-password"
-                    color="secondary"
-                    sx={{
-                      input: { color: "back.dark" },
-                      backgroundColor: "back.light",
-                    }}
-                  />
-                </Grid>
+                />
               </Grid>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2, }}
-                
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  autoComplete="family-name"
+                  required
+                  fullWidth
+                  variant="filled"
+                  name="last_name"
+                  id="lastName"
+                  label="Last Name"
+                  color="secondary"
+                  sx={{
+                    input: { color: "back.dark" },
+                    backgroundColor: "back.light",
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  variant="filled"
+                  onChange={handleUsernameChange}
+                  error={errors.username}
+                  helperText={
+                    errors.username ? errors.usernameErrorMessage : ""
+                  }
+                  inputProps={{ pattern: ".{10,}" }}
+                  autoComplete="username"
+                  required
+                  fullWidth
+                  id="username"
+                  name="username"
+                  label="Username"
+                  color="secondary"
+                  sx={{
+                    input: { color: "back.dark" },
+                    backgroundColor: "back.light",
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  variant="filled"
+                  onChange={handleEmailChange}
+                  error={errors.email}
+                  helperText={errors.email ? errors.emailErrorMessage : ""}
+                  inputProps={{
+                    pattern:
+                      "^([a-zA-Z0-9[.]_]-*)+@(([a-zA-Z0-9_]-*)+[.])+([a-zA-Z0-9_]-*){2,4}$",
+                  }}
+                  autoComplete="email"
+                  required
+                  fullWidth
+                  id="email"
+                  name="email"
+                  label="Email Address"
+                  color="secondary"
+                  sx={{
+                    input: { color: "back.dark" },
+                    backgroundColor: "back.light",
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  variant="filled"
+                  onChange={handlePasswordChange}
+                  value={password}
+                  error={errors.password}
+                  helperText={
+                    errors.password ? errors.passwordErrorMessage : ""
+                  }
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          // onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  inputProps={{
+                    pattern:
+                      "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*\\-]).{8,}$",
+                  }}
+                  autoComplete="new-password"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  color="secondary"
+                  sx={{
+                    input: { color: "back.dark" },
+                    backgroundColor: "back.light",
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  variant="filled"
+                  value={verifyPassword}
+                  onChange={handleVerifyPasswordChange}
+                  error={errors.verifyPassword}
+                  helperText={
+                    errors.verifyPassword
+                      ? errors.verifyPasswordErrorMessage
+                      : ""
+                  }
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          // onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  inputProps={{
+                    pattern:
+                      "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*\\-]).{8,}$",
+                  }}
+                  autoComplete="verify-new-password"
+                  required
+                  fullWidth
+                  name="verify-password"
+                  label="Verify Password"
+                  type={showPassword ? "text" : "password"}
+                  id="verify-password"
+                  color="secondary"
+                  sx={{
+                    input: { color: "back.dark" },
+                    backgroundColor: "back.light",
+                  }}
+                />
+              </Grid>
+            </Grid>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Register
+            </Button>
+            <Typography
+              variant="h6"
+              color="back.light"
+              fontFamily="Lobster"
+              align="center"
+            >
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                sx={{
+                  color: "#1976d2",
+                  textDecoration: "underline",
+                  "&:hover": { color: "secondary.main" },
+                }}
               >
-                Register
-              </Button>
-              <Typography variant="h6" color="back.light" fontFamily="Lobster" align="center">
-                Already have an account?{" "}
-                <Link
-                  href="/login"
-                  sx={{ color: "#1976d2", textDecoration: "underline", "&:hover": {color: "secondary.main"} }}
-                >
-                  Login
-                </Link>
-              </Typography>
-            </Box>
+                Login
+              </Link>
+            </Typography>
+          </Box>
         </Container>
       </Box>
     </ThemeProvider>
