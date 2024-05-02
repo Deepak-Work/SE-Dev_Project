@@ -7,7 +7,6 @@ import Cookies from "js-cookie";
 
 import {
   Box,
-  PaletteOptions,
   Paper,
   Typography,
   Grid,
@@ -23,7 +22,9 @@ import {
 // import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
+
+import theme from "../UI/theme";
 
 import NavBar from "../LandingPage/NavBar";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
@@ -72,33 +73,9 @@ interface Comment {
   author_id: number;
 }
 
-interface CustomPaletteOptions extends PaletteOptions {
-  back?: {
-    main: string;
-    light?: string;
-    dark?: string;
-    contrastText?: string;
-  };
-}
+
 
 const PostPage = (props: Props) => {
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#7108d8",
-      },
-      secondary: {
-        main: "#8B139C",
-      },
-      back: {
-        main: "#ced4da",
-        light: "#fff",
-        dark: "#000",
-        contrastText: "purple",
-      },
-    } as CustomPaletteOptions,
-  });
-
 
   const { username } = props;
   const { id } = useParams();
@@ -108,7 +85,7 @@ const PostPage = (props: Props) => {
   const [showComments, setShowComments] = useState<boolean>(false);
   const [comments, setComments] = useState<Comment[]>([]);
 
-  const [commentBody, setCommentBody] = useState<string>("")
+  const [commentBody, setCommentBody] = useState<string>("");
   const [currentReplyId, setCurrentReplyId] = useState<number | null>(null);
   const [editCommentId, setEditCommentId] = useState<number | null>(null);
 
@@ -146,14 +123,17 @@ const PostPage = (props: Props) => {
     } else {
       console.log("Post Cannot be Loaded");
     }
-  };
-  
+  }; 
+
   const handleEditPostOpen = () => {
     setAnchorEl(null);
     setEditPostOpen(true);
   };
-  const handleEditPostClose = (event?: object, reason?: string) => {
-    if (reason == "backdropClick") return;
+  const handleEditPostClose = (event? : object, reason?: string) => {
+    console.log(event);
+    if (reason == "backdropClick"){
+     return;
+    } 
     setEditPostOpen(false);
   };
 
@@ -162,7 +142,7 @@ const PostPage = (props: Props) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorzation: `Bearer ${Cookies.get("token")}`,
+        Authorization: `Bearer ${Cookies.get("token")}`,
       },
     });
     if (response.ok) {
@@ -171,30 +151,28 @@ const PostPage = (props: Props) => {
         setIsDisliked(value.dislike_status);
       });
     }
-    console.log("Liked:" +  isLiked + " Disliked:" +isDisliked);
-    // fetchPost();
-  }
-  
+    console.log("Liked:" + isLiked + " Disliked:" + isDisliked);
+  };
+
   const handleLike = async () => {
     if (!isLiked) {
       const response = await fetch(`/api/posts/post/${id}/like`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorzation: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
       if (response.ok) {
         setIsLiked(true);
         console.log("Liked");
       }
-    }
-    else {
+    } else {
       const response = await fetch(`/api/posts/post/${id}/unlike`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorzation: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
       if (response.ok) {
@@ -203,7 +181,7 @@ const PostPage = (props: Props) => {
       }
     }
     fetchPost();
-  }
+  };
 
   const handleDislike = async () => {
     if (!isDisliked) {
@@ -211,29 +189,28 @@ const PostPage = (props: Props) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorzation: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
       if (response.ok) {
         setIsDisliked(true);
         console.log("Disliked");
       }
-    }
-    else {
+    } else {
       const response = await fetch(`/api/posts/post/${id}/undislike`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorzation: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
       if (response.ok) {
         setIsDisliked(false);
         console.log("Undisliked");
       }
-  }
-  fetchPost();
-}
+    }
+    fetchPost();
+  };
 
   const handleDeletePostOpen = () => {
     setDeletePostOpen(true);
@@ -287,7 +264,6 @@ const PostPage = (props: Props) => {
     }
   };
 
-
   const toggleComments = () => {
     if (!showComments) {
       fetchComments(Number(id));
@@ -295,15 +271,12 @@ const PostPage = (props: Props) => {
     setShowComments(!showComments);
   };
 
-
   const handleCommentSubmit: (
     event: FormEvent<HTMLFormElement>
   ) => void = async (event) => {
     event.preventDefault();
-    
-    setLoadingComments(true);
 
-    // const data = new FormData(event.currentTarget);
+    setLoadingComments(true);
 
     const form = new FormData();
 
@@ -332,30 +305,30 @@ const PostPage = (props: Props) => {
       fetchComments(Number(id));
     }
 
-    setTimeout(() => {setLoadingComments(false)}, 400);
+    setTimeout(() => {
+      setLoadingComments(false);
+    }, 400);
   };
 
-  const handleNewComment: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=> void  =
-  (event) => {
+  const handleNewComment: (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void = (event) => {
     setCommentBody(event.currentTarget.value);
-  }
+  };
 
-  const handleEditComment: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=> void  =
-  (event) => {
+  const handleEditComment: (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void = (event) => {
     setCommentBody(event.currentTarget.value);
-  }
+  };
 
   const handleEditCommentSubmit: (
-    event: FormEvent<HTMLFormElement>,
+    event: FormEvent<HTMLFormElement>
   ) => void = async (event) => {
     event.preventDefault();
 
-    // const data = new FormData(event.currentTarget);
-
     const form = new FormData();
-    // form.append("body", data.get("new-comment-body") as string);
     form.append("body", commentBody as string);
-    // form.append("reply_id", currentReplyId?.toString() as string);
 
     const headers = {
       "X-CSRFToken": Cookies.get("csrftoken") || "",
@@ -384,7 +357,6 @@ const PostPage = (props: Props) => {
     fetchComments(Number(id));
   }, []);
 
-
   if (!props.isAuth && !props.loading) {
     return <NotAuthorized />;
   }
@@ -408,15 +380,18 @@ const PostPage = (props: Props) => {
               backgroundColor: "#1e1e1e",
             }}
           >
-            <Box sx={{               width: "100%",
-              display: "flex",
-              overflow: "auto",
-              alignItems: "center",
-              justifyContent: "center",
-              flexFlow: "column nowrap",
-              mt: -10 }}>
-
-            <NavBar username={username} />
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                overflow: "auto",
+                alignItems: "center",
+                justifyContent: "center",
+                flexFlow: "column nowrap",
+                mt: -10,
+              }}
+            >
+              <NavBar username={username} />
             </Box>
 
             <Box
@@ -437,15 +412,12 @@ const PostPage = (props: Props) => {
                   ml: 10,
                   borderRadius: "20px",
                   textAlign: "left",
-                  // minWidth: "45%",
-                  // maxWidth: "80%",
                   minWidth: "350px",
                   width: "20%",
                   overflow: "auto",
                   display: "flex",
                   flexFlow: "row nowrap",
                   border: "5px solid #000000",
-                  // ml: 5,
                 }}
               >
                 <Box
@@ -455,20 +427,11 @@ const PostPage = (props: Props) => {
                     height: "10%",
                     width: "100%",
                     backgroundColor: "primary.main",
-                    // background:
-                    //   "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
                     display: "flex",
                     flexFlow: "row nowrap",
                     alignItems: "center",
                     justifyContent: "left",
                     gap: 2,
-                    // paddingRight: "10px",
-                    // paddingleft: "10px",
-                    // px: 10,
-                    // mt: 16,
-                    // mr: 4,
-                    // ml: 2,
-                    // textAlign: "center",
                     overflow: "auto",
                   }}
                 >
@@ -483,7 +446,7 @@ const PostPage = (props: Props) => {
                       mx: 1,
                       my: 1,
                     }}
-                    // alt="Club image"
+                    alt="Club image"
                     src={postInfo.clubImage}
                   />
                   <Typography
@@ -491,7 +454,7 @@ const PostPage = (props: Props) => {
                     mt={0}
                     variant="h5"
                     color="white"
-                    fontFamily={"RampartOne"}
+                    fontFamily={"Rampart One"}
                     onClick={() =>
                       navigate(`/club/${postInfo.clubName}/${postInfo.clubId}`)
                     }
@@ -538,7 +501,6 @@ const PostPage = (props: Props) => {
                     "&::-webkit-scrollbar": {
                       display: "none",
                     },
-                    // float: "top",
                   }}
                 >
                   <Box
@@ -646,7 +608,11 @@ const PostPage = (props: Props) => {
                         }}
                       >
                         <IconButton aria-label="Like post">
-                          {isLiked? <ThumbUpAltIcon sx={{color: "primary.main"}} /> : <ThumbUpAltIcon />}
+                          {isLiked ? (
+                            <ThumbUpAltIcon sx={{ color: "primary.main" }} />
+                          ) : (
+                            <ThumbUpAltIcon />
+                          )}
                         </IconButton>
                         <Typography
                           color="primary.main"
@@ -690,10 +656,12 @@ const PostPage = (props: Props) => {
                           "&:hover": { backgroundColor: "secondary.light" },
                         }}
                       >
-                        <IconButton
-                          aria-label="dislike post"
-                        >
-                          {isDisliked ? <ThumbDownIcon sx={{color: "primary.main"}} /> : <ThumbDownIcon />}
+                        <IconButton aria-label="dislike post">
+                          {isDisliked ? (
+                            <ThumbDownIcon sx={{ color: "primary.main" }} />
+                          ) : (
+                            <ThumbDownIcon />
+                          )}
                         </IconButton>
                         <Typography
                           color="primary.main"
@@ -804,7 +772,6 @@ const PostPage = (props: Props) => {
                           Edit Post
                         </Typography>
                       </MenuItem>
-                      {/* <MenuItem onClick={() => handleClose("delete")}> */}
                       <MenuItem
                         onClick={() => {
                           handleDeletePostOpen();
@@ -828,7 +795,6 @@ const PostPage = (props: Props) => {
                       width: "40%",
                       minWidth: "300px",
                       minHeight: "60vh",
-                      // minHeight: "400px",
                       maxHeight: "800px",
                       overflow: "auto",
                       display: "flex",
@@ -838,7 +804,6 @@ const PostPage = (props: Props) => {
                       "&::-webkit-scrollbar": {
                         display: "none",
                       },
-                      // position:"absolute",
                     }}
                   >
                     <Box
@@ -847,8 +812,6 @@ const PostPage = (props: Props) => {
                         border: "0px solid #000",
                         borderBottom: "5px solid #000",
                         height: "fit",
-                        // background:
-                        //   "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
                         backgroundColor: "secondary.main",
                         display: "flex",
                         justifyContent: "space-between",
@@ -860,7 +823,7 @@ const PostPage = (props: Props) => {
                         color="white"
                         fontWeight="bold"
                         fontFamily={"Lobster"}
-                        sx={{ pt: 1, pl: 3, pr: 3, userSelect:"none" }}
+                        sx={{ pt: 1, pl: 3, pr: 3, userSelect: "none" }}
                       >
                         Comments
                       </Typography>
@@ -873,162 +836,174 @@ const PostPage = (props: Props) => {
                         width: "100%",
                         border: "2px solid",
                         borderRadius: "0px",
-                        // minHeight: "30%",
                         maxHeight: "50%",
                         m: 0,
                       }}
                     >
-                      {editCommentId ?                       <Box
-                        component="form"
-                        onSubmit={handleEditCommentSubmit}
-                        sx={{
-                          display: "flex",
-                          flexFlow: "column wrap",
-                          justifyContent: "center",
-                          width: "100%",
-                          height: "100%",
-                          overflow: "auto",
-                          "&::-webkit-scrollbar":{
-                            display:"none"
-                          },
-                        }}
-                      >
-                        <TextField
-                          sx={{ backgroundColor: "back.light",}}
-                          variant="filled"
-                          autoComplete="edit-comment-field"
-                          required
-                          fullWidth
-                          multiline
-                          maxRows={7}
-                          id="edit-comment-body"
-                          name="edit-comment-body"
-                          label="Edit Comment 📜"
-                          type="text"
-                          onChange={handleEditComment}
-                          value={commentBody}
-                          InputProps={{
-                            // startAdornment: (
-                            //   <InputAdornment position="start">
-                            //     📜
-                            //   </InputAdornment>
-                            // ),
-                            // endAdornment: (
-                            //   <Button
-                            //     type="submit"
-                            //     variant="contained"
-                            //     sx={{ mt: 3, mb: 2 }}
-                            //   >
-                            //     Send
-                            //   </Button>
-                            // ),
+                      {editCommentId ? (
+                        <Box
+                          component="form"
+                          onSubmit={handleEditCommentSubmit}
+                          sx={{
+                            display: "flex",
+                            flexFlow: "column wrap",
+                            justifyContent: "center",
+                            width: "100%",
+                            height: "100%",
+                            overflow: "auto",
+                            "&::-webkit-scrollbar": {
+                              display: "none",
+                            },
                           }}
-                        />
-
-                          <Box sx={{display:"flex", flexFlow:"row nowrap", width:"100%"}}> 
-                          <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", width:"35%",}}>
-                            <Typography fontFamily={"Lobster"} fontSize="0.75rem" sx={{color:"back.main", border:"2px solid", borderColor:"back.dark", borderRadius: "20px",backgroundColor: "secondary.main", p:1, mt:1,}}>
-                            Edit: {editCommentId}
-                              </Typography>
-                          </Box>
-                          
-
-
-
-                          <Button
-                          type="submit"
-                          variant="contained"
-                          
-                          sx={{ width: "100%", my: 2, mx: 1 }}
                         >
-                          Send
-                        </Button>
+                          <TextField
+                            sx={{ backgroundColor: "back.light" }}
+                            variant="filled"
+                            autoComplete="edit-comment-field"
+                            required
+                            fullWidth
+                            multiline
+                            maxRows={7}
+                            id="edit-comment-body"
+                            name="edit-comment-body"
+                            label="Edit Comment 📜"
+                            type="text"
+                            onChange={handleEditComment}
+                            value={commentBody}
+                          />
+
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexFlow: "row nowrap",
+                              width: "100%",
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                width: "35%",
+                              }}
+                            >
+                              <Typography
+                                fontFamily={"Lobster"}
+                                fontSize="0.75rem"
+                                sx={{
+                                  color: "back.main",
+                                  border: "2px solid",
+                                  borderColor: "back.dark",
+                                  borderRadius: "20px",
+                                  backgroundColor: "secondary.main",
+                                  p: 1,
+                                  mt: 1,
+                                }}
+                              >
+                                Edit: {editCommentId}
+                              </Typography>
+                            </Box>
+
+                            <Button
+                              type="submit"
+                              variant="contained"
+                              sx={{ width: "100%", my: 2, mx: 1 }}
+                            >
+                              Send
+                            </Button>
+                          </Box>
                         </Box>
-                      </Box> :                       <Box
-                        component="form"
-                        onSubmit={handleCommentSubmit}
-                        sx={{
-                          display: "flex",
-                          flexFlow: "column wrap",
-                          justifyContent: "center",
-                          width: "100%",
-                          height: "100%",
-                          overflow: "auto",
-                          "&::-webkit-scrollbar":{
-                            display:"none"
-                          },
-                        }}
-                      >
-                        <TextField
-                          sx={{ backgroundColor: "back.light",}}
-                          variant="filled"
-                          autoComplete="comment-field"
-                          required
-                          fullWidth
-                          multiline
-                          maxRows={7}
-                          id="new-comment-body"
-                          name="new-comment-body"
-                          label="New Comment 📜"
-                          type="text"
-                          onChange={handleNewComment}
-                          value={commentBody}
-                          InputProps={{
-                            // startAdornment: (
-                            //   <InputAdornment position="start">
-                            //     📜
-                            //   </InputAdornment>
-                            // ),
-                            // endAdornment: (
-                            //   <Button
-                            //     type="submit"
-                            //     variant="contained"
-                            //     sx={{ mt: 3, mb: 2 }}
-                            //   >
-                            //     Send
-                            //   </Button>
-                            // ),
+                      ) : (
+                        <Box
+                          component="form"
+                          onSubmit={handleCommentSubmit}
+                          sx={{
+                            display: "flex",
+                            flexFlow: "column wrap",
+                            justifyContent: "center",
+                            width: "100%",
+                            height: "100%",
+                            overflow: "auto",
+                            "&::-webkit-scrollbar": {
+                              display: "none",
+                            },
                           }}
-                        />
-
-                          <Box sx={{display:"flex", flexFlow:"row nowrap", width:"100%"}}>
-                          {currentReplyId && 
-                          <Box sx={{display:"flex", justifyContent:"center", alignItems:"center", width:"35%", }}>
-                            <Typography fontFamily={"Lobster"} fontSize="0.75rem" sx={{color: "back.main", border:"2px solid", borderColor:"back.dark", backgroundColor: "secondary.main", borderRadius: "20px", p:1, mt:1,}}>
-                            Reply: {currentReplyId}
-                              </Typography>
-                          </Box>
-                          }
-
-
-
-                          <Button
-                          type="submit"
-                          variant="contained"
-                          
-                          sx={{ width: "100%", my: 2, mx: 1 }}
                         >
-                          Send
-                        </Button>
+                          <TextField
+                            sx={{ backgroundColor: "back.light" }}
+                            variant="filled"
+                            autoComplete="comment-field"
+                            required
+                            fullWidth
+                            multiline
+                            maxRows={7}
+                            id="new-comment-body"
+                            name="new-comment-body"
+                            label="New Comment 📜"
+                            type="text"
+                            onChange={handleNewComment}
+                            value={commentBody}
+                          />
+
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexFlow: "row nowrap",
+                              width: "100%",
+                            }}
+                          >
+                            {currentReplyId && (
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  width: "35%",
+                                }}
+                              >
+                                <Typography
+                                  fontFamily={"Lobster"}
+                                  fontSize="0.75rem"
+                                  sx={{
+                                    color: "back.main",
+                                    border: "2px solid",
+                                    borderColor: "back.dark",
+                                    backgroundColor: "secondary.main",
+                                    borderRadius: "20px",
+                                    p: 1,
+                                    mt: 1,
+                                  }}
+                                >
+                                  Reply: {currentReplyId}
+                                </Typography>
+                              </Box>
+                            )}
+
+                            <Button
+                              type="submit"
+                              variant="contained"
+                              sx={{ width: "100%", my: 2, mx: 1 }}
+                            >
+                              Send
+                            </Button>
+                          </Box>
                         </Box>
-                      </Box>  }
+                      )}
                     </Box>
-      
-                    
+
                     <Box
                       sx={{
                         display: "flex",
                         flexFlow: "column nowrap",
                         alignItems: "center",
-                        // justifyContent: "center",
                         minHeight: "47.5vh",
-                        // maxHeight: "47.5vh",
-                        // height: "100%",
                         overflow: "auto",
                         border: "2px solid black",
                       }}
                     >
-                      {loadingComments ? <LoadingComponentIndicator /> :comments.length > 0 ? (
+                      {loadingComments ? (
+                        <LoadingComponentIndicator />
+                      ) : comments.length > 0 ? (
                         comments.map((comment) => (
                           <CommentElement
                             replyStatus={Boolean(comment.parent_id)}
@@ -1048,13 +1023,13 @@ const PostPage = (props: Props) => {
                             fetchComments={fetchComments}
                           />
                         ))
-                      ) :  (
+                      ) : (
                         <Typography
                           variant="h3"
                           color="secondary.main"
                           fontWeight="bold"
                           fontFamily={"Lobster"}
-                          sx={{ pt: 1, pl: 3, pr: 3, userSelect:"none" }}
+                          sx={{ pt: 1, pl: 3, pr: 3, userSelect: "none" }}
                         >
                           No Comments Yet
                         </Typography>
@@ -1081,6 +1056,5 @@ const PostPage = (props: Props) => {
     </>
   );
 };
-
 
 export default PostPage;

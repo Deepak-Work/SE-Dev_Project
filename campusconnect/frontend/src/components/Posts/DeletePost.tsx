@@ -4,33 +4,16 @@ import {
   Container,
   Dialog,
   DialogTitle,
-  Fab,
-  Grid,
-  Paper,
-  TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-
-import Cookies from "js-cookie";
-
-interface DeletePost {
-  title: string;
-  body: string;
-  id: string;
-  image?: string;
-}
 
 interface DeletePostProps {
   deletePostOpen: boolean;
   handleDeletePostClose: (event?: object, reason?: string) => void;
   handleClose: (reason: string) => void;
-  // handleDeleteSubmit : (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
 const DeletePost = (props: DeletePostProps) => {
-  const { id } = useParams();
   const { deletePostOpen, handleDeletePostClose, handleClose } = props;
 
   return (
@@ -64,13 +47,12 @@ const DeletePost = (props: DeletePostProps) => {
             justifyContent: "space-between",
           }}
         >
-          <Typography component="h2" variant="h2" fontFamily={"RampartOne"}>
+          <Typography component="h2" variant="h2" fontFamily={"Rampart One"}>
             Delete Post
           </Typography>
         </Container>
       </DialogTitle>
 
-      {/* <DialogContent> */}
       <Container
         component="div"
         sx={{

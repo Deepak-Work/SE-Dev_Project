@@ -7,7 +7,6 @@ import {
   DialogContent,
   DialogTitle,
   Dialog,
-  Slide,
   Typography,
   Container,
   Button,
@@ -15,15 +14,16 @@ import {
   TextField,
   Box,
 } from "@mui/material";
-import { InputAdornment, PaletteOptions, styled } from "@mui/material";
-import { TransitionProps } from "@mui/material/transitions";
+import { styled } from "@mui/material";
+
+import theme from "../UI/theme";
+import slideTransition from "../UI/slideTransition";
 
 import Cookies from "js-cookie";
 
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import CustomPaletteOptions from "../UI/CustomPaletteOptions";
+import { ThemeProvider } from "@mui/material/styles";
 
 interface User {
   name: string;
@@ -47,15 +47,6 @@ interface Errors {
 
 type ImageFile = File | null;
 
-const slideTransition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>;
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="down" ref={ref} {...props} />;
-});
-
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -71,7 +62,7 @@ const VisuallyHiddenInput = styled("input")({
 const ProfileSettings = (props: SettingsProps) => {
   const navigate = useNavigate();
 
-  const { user, settingsOpen, handleSettingsOpen, handleSettingsClose } = props;
+  const { user, settingsOpen, handleSettingsClose } = props;
 
   const [errors, setErrors] = useState<Errors>({
     username: false,
@@ -127,13 +118,10 @@ const ProfileSettings = (props: SettingsProps) => {
   };
 
   const handleImageSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    // Prevent default behavior for forms. We need this other some browsers (like Firefox) blocks the request.
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
     const image = data.get("image") as File;
-
-    console.log(image);
 
     if (profileImage !== null) {
       const headers = {
@@ -158,7 +146,6 @@ const ProfileSettings = (props: SettingsProps) => {
   const handleUsernameSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
-    // Prevent default behavior for forms. We need this other some browsers (like Firefox) blocks the request.
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
@@ -168,8 +155,6 @@ const ProfileSettings = (props: SettingsProps) => {
       "Content-Type": "application/json",
       "X-CSRFToken": Cookies.get("csrftoken") || "",
     };
-
-    // TODO: Need to add upload profile pic field
 
     if (username.length === 0) {
       setErrors({
@@ -192,7 +177,7 @@ const ProfileSettings = (props: SettingsProps) => {
         usernameErrorMessage: "Username found",
       });
     } else {
-      navigate(`/profile/${username}`)
+      navigate(`/profile/${username}`);
       window.location.reload();
     }
   };
@@ -200,7 +185,6 @@ const ProfileSettings = (props: SettingsProps) => {
   const handlePasswordSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
-    // Prevent default behavior for forms. We need this other some browsers (like Firefox) blocks the request.
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
@@ -210,8 +194,6 @@ const ProfileSettings = (props: SettingsProps) => {
       "Content-Type": "application/json",
       "X-CSRFToken": Cookies.get("csrftoken") || "",
     };
-
-    // TODO: Need to add upload profile pic field
 
     if (password.length === 0) {
       setErrors({
@@ -237,23 +219,6 @@ const ProfileSettings = (props: SettingsProps) => {
       navigate("/login");
     }
   };
-
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#7108d8",
-      },
-      secondary: {
-        main: "#8B139C",
-      },
-      back: {
-        main: "#ced4da",
-        light: "#fff",
-        dark: "#000",
-        contrastText: "purple",
-      },
-    } as CustomPaletteOptions,
-  });
 
   return (
     <ThemeProvider theme={theme}>
@@ -291,7 +256,7 @@ const ProfileSettings = (props: SettingsProps) => {
             <Typography
               component="h3"
               variant="h3"
-              fontFamily="RampartOne"
+              fontFamily="Rampart One"
               color="white"
             >
               Edit Profile

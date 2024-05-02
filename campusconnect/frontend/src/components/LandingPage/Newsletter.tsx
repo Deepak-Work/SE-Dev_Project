@@ -13,7 +13,6 @@ import {
   Card,
 } from "@mui/material";
 
-import NewsletterElement from "./NewsletterElement";
 import TextMobileStepper from "../UI/TextMobileStepper";
 import LoadingComponentIndicator from "../Utils/LoadingComponentIndicator";
 import { useNavigate } from "react-router-dom";
@@ -52,7 +51,6 @@ const Newsletter = () => {
   const [selectedClub, setSelectedClub] = useState('');
 
   const handleSelectedClubChange = (event: SelectChangeEvent) => {
-    console.log(event.target.value);
     setSelectedClub(event.target.value);
     if(event.target.value) {
       setSelectedPostsByClubs(postsByClubs.filter((value) => value.club_id === Number(event.target.value)))
@@ -76,9 +74,6 @@ const Newsletter = () => {
     );
     if (response.ok) {
       response.json().then((value) => {
-        console.log(value.clubs_data);
-        // const clubIds = value.clubs_data.map((x) => x['club_id']); // Assuming the club ID is the first element in the tuple
-        // setFollowedClubs(clubIds.join(','));
         setFollowedClubs(value.clubs_data);
       });
     }    
@@ -98,7 +93,6 @@ const Newsletter = () => {
     );
     if (response.ok) {
       response.json().then((value) => {
-        console.log(value.posts_by_club);
         setPostsByClubs(value.posts_by_club);
         setSelectedPostsByClubs(value.posts_by_club);
       });
@@ -171,7 +165,6 @@ const Newsletter = () => {
             id="followed-clubs-select"
             value={selectedClub}
             onChange={handleSelectedClubChange}
-            // MenuProps={{ MenuListProps: { sx: { maxHeight: "200px" } } }}
             MenuProps={MenuProps}
           >
             <MenuItem value="">
@@ -196,11 +189,9 @@ const Newsletter = () => {
        >
         <Card
       sx={{
-        //  display:"flex",
         border: "3px solid",
         borderColor: "back.dark",
         borderRadius: "35px",
-        // width: "450px",
         minWidth: "600px",
         textWrap: "balance",
       }}
@@ -225,8 +216,6 @@ const Newsletter = () => {
             maxHeight: "200px",
             maxWidth: "50%",
             backgroundColor: "primary.main",
-            // background:
-            //   "linear-gradient(90deg, rgba(78,26,157,1) 0%, rgba(126,2,237,1) 99%)",
             display: "flex",
             flexFlow: "row nowrap",
             alignItems: "center",
@@ -256,7 +245,7 @@ const Newsletter = () => {
          <Typography
            component="h2"
            variant="h2"
-           fontFamily={"RampartOne"}
+           fontFamily={"Rampart One"}
            sx={{
              color: "secondary.dark",
              fontSize: "2rem",
@@ -284,7 +273,7 @@ const Newsletter = () => {
         <Typography
           component="h2"
           variant="h2"
-          fontFamily={"RampartOne"}
+          fontFamily={"Rampart One"}
           sx={{
             color: "secondary.dark",
             fontSize: "2rem",

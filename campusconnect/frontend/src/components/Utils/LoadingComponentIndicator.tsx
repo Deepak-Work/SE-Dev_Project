@@ -1,27 +1,9 @@
-import * as React from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
-import { ThemeProvider, Typography, createTheme } from "@mui/material";
-import CustomPaletteOptions from "../UI/CustomPaletteOptions";
+import { ThemeProvider, Typography } from "@mui/material";
+import theme from "../UI/theme";
 
 const LoadingComponentIndicator = () => {
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#7108d8",
-      },
-      secondary: {
-        main: "#8B139C",
-      },
-      back: {
-        main: "#ced4da",
-        light: "#fff",
-        dark: "#000",
-        contrastText: "purple",
-      },
-    } as CustomPaletteOptions,
-  });
-
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -40,7 +22,7 @@ const LoadingComponentIndicator = () => {
         <Typography
           variant="h4"
           color="back.light"
-          sx={{ml: "5px", mt:-10, fontFamily: "RampartOne" }}
+          sx={{ml: "5px", mt:-10, fontFamily: "Rampart One" }}
         >
           CampusConnect
         </Typography>
@@ -49,9 +31,6 @@ const LoadingComponentIndicator = () => {
     </ThemeProvider>
   );
 
-  {
-    /* You can add additional styling or animation for the loading indicator */
-  }
 };
 
 export default LoadingComponentIndicator;

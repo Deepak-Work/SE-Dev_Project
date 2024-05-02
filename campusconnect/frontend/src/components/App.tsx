@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import Login from "./Login";
@@ -21,10 +20,6 @@ function App() {
   const [isAuth, setAuth] = useState(false);
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState("");
-  // const navigate = useNavigate();
-
-  // const navigate = useNavigate();
-  // Every time the page is re-rendered, this is called
 
 
   useEffect(() => {
@@ -44,11 +39,9 @@ function App() {
       }, 500);
       } catch (error) {
         console.error("Error checking authentication:", error);
-        // Handle error (e.g., display error message)
       }
     };
     checkAuth();
-    console.log(isAuth);
   }, []);
 
   if(loading) {

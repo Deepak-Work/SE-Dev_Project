@@ -1,32 +1,9 @@
 import Box from "@mui/material/Box";
-import { ThemeProvider, Typography, createTheme } from "@mui/material";
-import CustomPaletteOptions from "../UI/CustomPaletteOptions";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { ThemeProvider, Typography } from "@mui/material";
+
+import theme from "../UI/theme";
 
 const PageNotFound = () => {
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#7108d8",
-      },
-      secondary: {
-        main: "#8B139C",
-      },
-      back: {
-        main: "#ced4da",
-        light: "#fff",
-        dark: "#000",
-        contrastText: "purple",
-      },
-    } as CustomPaletteOptions,
-  });
-
-  const navigate = useNavigate();
-
-  useEffect(() => {
-  }, [])
-
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -45,17 +22,13 @@ const PageNotFound = () => {
         <Typography
           variant="h1"
           color="back.light"
-          sx={{ml: "5px", fontFamily: "RampartOne" }}
+          sx={{ ml: "5px", fontFamily: "RampartOne" }}
         >
           Error 404 - Page Not Found
         </Typography>
       </Box>
     </ThemeProvider>
   );
-
-  {
-    /* You can add additional styling or animation for the loading indicator */
-  }
 };
 
 export default PageNotFound;

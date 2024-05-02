@@ -1,27 +1,10 @@
 import Box from "@mui/material/Box";
-import { ThemeProvider, Typography, createTheme } from "@mui/material";
-import CustomPaletteOptions from "../UI/CustomPaletteOptions";
+import { ThemeProvider, Typography} from "@mui/material";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import theme from "../UI/theme";
 
 const UserDoesNotExist = () => {
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#7108d8",
-      },
-      secondary: {
-        main: "#8B139C",
-      },
-      back: {
-        main: "#ced4da",
-        light: "#fff",
-        dark: "#000",
-        contrastText: "purple",
-      },
-    } as CustomPaletteOptions,
-  });
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,14 +29,14 @@ const UserDoesNotExist = () => {
         <Typography
           variant="h1"
           color="back.light"
-          sx={{ml: "5px", fontFamily: "RampartOne" }}
+          sx={{ml: "5px", fontFamily: "Rampart One" }}
         >
           User Does Not Exist
         </Typography>
         <Typography
           variant="h4"
           color="back.light"
-          sx={{ml: "5px", fontFamily: "RampartOne" }}
+          sx={{ml: "5px", fontFamily: "Rampart One" }}
         >
           Redirecting in 5 Seconds...
         </Typography>

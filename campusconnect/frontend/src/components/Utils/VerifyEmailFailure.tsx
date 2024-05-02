@@ -1,27 +1,11 @@
 import Box from "@mui/material/Box";
-import { ThemeProvider, Typography, createTheme } from "@mui/material";
-import CustomPaletteOptions from "../UI/CustomPaletteOptions";
+import { ThemeProvider, Typography } from "@mui/material";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const VerifyEmailFailure = () => {
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#7108d8",
-      },
-      secondary: {
-        main: "#8B139C",
-      },
-      back: {
-        main: "#ced4da",
-        light: "#fff",
-        dark: "#000",
-        contrastText: "purple",
-      },
-    } as CustomPaletteOptions,
-  });
+import theme from "../UI/theme";
 
+const VerifyEmailFailure = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,24 +30,20 @@ const VerifyEmailFailure = () => {
         <Typography
           variant="h1"
           color="back.light"
-          sx={{ml: "5px", fontFamily: "RampartOne" }}
+          sx={{ml: "5px", fontFamily: "Rampart One" }}
         >
           Failed Email Verification
         </Typography>
         <Typography
           variant="h4"
           color="back.light"
-          sx={{ml: "5px", fontFamily: "RampartOne" }}
+          sx={{ml: "5px", fontFamily: "Rampart One" }}
         >
           Redirecting in 5 Seconds...
         </Typography>
       </Box>
     </ThemeProvider>
   );
-
-  {
-    /* You can add additional styling or animation for the loading indicator */
-  }
 };
 
 export default VerifyEmailFailure;
