@@ -1,7 +1,62 @@
-# SE-Dev_Project - Campus Connect
-CampusConnect is a web app. for all NYU students that allows to keep up with the clubs they want to follow.
+# SE-Dev_Project - CampusConnect
 
-# Useful Commands
+## Description
+CampusConnect is a Web Application for all students that allows them to keep up with the clubs they want to follow.
+
+This innovative application is designed to streamline the communication and collaboration among university clubs and their members. This platform serves as a dynamic hub for aggregating newsletters from various clubs, facilitating efficient communication, and fostering a sense of community within the campus. 
+
+With this application, clubs can easily share announcements, event details, and important updates, ensuring that their members stay informed about the latest happenings. This centralized approach enhances transparency and accessibility, making it simple for members to engage with club activities.
+
+This application also provided members with the ability to respond to announcements, ask questions, and engage in discussion in real time. This fosters a more interactive and engaged community, as members can easily connect with club leaders, and fellow members, and stay actively involved in club initiatives.
+
+## Windows Setup
+
+### Using CMD
+
+1) Create a virtual environment within the root directory with the following command:
+```
+py venv -m .\<env_name>
+```
+2) Activate the virtual environment within the root directory with the following command:
+```
+<env_name>\Scripts\activate.bat
+```
+3) Install the Python dependencies from the requirements.txt
+```
+pip install -r requirements.txt
+```
+4) Install frontend dependencies:
+```
+cd campusconnect\frontend
+npm install
+```
+5) Build the latest version for the frontend:
+```
+npm run build
+```
+6)  Make the migrations for the SQLite3 database and Django models
+```
+cd ..\
+py manage.py makemigrations
+py manage.py migrate
+```
+7) Run the application
+```
+py manage.py runserver
+```
+8) Visit the website at: http://127.0.0.1:8000/
+
+
+## Tech Stack 
+- Django
+- React
+- TypeScript
+- Python
+- SQLite3
+- Material UI
+- Vite
+
+# Development - Useful Commands
 ## Git Commands
 
 ### Pushing/Pulling
