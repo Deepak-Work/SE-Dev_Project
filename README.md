@@ -13,38 +13,42 @@ This application also provided members with the ability to respond to announceme
 
 ### Using CMD
 
-1) Create a virtual environment within the root directory with the following command:
+1) Clone this repository and open the project:
+```
+git clone https://github.com/Deepak-Work/SE-Dev_Project.git
+```
+2) Create a virtual environment within the root directory with the following command:
 ```
 py venv -m .\<env_name>
 ```
-2) Activate the virtual environment within the root directory with the following command:
+3) Activate the virtual environment within the root directory with the following command:
 ```
 <env_name>\Scripts\activate.bat
 ```
-3) Install the Python dependencies from the requirements.txt
+4) Install the Python dependencies from the requirements.txt
 ```
 pip install -r requirements.txt
 ```
-4) Install frontend dependencies:
+5) Install frontend dependencies:
 ```
 cd campusconnect\frontend
 npm install
 ```
-5) Build the latest version for the frontend:
+6) Build the latest version for the frontend:
 ```
 npm run build
 ```
-6)  Make the migrations for the SQLite3 database and Django models
+7)  Make the migrations for the SQLite3 database and Django models
 ```
 cd ..\
 py manage.py makemigrations
 py manage.py migrate
 ```
-7) Run the application
+8) Run the application
 ```
 py manage.py runserver
 ```
-8) Visit the website at: http://127.0.0.1:8000/
+9) Visit the website at: http://127.0.0.1:8000/
 
 
 ## Tech Stack 
